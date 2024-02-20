@@ -355,6 +355,49 @@
       \field{pages}{223\bibrangedash 228}
       \range{pages}{6}
     \endentry
+    \entry{undercompleteautoencoder}{article}{}
+      \name{author}{4}{}{%
+        {{hash=33e659e99182441e4ba91833dba975ae}{%
+           family={Misra},
+           familyi={M\bibinitperiod},
+           given={Sumit},
+           giveni={S\bibinitperiod}}}%
+        {{hash=ff15aaa3d87c362594766461ac93f4b0}{%
+           family={Thakur},
+           familyi={T\bibinitperiod},
+           given={Soumyadeep},
+           giveni={S\bibinitperiod}}}%
+        {{hash=9a5aab46fad3a9fc22e5e5e699a48099}{%
+           family={Ghosh},
+           familyi={G\bibinitperiod},
+           given={Manosij},
+           giveni={M\bibinitperiod}}}%
+        {{hash=b55c399b6e8391806fc1e07805e322c9}{%
+           family={Saha},
+           familyi={S\bibinitperiod},
+           given={Sanjoy\bibnamedelima Kumar},
+           giveni={S\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{8c27fe280e772c1c40c051ad2b31e86c}
+      \strng{fullhash}{5b0921c4f9cc76e14e3dd5e06bd7d357}
+      \strng{bibnamehash}{8c27fe280e772c1c40c051ad2b31e86c}
+      \strng{authorbibnamehash}{8c27fe280e772c1c40c051ad2b31e86c}
+      \strng{authornamehash}{8c27fe280e772c1c40c051ad2b31e86c}
+      \strng{authorfullhash}{5b0921c4f9cc76e14e3dd5e06bd7d357}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Procedia Computer Science}
+      \field{title}{An autoencoder based model for detecting fraudulent credit card transaction}
+      \field{volume}{167}
+      \field{year}{2020}
+      \field{pages}{254\bibrangedash 262}
+      \range{pages}{9}
+    \endentry
     \entry{scikit-learn}{article}{}
       \name{author}{16}{}{%
         {{hash=6e96fec0d63277626bb324bd28cdecb7}{%

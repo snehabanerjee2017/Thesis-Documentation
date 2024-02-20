@@ -38,21 +38,35 @@ Clustering algorithms can be broadly classified into the following categories: d
     \label{fig:dbscan}
 \end{figure} 
 Moreover, these algorithms are also very robust to outliers as they do not force the outliers to belong to any category but are rather ignored as it is unlikely that outliers can form an area of high concentration of datapoints. I have carried on the experiments on this thesis on two such density-based clustering algortihms called \ac{DBSCAN}\cite*{dbscan} and \ac{HDBSCAN} algorithms\cite*{hdbscan}. The available scikit-learn implementations were used for this purpose\cite*{scikit-learn}. The \ac{DBSCAN}\cite*{dbscan} algortihm  does not require the users to define the number of clusters to be generated which doesn't force dissimilar datapoints to belong to the same cluster. However, this algorithm was still sensitive to two parameters $\epsilon$, the maximum distance betwwen the datapoints to be considered in the same cluster and the minimum number of samples in the cluster which the user needs to define \cite*{scikit-learn}. But finding an optimum value for these parameters often require domain expertise and are dependent on the data. The \ac{HDBSCAN}\cite*{hdbscan} algorithm mitigates this issue and thus does not require the user to define these two parameters. It is a hierarchical density-based clustering that performs the \ac{DBSCAN} algorithm over multiple $\epsilon$ values to find the most stable result. In distribution-based algorithms, a datapoint is said to be a member of the cluster depending on the probability of it's membership to the cluster. The more the distance of a point increases from the centre of the cluster, the less is it's probability of belonging to that cluster. Centroid-based algorithms groups the datapoints based on some initial cluster centres. Once all the dataspoints are softly assigned to some cluster membership, the cluster centres are recalculated and this process is iterated until convergence. These algorithms are sensitive to the initial parameters like the cluster centres chosen in the first step. Another major disadvantage of these clustering algorithms are that they always form spherical clusters. The user also needs to define the number of clusters the dataset is to be grouped in, which makes it sensitive to outliers. However, these algorithms can be executed very fast and we have used two such algorithms in our experiments- K-Means\cite*{kmeans}and K-Medoids\cite*{kmedoids}. In K-Means, the mean of the datapoints of the clusters is assigned as the cluster-centroid. It might not be an actual datapoint in the dataset, rather a blurred, noisy average of a datapoints in the cluster. On the contrary, the K-Medoids algortihm assigns an actual datapoint of the dataset, that is most centrally located as the cluster centroid as shown in Fig.\ref*{fig:kmean-kmedoid}. Thus K-Medoids is more robust to outliers and noises as compared to K-Means.
-\begin{figure}[h]
+
+\begin{figure}
     \centering
-    \includegraphics[width=200pt,height=150pt]{pictures/The-graphical-representation-of-the-difference-between-the-k-means-and-k-medoids_W640.jpg}
-    \caption{Difference between K-Means and K-Medoids.\cite{kmean-kmedoid}}
-    \label{fig:kmean-kmedoid}
-\end{figure}
-Hierarchical-based clustering algorithm that form a hierarchy of clusters. Datapoints in a cluster are more similar to each other as compared to other groups. this hierarchy of clusters is visualised by a hierarchy tree called dendograms. hierarchical clustering algorithms can be of two types - agglomerative and divisive. In agglomerative clustering, each datapointis considered as a separate cluster in the first step. Then these clusters are merged into one another until only one cluster remains. Thus at the end, the last level cluster consists of all teh datapoints in the dataset. The divisive method is the reverse procedure of the aggomerative method. In the beginning, all the datapoints are considered to be in a single cluster and gradually the cluster is broken into smaller clusters, untill each cluster consists of only one datapoint. A visual representation of a dendogram has been shown in Fig.\ref*{fig:dendogram}
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=200pt,height=150pt]{pictures/dendogram.png}
-    \caption{A dendogram in hierarchical clustering.\cite{dendogram}}
-    \label{fig:dendogram}
+    \begin{minipage}[t]{.45\textwidth}
+      \centering
+      \includegraphics[width=200pt,height=150pt]{pictures/The-graphical-representation-of-the-difference-between-the-k-means-and-k-medoids_W640.jpg}
+      \captionof{figure}{Difference between K-Means and K-Medoids.\cite{kmean-kmedoid}}
+      \label{fig:kmean-kmedoid}
+    \end{minipage}%
+    \hspace{1cm}
+    \begin{minipage}[t]{.45\textwidth}
+      \centering
+      \includegraphics[width=200pt,height=150pt]{pictures/dendogram.png}
+      \captionof{figure}{A dendogram in hierarchical clustering.\cite{dendogram}}
+      \label{fig:dendogram}
+    \end{minipage}
 \end{figure}
 
+Hierarchical-based clustering algorithm that form a hierarchy of clusters. Datapoints in a cluster are more similar to each other as compared to other groups. this hierarchy of clusters is visualised by a hierarchy tree called dendograms. hierarchical clustering algorithms can be of two types - agglomerative and divisive. In agglomerative clustering, each datapointis considered as a separate cluster in the first step. Then these clusters are merged into one another until only one cluster remains. Thus at the end, the last level cluster consists of all teh datapoints in the dataset. The divisive method is the reverse procedure of the aggomerative method. In the beginning, all the datapoints are considered to be in a single cluster and gradually the cluster is broken into smaller clusters, untill each cluster consists of only one datapoint. A visual representation of a dendogram has been shown in Fig.\ref*{fig:dendogram}
+
 \subsubsection{Autoencoders}
+Autoencoders are a special type of feedforward neural network in which the output tries to reconstruct the input. It is predominantly used in unsupervised learning for the tasks if dimensionality reduction, learning feature representations, and for data compression.It tries the encode the input data into a more compact representation with lower dimensions called the "code"\cite*{Goodfellow-et-al-2016} or "latent space". The idea is that this latent space representation should capture the most vital aspects pf the input data. This is done by the first part of the network called the encoder. The second part of the network, the decoder then tries to decode this compressed representation of the input data to reconstruct the original input data as accurately as possible. during the training of an autoencoder, the goal is to minimise this reconstruction loss, i.e. the difference between the original input data and the output of the decoder. There are different types of autoencoders - undercomplete autoencoders, regularized autoencoders, sparse autoencoders, denoising autoencoders, convolutional autoencoders, variational autoencoders, and contractive autoencoders. \\
+Undercomplete autoencoders ensures that the dimension of the latent space representation is less than the dimension of the original input data as show in Fig. \ref*{fig:undercompleteautoencoder}. Because, the output of the decoder to be the exact copy of the input is of no use. Rather, if the dimension of the code is less than that of the input, then it ensures that the autoencoder learns those representative features of the input data which are most salient. 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=200pt,height=150pt]{pictures/undercomplete_autoencoder.png}
+    \caption{Architecture of an undercomplete autoencoder.\cite{undercompleteautoencoder}}
+    \label{fig:undercompleteautoencoder}
+\end{figure}
 \subsubsection{Siamese Network}
 \subsubsection{YOLO}
 \subsection{Transfer learning}

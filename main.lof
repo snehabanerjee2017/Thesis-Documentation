@@ -1,3 +1,4 @@
-\contentsline {figure}{\numberline {1}{\ignorespaces \ac {DBSCAN} can find non-linearly separable non-convex clusters.\blx@tocontentsinit {0}\cite {dbscanWiki}}}{9}{figure.1}%
-\contentsline {figure}{\numberline {2}{\ignorespaces Difference between K-Means and K-Medoids.\blx@tocontentsinit {0}\cite {kmean-kmedoid}}}{9}{figure.2}%
-\contentsline {figure}{\numberline {3}{\ignorespaces A dendogram in hierarchical clustering.\blx@tocontentsinit {0}\cite {dendogram}}}{10}{figure.3}%
+\contentsline {figure}{\numberline {1}{\ignorespaces \ac {DBSCAN} can find non-linearly separable non-convex clusters.\blx@tocontentsinit {0}\cite {dbscanWiki}}}{5}{figure.caption.13}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Difference between K-Means and K-Medoids.\blx@tocontentsinit {0}\cite {kmean-kmedoid}}}{5}{figure.caption.16}%
+\contentsline {figure}{\numberline {3}{\ignorespaces A dendogram in hierarchical clustering.\blx@tocontentsinit {0}\cite {dendogram}}}{5}{figure.caption.16}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Architecture of an undercomplete autoencoder.\blx@tocontentsinit {0}\cite {undercompleteautoencoder}}}{6}{figure.caption.17}%

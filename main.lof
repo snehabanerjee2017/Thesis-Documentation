@@ -1,6 +1,0 @@
-\contentsline {figure}{\numberline {1}{\ignorespaces \ac {DBSCAN} can find non-linearly separable non-convex clusters.\blx@tocontentsinit {0}\cite {dbscanWiki}}}{5}{figure.caption.14}%
-\contentsline {figure}{\numberline {2}{\ignorespaces Difference between K-Means and K-Medoids.\blx@tocontentsinit {0}\cite {kmean-kmedoid}}}{5}{figure.caption.17}%
-\contentsline {figure}{\numberline {3}{\ignorespaces A dendogram in hierarchical clustering.\blx@tocontentsinit {0}\cite {dendogram}}}{5}{figure.caption.17}%
-\contentsline {figure}{\numberline {4}{\ignorespaces Architecture of an undercomplete autoencoder.\blx@tocontentsinit {0}\cite {undercompleteautoencoder}}}{6}{figure.caption.18}%
-\contentsline {figure}{\numberline {5}{\ignorespaces Architecture of a single layer sparse encoder. The hidden nodes in bright yellow are active, while the ones in light yellow are set to zero, hence inactive\blx@tocontentsinit {0}\cite {autoencoder}}}{6}{figure.caption.18}%
-\contentsline {figure}{\numberline {6}{\ignorespaces Difference between a vanilla autoencoder and a \ac {VAE}.\blx@tocontentsinit {0}\cite {vae_image}}}{7}{figure.caption.21}%

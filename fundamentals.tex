@@ -143,7 +143,27 @@ but there are some practical problems related to the use of triplet loss functio
 \end{figure}
 Thus siamese networks are very robust to the class imbalance in dataset which is very common in real datasets. Since it depends on very few datapoints of a particular object class, it has good generalisation capabilities for unseen datapoints in the future. They are also very robust to small perturbationsin the datapoints due to difference in lighting conditions or orientation or background, as they keep similar objects close to each other even if the datapoints are slightly different. Since the siamese networks places similar datapoints together while increasing the distance between dissimilar datapoints, they are often useful for learning semantic similarity within the datapoints. However despite it's benefit, training a siamese network takes longer as compared to traditional neural networks because it involves learning from quadratic pair of datapoints.\cite*{siamese_network}
 \subsection{Transfer learning}
+Transfer learning is an optimization in machine learning techniques where a model trained for a particular task let's say task 1 is used for another task, task 2. It uses the knowledge learnt by the model in the previous task to be adapted for the new task. Trasnfer learning has it's benefits in a multitude of applications because real world problems doesn't necessarily always have an abundant amount of labelled data which can beused to train a model from scratch\cite*{weiss2016survey}. It can be used for tasks which intend to solve different but related problems\cite{weiss2016survey}. In other words, if the domain of the data for task 2 is similar to that of task 1, transfer learning can be used as shown in Fig.\ref*{fig:source_target}.Several approaches have been adapted to use transfer learning. Let's say we want to solve task $T_{1}$, but we don't have adequate data to train a deep neural network for it. But we have ample data to solve a similar task $T_{2}$. So we can train a model for task $T_{2}$ and then use it for task $T_{1}$. We might need to re-train only the later layers or all the layers of the model, but that heavily depends on the problem at hand. Another approach could be to use an existing pre-trained network. There are a lot a available open-source models which can be re-trained and re-used depending on the problem. Some of the popular models that are used as pre-trained models in transfer learning are Oxford VGG Model\cite*{simonyan2014very},Google Inception model\cite*{szegedy2015going}, Microsoft ResNet model\cite*{he2016deep}. Another approach could be to use transfer learning for the purpose of feature extraction. Transfer learning has found a lot of application in the domain of computer vision and natural language processing because it requires a lot of data for training such complex models from scratch. In the domain of computer vision, we know that the early layers of a deep neural network focuses on learning the low level features like the detection of edges, while the middle layers focus on learning the mid level features like the detection of shapes. In transfer learning, these pre-trained early and middle layers could be used verbatim and only the latter layers which focus on the high level features could be re-trained for the new task as shown in fig\ref*{fig:transfer_learning}.
+\begin{figure}
+  \centering
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=100pt,height=120pt]{pictures/source_target.PNG}
+    \captionof{figure}{Model trained for a task in the similar domain is re-used for a new task.\cite*{hosna2022transfer}}
+    \label{fig:source_target}
+  \end{minipage}%
+  \hspace{1cm}
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=100pt,height=120pt]{pictures/transfer_learning.PNG}
+    \captionof{figure}{A model trained on a different task is adapted to be used for a new task.\cite*{transfer_learning}}
+    \label{fig:transfer_learning}
+  \end{minipage}  
+\end{figure}
+Transfer learning has numerous advantages like significant reduction in the amount of training time\cite*{liu2019exploring}, improvement in performance for some neural networks\cite*{pan2011transfer} and less reliance on a huge amount of data\cite*{duan2012learning,kulis2011you,zhu2011heterogeneous}.  
 \subsubsection{Definition}
+According to \cite*{weiss2016survey,pan2009survey}, transfer learning can be formally defined as the following. A domain $D$ of the input data, with the feature space $\mathcal{X}$ and a marginal probability distribution $P(X)$ such that $X=\{x_{1},.....,x_{n}\} \in \mathcal{X}$, where $n$ is the number of feature vectors in $X$. In the given input data domain $D$, the task $\mathcal{T}$ has a label space $\mathcal{Y}$ and a predictive function $f(\cdot)$\cite*{weiss2016survey}
+\todo{Complete definition}
 \subsubsection{Categories}
 \subsubsection{Relevant Algorithms}
 \subsection{Network generation process with PQ-Net++}

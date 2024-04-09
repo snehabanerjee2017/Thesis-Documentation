@@ -225,7 +225,89 @@ where $a_{ki}$ is the k-th component of the vector representation of $a_i$ which
 
 \vspace{5 mm}
 
-Thus, we could see how even the evaluation metrics using just the intrinsic features of the dataset are still not efficient in the presence of noise, outliers or non-convex clusters.\todo{write DBCV}
+Thus, we could see how even the evaluation metrics using just the intrinsic features of the dataset are still not efficient in the presence of noise, outliers or non-convex clusters.As pointed out by Jain and Dubes, "without a strong effort in this direction, cluster analysis will remain a black art accessible only to those true believers who have experience and great courage" \cite*{jain1988algorithms}. The fact that this statement holds even today, 35 years after he said it is even more astonishing. To tackle the problem of inefficient evaluation metrics for non-convex clusters or where the different clusters have a difference in size Moulavi \textit{et. al.} proposed the Density Based Cluster Validation Index (DBCV)\cite*{moulavi2014density}. The authors have utilised the theory of Hartigan's model of density-contour trees\cite*{hartigan1975clustering}. The least dense region within a cluster and the most dense region outside a cluster is calculated with it which is analogous to computing the within cluster and between cluster density connectedness. As per the definition of Density Contour Trees\cite*{hartigan1975clustering} by Hartigan, density based clusters are regions of high density which are separated by low density regions. Having such model as a backdrop, it is expected that a good clustering algorithm which generate clusters such that the least dense region within a cluster is still more dense as compared to regions surrounding a cluster. Traditional intrinsic measure based evaluation mterics uses distance between the datapoints to compute cluster-variance and then incorporates it with the separation between the clusters to eventually compute the quality of the clustering algorithm. But this was not the target for DBCV. So they proposed a metric which was defined by densities instead of distances. DBCV wanted to takes into account both the density and the shape pf the cluster. So at first, the authors defined the concept of "all-points-core-distance"($a_{pts}coredist$). It was the inverse of the density of each object with respect to all other objects inside its cluster as given in Eq. \ref*{eq:aptscoredist}.
+\begin{equation}
+  \label{eq:aptscoredist}
+  \mathit{a_{pts}coredist(\textbf{o})}= \mathit{\left\{\frac{\sum_{i=2}^{n_i}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n_i - 1}\right\}^{-\frac{1}{d}}} 
+\end{equation}
+Using the above-mentioned equation, they defined a symmetric reachability distance which was then utilized to generate the \ac{MST} inside each clusters. Because the \ac{MST}s are built on the transformed space of symmetric reachabilty distances, it is capable of capturing both the density and shape of the cluster. On using these \ac{MST}s, they were able to find the least dense region within each of the clusters and the most dense regions between the pair of clusters. As per the definitions provided by the authors, $\textbf{O} = {o_1, o_2, ...., o_n}$ is the dataset containing $n$ objects in the $\mathbb{R}^d$ feature space. $\textbf{Dist}$ is an $n \times n$ matrix of pairwise distance $d(o_p,o_q)$ between the objects of the dataset, such that $o_p,o_q \in \textbf{O}$. $KNN(\textbf{o},i)$ is the distance between the object $o$ and its $i^{th}$ nearest neighbor. $C=({C_i},N) 1 \leq i \leq l$ is the results returned by the clustering algorithms having $l$ clusters and a set of $N$ noise objects. $n_i$ is the size of the $i^{th}$ cluster and $n_N$ is the number of objects in that particular cluster. To get an estimate of the density of an object within a cluster, traditional approaches use the notion o ´f taking the inverse of the threshold distance required to find $K$ objects within this threshold\cite*{hartigan1975clustering, campello2012simpler}. But a drawback of this method would be that one would need to decide the value of the parameter $K$, which is not desirable. Moreover, with this approach, the density of the object is dependent to its distance from only one other object i.e. the $k^th$ nearest neighbor. This approach is not as robust as compared to considering more objects in its neighborhood as done in Gaussian kernel density estimate. Thus in order to propose a more robust density estimate, the authors proposed the use of a new parameterless core distance which can be elucidated as the inverse of a density estimate and thus can be used in defining the mutual reachability distance. So now instead of using just one point in the cluster, all the points are taken into account such that the objects closer to it contribute to the density more as compared to the objects further away. We can see in Eq. \ref*{eq:aptscoredist}, that the inverse of the $KNN$ distances raised to the power of dimensions has been calculated such that closer objects gets a higher weight as compared to further objects. This effect can further be increased by using squared Euclidean distance instead of Euclidean distances. Also, as per the definition of mutual reachability distance\cite*{lelis2009semi}, the core distance of an object is compared to the distances of the object to other objects in the cluster. Hence, the core distance needs to be comparable to these distances. With the help of the following proof the authors have could rightfully conclude that for each object $\textbf{o}$ in the cluster, the "all-points-core-distance" $a_{pts}coredist(\textbf{o})$ lies between the second and the last nearest neighbor distance of the object\cite*{moulavi2014density} as in Eq.\ref*{eq:knndist}. 
+\begin{proof}
+  We have $\forall2 \leq i \leq n$,
+  \begin{align*}
+    \mathit{KNN(\textbf(o),2)} &\leq \mathit{KNN(\textbf(o),i)} \implies \\
+    \left(\frac{1}{KNN(\textbf{o},i)}\right)^d &\leq \left\{\frac{1}{KNN(\textbf{o},2)}\right\}^d
+  \end{align*}
+  Therefore,
+  \begin{align*}
+    \sum_{i=2}^{n}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d&\leq (n-1)\left(\frac{1}{KNN(\textbf{o},2)}\right)^d\\
+    \mathit{\left((n-1)\frac{\frac{1}{KNN(\textbf{o},2)}^d}{n-1}\right)^{-\frac{1}{d}}} &\leq \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n-1}\right)^{-\frac{1}{d}}}\\
+    \mathit{KNN(\textbf{o},2)} &\leq \mathit{a_{pts}coredist(\textbf{o})}          
+  \end{align*}
+  The upper bound of the equation can be proved similarly giving rise to
+  \begin{align*}
+    \mathit{a_{pts}coredist(\textbf{o})} &\leq \mathit{KNN(\textbf{o},n)}  
+  \end{align*}
+\end{proof}
+\begin{equation}
+  \label{eq:knndist}
+  \mathit{KNN(\textbf{o},2)} \leq \mathit{a_{pts}coredist(\textbf{o})} \leq \mathit{KNN(\textbf{o},n)}
+\end{equation}
+Moreover, the core distance is approximated to the distance of the object to its $k^{th}$ nearest neighbor such that $k$ is not too large. This means, that only a small neighborhood of the object is to be considered. Furthermore, let n objects be uniformly distributed random variables in a d-dimensional unit hypersphere. Then the core distance of object $\textbf{o}$ is given by Eq. \ref*{eq:aptsln} which can be proved as following.
+\begin{equation}
+  \label{eq:aptsln}
+  \mathit{a_{pts}coredist(\textbf{o})} = \mathit{\ln(n)^{-\frac{1}{d}}}
+\end{equation}
+
+\begin{proof}
+  First the authors proved the following:
+  \begin{equation}
+    \label{eq:knnij}
+    \forall1 \leq i \leq j \leq n, \mathit{\frac{KNN(\textbf{o},i)}{KNN(\textbf{o},j)}} \approx \mathit{\left(\frac{i-1}{j-1}\right)^\frac{1}{d}} 
+  \end{equation}
+  where $KNN(\textbf{o},i)$ is the distance between the object o and its $i_{th}$ nearest neighbor in the hypersphere. Now, the minimum volume of the hypersphere containing the $i_{th}$ nearest neighbor of the object when the object is at the center of the hypersphere is given by Eq. \ref*{eq:volume}
+  \begin{equation}
+    \label{eq:volume}
+    \mathit{V_i} \approx \frac{\pi^{\frac{d}{2}}}{\Gamma(\frac{d}{2}+1)}r_i^d
+  \end{equation}
+  where $V_i$ is the minimum volume of the hypersphere with radius $r_i$ that contains $KNN(\textbf{o},i)$. So, we get $KNN(\textbf{o},i)=r_i$. So in case of a unit hypersphere, $KNN(\textbf{o},i) \approx 1$. Also, because the objects are uniformly distributed, the ratio of the volume of the hyperspheres which contains the $i_{th}$ and $j_{th}$  nearest neighbors to the object $\textbf{o}$ is $\frac{v_i}{V_j} \approx \frac{i-1}{j-1}$
+  \begin{equation}
+    \label{eq:volume_ratio}
+    \mathit{\frac{V_i}{V_j}} \approx \left(\frac{r_i}{r_j}\right)^d
+  \end{equation}
+  \begin{equation}
+    \label{eq:radius_ratio}
+    \mathit{\frac{r_i}{r_j}} = \mathit{\frac{KNN(\textbf{o},i)}{KNN(\textbf{o},j)}} \approx \left(\frac{i-1}{j-1}\right)^{\frac{1}{d}}
+  \end{equation}
+  From Eq.\ref*{eq:knnij}, we have,
+  \begin{align*}
+    \mathit{\frac{1}{KNN(\textbf{o},i)}} &= \mathit{\left(\frac{n-1}{i-1}\right)^{\frac{1}{d}}\frac{1}{KNN(\textbf{o},n)}}         
+  \end{align*}
+  Therefore,
+  \begin{align*}
+    \mathit{a_{pts}coredist(\textbf{o})} &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}^{\frac{1}{d}}\frac{1}{KNN(\textbf{o},n)}\right)^d}{n-1}\right)^{-\frac{1}{d}}}         
+  \end{align*}
+  Since we have $KNN(\textbf{o},n) \approx 1$, therefore,
+  \begin{align*}
+    \mathit{a_{pts}coredist(\textbf{o})} &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}^{\frac{1}{d}}\right)^d}{n-1}\right)^{-\frac{1}{d}}} \\
+    &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}\right)}{n-1}\right)^{-\frac{1}{d}}} \\
+    &= \mathit{\left((n-1)\frac{\sum_{i=2}^{n}\left(\frac{1}{i-1}\right)}{n-1}\right)^{-\frac{1}{d}}} \\
+    &= \mathit{\left(\sum_{i=2}^{n}\left(\frac{1}{i-1}\right)\right)^{-\frac{1}{d}}} \\
+    &= \mathit{(\ln(n-1) + \gamma + \epsilon)^{-\frac{1}{d}}} \\
+    & \mathit{\approx \ln(n)^{-\frac{1}{d}}}
+  \end{align*}
+  where $\sum_{i=1}^{n}\left(\frac{1}{i}\right)$ is a harmonic series. Furthermore, from Eq.\ref*{eq:knnij},
+  \begin{align*}
+    \mathit{\frac{KNN(\textbf{o},\frac{n}{\ln(n)})}{KNN(\textbf{o},n)}} & \approx \mathit{\left(\frac{\frac{n}{\ln(n)}-1}{n-1}\right)^\frac{1}{d}} \\
+    & \approx \mathit{\left(\frac{\frac{n}{\ln(n)}}{n}\right)^\frac{1}{d}} \\
+    \mathit{\frac{KNN(\textbf{o},\frac{n}{\ln(n)})}{KNN(\textbf{o},n)}} & \approx \mathit{\ln(n)^{-\frac{1}{d}}} \\
+  \end{align*}
+  Since $KNN(\textbf{o},n) \approx 1$,
+  \begin{align*}
+    \mathit{KNN\left(\textbf{o},\frac{n}{\ln(n)}\right)} & \approx \mathit{\ln(n)^{-\frac{1}{d}}} \\
+  \end{align*}
+  Therefore, $\mathit{a_{pts}coredist(\textbf{o})} \approx \mathit{\ln(n)^{-\frac{1}{d}}} \approx KNN(\textbf{o},j)$. where $j$ is the closest natural number to $\frac{n}{\ln(n)}$. 
+\end{proof}
+This proves that the core distance of the object $o$ is approximately equal to the same nearest neighbor distance and is independent of the dimension of the data space, if the objects are uniformly distributed. If the dataset doesn't have a uniform distribution, which is the case for most real world datasets, only the first property holds i.e. the density of the object doesn't depend on just one other object but on all objects in the cluster. \todo{Continue with definitions} 
 \subsection{Transfer learning}
 Transfer learning is an optimization in machine learning techniques where a model trained for a particular task let's say task 1 is used for another task, task 2. It uses the knowledge learnt by the model in the previous task to be adapted for the new task. Transfer learning has its benefits in a multitude of applications because real world problems doesn't necessarily always have an abundant amount of labelled data which can be used to train a model from scratch\cite*{weiss2016survey}. It can be used for tasks which intend to solve different but related problems\cite{weiss2016survey}. In other words, if the domain of the data for task 2 is similar to that of task 1, transfer learning can be used as shown in Fig.\ref*{fig:source_target}. Several approaches have been adapted to use transfer learning. Let's say we want to solve task $T_{1}$, but we don't have adequate data to train a deep neural network for it. But we have ample data to solve a similar task $T_{2}$. So we can train a model for task $T_{2}$ and then use it for task $T_{1}$. We might need to re-train only the later layers or all the layers of the model, but that heavily depends on the problem at hand. Another approach could be to use an existing pre-trained network. There are a lot of available open-source models which can be re-trained and re-used depending on the problem. Some of the popular models that are used as pre-trained models in transfer learning are Oxford VGG Model\cite*{simonyan2014very},Google Inception model\cite*{szegedy2015going}, Microsoft ResNet model\cite*{he2016deep}. Another approach could be to use transfer learning for the purpose of feature extraction. Transfer learning has found a lot of application in the domain of computer vision and natural language processing because it requires a lot of data for training such complex models from scratch. In the domain of computer vision, we know that the early layers of a deep neural network focuses on learning the low level features like the detection of edges, while the middle layers focus on learning the mid level features like the detection of shapes. In transfer learning, these pre-trained early and middle layers could be used verbatim and only the latter layers which focus on the high level features could be re-trained for the new task as shown in fig\ref*{fig:transfer_learning}.
 \begin{figure}

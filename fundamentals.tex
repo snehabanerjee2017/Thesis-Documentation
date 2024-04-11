@@ -117,6 +117,9 @@ where $G_{w}(X_{i})$ is the output of the twin network such that $i \in \{1,2\}$
     \label{fig:online_triplet}
   \end{minipage}
 \end{figure}
+
+\vspace{5mm}
+
 \textbf{Triplet loss} function\cite*{weinberger2009distance} trains the siamese network in a way that a triplet of datapoints are presented to the siamese network. by applying triplet loss the model tries to group the datapoints similar to the anchor datapoint, close to one another while increasing the distance between the anchor datapoint and the datapoints dissimilar to it as shown in Fig.\ref*{fig:triplet_loss}. In order to do so, a positive value called margin is used which increases the distance between dissimilar datapoints and also eliminates the output of any trivial solution. Euclidean distance or cosine distance is used as the distance metric while calculating the triplet loss and shown in Eq.\ref*{eq:triplet_loss}\cite*{hermans2017defense,siamese_network}
 \begin{equation}
   \label{eq:triplet_loss}

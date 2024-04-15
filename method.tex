@@ -29,7 +29,7 @@ Fig.\ref*{fig:point_level} gives a detailed visualisation of the point-level clu
 But to train a network with a cross-entropy loss, the ground truth labels of the points in the point cloud are required. Since that is not available, one needs to assign the label $\gamma$ automatically, which is explained in details in the following passage. 
 
 \subsubsection{Class Probability prediction}
-As mentioned in the last passage, the output of the encoder $f_{\psi}$ is fed as input to a classification head $\phi_\alpha$ and it generates a logit score for each of the feature vector as shown in Fig.\ref*{fig:class_prob}. The vector for the logit score if given by $\textbf{g}_i = (g_{i1}, g_{i2},....., g_{iJ}), where \textbf{g}_i = \gamma_\alpha(f_{p_i})$. The classification head has 2 fully connected layers where each layer is a linear layer followed by a batch normalization. The leakyreLU activation function is used in all the layers except the last layer. As the output of the last layer we get N vectors for each of the N points in the point cloud where each of the output vector has $J$ dimensions, the number of predetermined subcategories each point cloud is to be segmented into. Thus each entry of the feature vector is the probability of that point belonging to $j-th$ category. Thus, the logit score matrix $\textbf{G} = \{ g_{ij}\}_{i,j}^{N,J}$ has the dimension $N \times J$. The prediction that the point $p_i$ belongs to the category $j$ is computed by teh application of a row-wise softmax operation on $\textbf{G}$ given by Eq.\ref*{eq:softmax}
+As mentioned in the last passage, the output of the encoder $f_{\psi}$ is fed as input to a classification head $\phi_\alpha$ and it generates a logit score for each of the feature vector as shown in Fig.\ref*{fig:class_prob}. The vector for the logit score if given by $\textbf{g}_i = (g_{i1}, g_{i2},....., g_{iJ}), where \textbf{g}_i = \gamma_\alpha(f_{p_i})$. The classification head has 2 fully connected layers where each layer is a linear layer followed by a batch normalization. The leakyreLU activation function is used in all the layers except the last layer. As the output of the last layer we get N vectors for each of the N points in the point cloud where each of the output vector has $J$ dimensions, the number of predetermined subcategories each point cloud is to be segmented into. Thus each entry of the feature vector is the probability of that point belonging to $j$-th category. Thus, the logit score matrix $\textbf{G} = \{ g_{ij}\}_{i,j}^{N,J}$ has the dimension $N \times J$. The prediction that the point $p_i$ belongs to the category $j$ is computed by the application of a row-wise softmax operation on $\textbf{G}$ given by Eq.\ref*{eq:softmax}
 \begin{equation}
     \label{eq:softmax}
     \mathit{s_{ij}}= \mathit{\frac{exp(g_{ij})}{\sum_{l=1}^{J}exp(g_{ij})}} 
@@ -51,11 +51,25 @@ As mentioned in the last passage, the output of the encoder $f_{\psi}$ is fed as
       \label{fig:label_reassign}
     \end{minipage}
 \end{figure}
-\todo{Continue from label reassigning}
 
+\subsubsection{Label reassigning}
+In order to calculate the labels shown in Fig.\ref*{fig:label_reassign}, one needs to the representative members of each of the semantic subgroups. It can be done by selecting the cluster mean or cluster centers of each of these subgroups as the representative member of the cluster. The class probability matrix $S$ can be infered as the soft assignment of each point $p_i$ in the point cloud to $J$ semantic partitions. So the softly weighted mean of each of these partitions can be calculated as in Eq.\ref*{eq:soft_mean}
+
+\begin{equation}
+    \label{eq:soft_mean}
+    \mathit{c_{j}}= \mathit{\frac{1}{\sum_{i=1}^{N}s_{ij}}\sum_{i=1}^{N}s_{ij}\mathbf{p}_i, j = 1,2,....,J} 
+\end{equation}
+or in another way $C= \{c_j\}_{j_1}^J$ is a matrix with dimensions $J \times 3$. In a completely unsupervised learning setup, $\gamma \in [0,1]$ can be visualized as the posterior probability of a $p_i$ belong to the $j-th$ partition. $\gamma$ was optimized in the same method as in Eq.\ref*{eq:softmax}. This results in a degenerate solution where each point is assigned to a single category. Thus, two assumptions were very pivotal for the reassigning of the labels. Firstly, the points in the point cloud ought to be partitioned into "equally-sized" partitions. In other words it can be formulated as $\mathit{\sum_{i=1}^{N}\gamma_{ij} = \frac{N}{J}}$. This is extremely importance in order to pretend all the points in the point cloud to be assigned to a single partition. Secondly, since the idea of using cluster centers as representative members of the partitions was inspired from the k-means algorithm, it means that if a point $p_i$ of the point cloud belongs to the $j^{*}$-th partition, it means that the distance from $p_i$ to $c_j$ should be the shortest as compared to the distance of $p_i$ to all other cluster centers. In other words $ \lVert \mathbf{p}_i - c_{j^*} \rVert _2 \leq \lVert \mathbf{p}_i - c_{j} \rVert _2, j \neq j^* $. This is also equivalent to $ min_{\gamma}\sum_{i=1}^{N}\sum_{j=1}^{J} \gamma_{ij} \lVert \mathbf{p}_i - c_{j} \rVert _2^2$. This objective function is optimised to get $\gamma$. As per the rules of probability, the sum of all possible outcomes of an event is equal to 1, therefore, we get $\sum_{j=1}^{J} \gamma_{ij} = 1$. Thus, we can formulate the matrix of joint probability $\Gamma$ as $\Gamma = \frac{\gamma}{N}$ which has the elements $\Gamma_{ij} = \frac{\gamma_{ij}}{N}$. The distance matrix $\mathit{D = \{d_{ij}\}_{i,j}^{N,J}}$ has dimensions $\mathit{N \times J}$ where each element $\mathit{d_{ij}}$ is defined as $\mathit{d_{ij}} = \lVert \mathbf{p}_i - c_{j} \rVert _2^2$. In accordance to the assumptions stated above, the objective function $\mathit{D}$ could be minimized with respect to $\Gamma$ as in Eq.\ref*{eq:label_reassign}
+\begin{equation}
+    \label{eq:label_reassign}
+    \begin{split}
+        &\underset{\Gamma}{min \langle \Gamma, D \rangle},\\
+        &s.t., \Gamma^{T}1_{\mathit{N}} = \frac{1}{\mathit{J}}1_{J} =, \Gamma1_{J} = \frac{1}{\mathit{N}}1_{\mathit{N}}
+    \end{split}    
+\end{equation}
+where $1_{J}$ is the vector of ones having dimension $J$. The above condition enforces that each of the cluster representative is  selected atleast $\frac{N}{J}$ times for each point cloud and $\sum_{j=1}^{J}\gamma_{ij}=1$. The objective function as defined in Eq.\ref*{eq:label_reassign} is a typical case of optimal transport problem\cite*{peyre2019computational}. Such problems can be solved by the Sinkhorn-Knopp algorithm\cite*{cuturi2013sinkhorn}. 
 \subsection{Suitable Algorithm and Adjustments}
 \subsection{Whatever new Concept we propose}
-\subsection{Architecture}
 \subsection{Source and Target Objects}
 \subsection{Data Generation}
 \subsection{Important Aspects}

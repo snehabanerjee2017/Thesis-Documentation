@@ -60,7 +60,114 @@ where $\mathit{f}: 2_{\mathbb{R}_{\mathit{N}} \rightarrow \mathbb{R}}, \mathbb{R
     L_{reg} = \lVert I - AA_T \rVert _F^2
 \end{equation}
 where $\lVert . \rVert _F$ is the Frobenius-norm, $I$ is the Identity matrix, and $A$ is the feature alignment matrix predicted by the mini-network. The feature transformation matrix has been approximated by an orthogonal matrix because orthogonal transformations ensure that no information about the input has been lost.
+
 \subsubsection{Dynamic Graph Convolutional Neural Network}
+Another more general feature encoder was used in this work. It was seen that the PointNet architecture treated each point of the point cloud independently. The model was made invariant to the different possible permutations by applying a symmetric function to aggregate the features. But a limitation to this method is that it doesn't take into consideration the topology of the points. It ignores the connectedness in between the points and thus cannot learn the local features. This limitation was addressed by Y. Wang \textit{et al.} in \cite*{wang2019dynamic}. The authors proposed the EdgeConv operation which was able to learn the local features of the point cloud while still meeting the requirement of being permutation invariant. EdgeConv generated the edge features which were capable of capturing the topological information of the points i.e. the connection between a point and its neighbors. In other words, the EdgeConv operation computes a local graph for each of the points in the point cloud which was capableof learning the edge embeddings for the edges in the graph. So the model group points based on both the Euclidean distance between the points and also how they were semantically related. The EdgeConv is a plug-and-play module that would be used combined into any existing model architecture to further enhance its performance. The approach has been further elaborated in the following passages.
+
+\vspace{5mm}
+
+Unlike PointNet, the \ac{DGCNN} network captures the topological information by generating a local neighborhood graph and then applying an operation analogous to the convolution operation on the edges connecting a pair of points. It is in line to the methodology used in graph neural networks. But unlike a traditional graph \ac{CNN}, the local neighborhood graph is not fixed in this case. On the contrary, it is updated after every layer in the network. This is because the k-nearest neighbors of a point doesn't remain the same after every layer of the network. This happens as the k-nearest neighbors are computed not based on the Euclidean distance between the points, but rather of the proximity of the points based on the learnt embeddings. In other words, the proximity of the points in the feature space are different from the proximity of the input points in the Euclidean space. This is responsible for the non-local flow of information through the point cloud. 
+
+\vspace{5mm}
+
+\textbf{Edge Convolution}  In this work, we have 3D point cloud $P = {p_i \in \mathbb{R}^F|i = 1, 2, 3, ...., N}$ where $N$ is the number of points in each point cloud and $p_i$ is each point in the point cloud represented in 3D cartesian coordinate system where $p_i = (x_i,y_i,z_i)$. In this work, $F=3$, but it is also possible to include additional information about the coordinates such as surface normals, color, etc. like most traditional deep neural networks, each layer acts upon the outputs of the previous layer. So generally speaking, $F$ is the dimension of the features of a particular layer in the network. The architecture of the model used in this work is shown in Fig. \ref*{fig:dgcnn_arch}. The top branch is used for the classification of the point cloud and the bottom branch is for the point-wise segmentation task. The classification task requires the $n$ points in point cloud as input. $k$ is pre-defined as the number of nearest neighbors that are to be considered for generating the edge features. The EdgeConv layer computes an edge feature set of size $k$ for each point $p_i$ in the point cloud. An aggregation operation is performed on each of these sets to get the EdgeConv response for the respective points. A global aggregation function is applied on the output of the last EdgeConv layer to generate a 1D global feature descriptor. This is used to compute the classification score for $c$ classes. The point-wise segmentation branch  further extends the classification branch by concatenating the 1D global descriptor with all EdgeConv responses (acts as local descriptors) for each point in the point cloud. Thus, it generates a point-wise classification score for $p$ semantic classes that it can belong to. $\oplus$ is the concatenation operation. The spatial transform block is the module used to align the input point cloud to a canonical space. It is done by applying an estimated $3 \times 3$ transformation matrix. The coordinates of each of the points in the point cloud are concatenated with the difference in the coordinates with the $k$ neighboring points giving rise to a tensor. This tensor is used in computing above-mentioned transformation matrix. The input point cloud of shape $n \times f$, here $f=3$ is fed to the EdgeConv block which computes the edge features for each of teh points in the poitn cloud. An \ac{MLP} is used for this purpose where the number of neurons in a layer is defined as $\{a_1, a_2, ... , a_n\}.$ the output of this block is a tensor with shape $n \times a_n$ after performing a pooling operation on the neighboring edge features.  
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=430pt,height=300pt]{pictures/dgcnn_arch.jpg}
+    \caption{The \ac{DGCNN} Architecture.\cite{wang2019dynamic}}
+    \label{fig:dgcnn_arch}
+\end{figure}
+
+\vspace{5mm}
+
+A directed graph $G = (V,E)$ which captures the topology of the point cloud where $V=\{p_i | i = \{1,2,...,n\}\}$ is the set of vertices and $E \subset V \times V$ is the set of edges. The graph $G$ is the \ac{k-NN} graph of $\mathcal{P}$ in $\mathbb{R}^F$. the graph has self-loops which means, each point in the point cloud has an edge to itself. The edge features computed by the EdgeConv block was defined as $e_{ij} = h_{\theta}(p_i, p_j)$ where $h_{\theta}: \mathbb{R}^F \times \mathbb{R}^F \rightarrow \mathbb{R}^{F'}$ is a non-linear function with a set of trainable parameters $\theta$. The EdgeConv operation is defined as a symmetric aggregation operation $\square$ which is applied on a channel wise manner. Summation ($\sum$) or max are some of the examples of aggregation functions. It is applied on the edge features associated with all the edges that orginate from each connected vertex. Therefore, the output of the EdgeConv layer for $i$-th vertex is given by Eq. \ref*{eq:EdgeConv}
+\begin{equation}
+    \label{eq:EdgeConv}
+    p'_i = \underset{j:(i,j) \in E}{\square} h_{\theta}(p_i, p_j)
+\end{equation}
+drawing similarity with convolution on images, $p_i$ is the central pixel and $\{p_j:(i,j) \in E\}$ is a patch around the central pixel as shown in Fig. \ref*{fig:EdgeConv_op}. Therefore, for a point cloud with $F$ dimensions and $n$ points in it, the EdgeConv layer generates a point cloud with $F'$ dimensions and $n$ points in it.
+\begin{figure}
+    \centering
+    \begin{minipage}[t]{.45\textwidth}
+      \centering
+      \includegraphics[width=200pt,height=120pt]{pictures/EdgeConv.jpg}
+      \captionof{figure}{The Computation of edge feature $e_{ij}$ from a pair of points $p_i$ and $p_j$. Here, $h_{\theta}$ is a fully connected layer and the weights associated with it are the trainable parameters $\theta$.\cite*{wang2019dynamic}}
+      \label{fig:EdgeConv}
+    \end{minipage}%
+    \hspace{5mm}
+    \begin{minipage}[t]{.45\textwidth}
+      \centering
+      \includegraphics[width=200pt,height=150pt]{pictures/EdgeConv_op.jpg}
+      \captionof{figure}{The EdgeConv operation. The output of EdgeConv is computed by aggregating the features associated with all the edges that orginate from each connected vertex.\cite*{wang2019dynamic}}
+      \label{fig:EdgeConv_op}
+    \end{minipage}  
+\end{figure}
+
+\vspace{5mm}
+
+Deciding the non-linear function $h_{\theta}$ and the symmetric aggregation function $\square$ plays a pivotal role in the deciding the properties of the EdgeConv layer. To further illustrate on this point, if $p_1, ..., p_n$ are the points in the point cloud and the graph $G$ encapsulates the topological information of patches of fixed size around each central pixel, then if $\theta _m \cdot p_j$ is chosen as the non-linear function and sum ($\sum$) is chosen as the aggregation operation, then it would behave as a standard convolution operation as in eq. \ref*{eq:std_conv}
+\begin{equation}
+    \label{eq:std_conv}
+    p'_{im} = \sum_{j:(i,j) \in E}\theta _m \cdot p_j
+\end{equation}
+where $\theta = (\theta _1, \theta _2, ... , \theta _M)$ are the weights of $M$ different filters used in the convolution operation. Each entry in $\theta _m$ has the dimensionality as $p_i$ and $\cdot$ is the Euclidean inner product. Another variation of h could be 
+\begin{equation}
+    \label{eq:EdgeConv_pointnet}
+    h_{\theta}(p_i, p_j) = h_{\theta}(p_i).
+\end{equation}
+Here only the global embedding is encoding is taken into consideration and the non-linear function is unaware of the local features. This happens in PointNet and thus it could be considered as a special case of EdgeConv. Another variation of h as adapted by Atzmon \textit{et al.} iin \cite*{atzmon2018point} is
+\begin{equation}
+    \label{eq:EdgeConv_gaussian}
+    h_{\theta}(p_i, p_j) = h_{\theta}(p_j).
+\end{equation}
+and 
+\begin{equation}
+    \label{eq:EdgeConv_gaussian_point}
+    p'_{im} = \sum_{j \in V}(h_{\theta (p_j)})g(u(p_i,p_j)).
+\end{equation}
+Here $g$ is a Gaussian kernel and $u$ calculates the pairwise Euclidean distance between the points in the point cloud. Another variation of h could be to only capture the local features and ignore the global features based on the fact that the global shape is a collection of the local patches as shown in the following
+\begin{equation}
+    \label{eq:EdgeConv_local}
+    h_{\theta}(p_i, p_j) = h_{\theta}(p_j-p_i).
+\end{equation}
+The final variation of h which was utilized by the authors in \cite*{wang2019dynamic} is an asymmetric edge function as shown in eq. \ref*{eq:EdgeConv_asym}
+\begin{equation}
+    \label{eq:EdgeConv_asym}
+    h_{\theta}(p_i, p_j) = \bar{h_{\theta}}(p_i, p_j-p_i).
+\end{equation}
+This explicitly takes into account the global feature information as in Eq.\ref*{eq:EdgeConv_pointnet} captured by the coordinates of the central pixel of the patch $p_i$ and the information of the local neighborhood as in Eq. \ref*{eq:EdgeConv_local} and is captured by $p_j-p_i$. the EdgeConv operator was defined as 
+\begin{equation}
+    \label{eq:EdgeConv_op}
+    e'_{ijm} = \ac{ReLU}(\theta _m \cdot (p_j - p_i) + \phi _m \cdot p_i).
+\end{equation}
+This operator could be implemented as a shared \ac{MLP} and then performing a max-pooling operation as 
+\begin{equation}
+    \label{eq:EdgeConv_max}
+    p'_{im} = \underset{j:(i,j) \in E}{max}e'_{ijm},
+\end{equation}
+where $\theta = (\theta _1, \theta _2, ... , \theta _M)$ are the weights of $M$ different filters used in the convolution operation.
+
+\vspace{5mm}
+
+\textbf{Dynamic Graph Update} A crucial point in this network was to regenerate the graph using \ac{k-NN} in the feature space after each layer. This is the main difference of this network as compared to traditional graph \ac{CNN} for which there is a fixed graph for all the layers of the network. Because the graph was updated after every layer, the architecture gets its name the \ac{DGCNN}. With dynamically updating the graph after each layer, the receptive field increases to as large as diameter of the point cloud, even if the points in the point cloud are sparse. Thus after each layer a different graph is computed $G^{(l) = (V^{(l)}, E^{(l)})}$, where $G^{(l)}$ is a graph in the $l$-th layer with vertices $V^{(l)}$ and edges $E^{(l)}$ which can be denoted as $(i,j_{i1}), ... , (i,j_{ik_{l}})$ such that $p_{j_{i1}}^{(l)}, ... , p_{j_{ik_{l}}}^{(l)}$ are the k-nearest points closest to point $p_i$ at layer $l$. In other words, the model constructs a different graph for each point in the point cloud after every layer where the nearest points and the edges emerging from a vertex(point in the point cloud in the case) changes at every layer. A pairwise distance matrix in the feature space is used to calculate the k-nearest points of each point in the point cloud. As a result of this, the network has the following properties,
+\begin{itemize}
+    \item \textit{Invariant to permutations}. The output of an EdgeConv layer is given by
+    \begin{equation}
+        \label{eq:EdgeConv_perm}
+        p'_{i} = \underset{j:(i,j) \in E}{max}h_{\theta}(p_i,p_j). 
+    \end{equation}
+    Because of the usage of a max operator which is symmetric in nature, the output of the layer $p'_{i}$ is permutation invariant to the order in which $p_i$ appears in the input point cloud. Other functions which are symmetric (eg. $\sum$) in nature can also be applied here instead of max. the global max pooling operator used to aggregate point features is a symmetric function and thus gives permutation invariant results.
+    \item \textit{Invariant to translation.} The EdgeConv operator satisfies "partial" translation invariance. If a translation $T$ is applied to the points $p_i$ and $p_j$ of the point cloud $\mathcal{P}$, then applying translation to Eq. \ref*{eq:EdgeConv_op}, the translated point cloud would be 
+    \begin{equation}
+        \label{eq:EdgeConv_trans}
+        \begin{split}
+            e'_{ijm} &= \theta _m \cdot (p_j + T - (p_i + T)) + \phi _m \cdot (p_i + T),\\
+            &= \theta _m \cdot (p_j - p_i) + \phi _m \cdot (p_i + T).
+        \end{split}    
+    \end{equation}
+    Therefore, if $\phi _m =0$, then EdgeConv operator is completely translation invariant. But this however restricts the model to recognize an object depending on only the unordered set of patches, i.e. it disregards the orientation and the exact location of the patches. On the other hand, with both $p_j-p_i$ and $p_i$, the model considers both the local orientation of the patches as well as the global information about the shape of the object. 
+\end{itemize}
+
 \subsection{Point-level Clustering Module}
 \begin{figure}[t]
     \centering
@@ -68,7 +175,7 @@ where $\lVert . \rVert _F$ is the Frobenius-norm, $I$ is the Identity matrix, an
     \caption{The architecture of the point-level clustering based unsupervised feature learning.\cite{mei2022unsupervised}}
     \label{fig:point_level}
 \end{figure} 
-Fig.\ref*{fig:point_level} gives a detailed visualisation of the point-level clustering module. We can see that it is made up of 2 entites, the "class probability prediction" function and the "label reassigning". The point-level clustering module is analogous to the semantic segmentation task. Each point $p_i$ of the point cloud $\mathcal{\textbf{P}}$ is assigned to one of the $J$ predetermined possible subgroups or semantic categories. Essentially, it is achieved by processing each of the point cloud $\mathcal{\textbf{P}}$ followed by a point-level class probability prediction operator that yields a matrix for class probability $\mathit{\textbf{S}} = \{ s_{ij} \in [0,1]\}_{i,j}^{N,J}$. The label reassigning operator thus takes the point cloud $\mathcal{\textbf{P}}$ and the class probability matrix $S$ and generates a pseudo-label matrix $\mathit{\mathbf{\gamma}} = \{ \gamma_{ij} \in \{0,1\}\}_{i,j}^{N,J}$. The weights for the encoder $f_{\varphi}$ are learnt such that it minimizes the average cross-entropy loss between the pseudo-label $\gamma$ and the predicted class probability $\textbf{S}$. The average cross entropy loss is calculated by the formula given in Eq.\ref*{eq:avg_cross_entropy}.
+ Now, the model already has the feature representation from the feature encoder backbone (eg. PointNet or  \ac{DGCNN}). The next step is the point-level clustering module. Fig.\ref*{fig:point_level} gives a detailed visualisation of the point-level clustering module. We can see that it is made up of 2 entites, the "class probability prediction" function and the "label reassigning". The point-level clustering module is analogous to the semantic segmentation task. Each point $p_i$ of the point cloud $\mathcal{P}$ is assigned to one of the $J$ predetermined possible subgroups or semantic categories. Essentially, it is achieved by processing each of the point cloud $\mathcal{\textbf{P}}$ followed by a point-level class probability prediction operator that yields a matrix for class probability $\mathit{\textbf{S}} = \{ s_{ij} \in [0,1]\}_{i,j}^{N,J}$. The label reassigning operator thus takes the point cloud $\mathcal{\textbf{P}}$ and the class probability matrix $S$ and generates a pseudo-label matrix $\mathit{\mathbf{\gamma}} = \{ \gamma_{ij} \in \{0,1\}\}_{i,j}^{N,J}$. The weights for the encoder $f_{\varphi}$ are learnt such that it minimizes the average cross-entropy loss between the pseudo-label $\gamma$ and the predicted class probability $\textbf{S}$. The average cross entropy loss is calculated by the formula given in Eq.\ref*{eq:avg_cross_entropy}.
 \begin{equation}
     \label{eq:avg_cross_entropy}
     \mathit{\epsilon}(\gamma,\textbf{S})= \mathit{ - \frac{1}{N}} \langle \gamma,\log \textbf{S} \rangle = \mathit{ - \frac{1}{N}} \sum_{i=1}^{N} \sum_{j=1}^{J} \gamma_{ij} \log s_{ij}
@@ -177,6 +284,8 @@ where $\eta>0$ is a regularization parameter. The value of $\eta$ is set to \tod
     \mathcal{L}_{\mathit{total}} = \mathcal{L}_{\mathit{local}} + \mathcal{L}_{\mathit{global}}
 \end{equation}
 
+\subsection{Clustering Algorithm}
+Once
 \subsection{Suitable Algorithm and Adjustments}
 \begin{algorithm}[H]
     \caption{Pseudo-code for point-level clustering}\label{alg:point_level}

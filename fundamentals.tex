@@ -1,15 +1,179 @@
 \section{Fundamentals}
 \subsection{Bin Picking}
 \subsubsection{Definition and Application}
+Bin picking is a robotics and automation technique used in manufacturing and logistics, automotive industry, particularly in warehouses and assembly lines. It involves locating, grabbing and manipulating objects from a bin or container utilizing robotic devices equipped with sensors, cameras and algorithms. Thus, it is a crucial area of interest for research in computer vision and robotics. There are usually multiple steps in the process: sensing and perception, planning and path calculation, grasping and manipulation, and ultimately transportation and placement which will be further elaborated in the following passages. 
+
+\vspace{5mm}
+
+\textbf{Sensing and Perception} To determine the kind position, orientation and the kind of objects inside a bin or container, the robot uses its sensors and cameras to scan it. For the purpose of identifying the items, especially ones that are partially occluded or organized randomly or has entanglement in between them, advanced computer vision algorithms are used for the purpose.
+
+\vspace{5mm}
+
+\textbf{Planning and Path Calculation} Following the identification of the items in the bin, the robots control system determines the best course for the arm or gripper to take in order to reach and retrieve the intended item in the bin. Preventing collisions with other items in the container and maximizing efficiency are the two crucial factors in this part of the process.
+
+\vspace{5mm}
+
+\textbf{Grasping and Manipulation} After positioning the arm of the robot in a suitable location, the robot arm employs its gripper to firmly hold the object of interest.  To guarantee that the item is raised without damage and slippage, this stage calls for very precise control. 
+
+\vspace{5mm}
+
+\textbf{Transportation and Placement} The robot moves the item to the intended spot, like a shipping container, assembly line or conveyor belt, after it has been picked. Before settings the object down, the robot occasionally needs to realign or orient it. 
+
+There are numerous benefits of bin picking in manufacturing and logistics.
+\begin{itemize}
+  \item \textbf{Enhanced Efficiency} Businesses can greatly boost productivity and throughput, particularly in high-volume operations, by automating the process of selecting goods from bins.
+  \item \textbf{Flexibility} Bin picking applications are appropriate for a variety of manufacturing situations because they can handle a wide range of items based on their shapes, size and materials.
+  \item \textbf{Savings} Automating manual labor-intensive jobs, such as bin picking, can save labor costs and lower the chance of accidents that come with physical handling.
+  \item \textbf{Accuracy} Robots can pick and put objects with high degree of repeatability and accuracy because of its advanced sensing and control systems, which lowers mistake rates and improves product quality. 
+\end{itemize}
+All things considered, bin picking applications are essential to contemporary manufacturing and logistic operations, helping businesses to increase productivity and streamline workflows.
 \subsubsection{Gripper Types}
+Grippers are crucial parts of robotic systems used in bin picking applications that allow them to grab and move objects out of the bins or containers. There are different kinds of grippers, and each is appropriate for a particular purpose depending on the shape, size, weight, and substance of the objects being handled. The following are a few typical gripper kinds used for bin picking.
+
+\vspace{5mm}
+
+\textbf{Vacuum Grippers} These grippers cling to smooth or flat  surfaces using suction as shown in Fig. \ref*{fig:vacuum_gripper}.
+\begin{figure}
+  \centering
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=150pt,height=150pt]{pictures/vacuum_gripper.png}
+    \captionof{figure}{Vacuum Grippers\cite{vacuum_gripper}}
+    \label{fig:vacuum_gripper}
+  \end{minipage}%
+  \hspace{1cm}
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=150pt,height=150pt]{pictures/mechanical_gripper.png}
+    \captionof{figure}{Mechanical Grippers\cite{mechanical_gripper}}
+    \label{fig:mechanical_gripper}
+  \end{minipage}
+\end{figure}
+When handling huge, flat good like sheets of plastic, glass, or metal, they are especially useful. By using interchangeable suction cups or pads, vacuum grippers can be made to handle objects of various sizes and shapes. The primary advantage of these type of grippers is the need for one-surface accessibility. This makes handling cluttered bins easier. The drawback however is that a vacuum gripper can still generate traction even if the intended grasping position is not met. This results in a possibly erroneous placement and an imprecise position of the gripper.\cite*{spenrath2022heuristic}
+
+\vspace{5mm}
+
+\textbf{Mechanical Grippers} To grasp objects, mechanical grippers use mechanical jaws, fingers, or claws. They may be tailored with various jaw configurations to meet particular object geometries and are appropriate for a broad variety of shapes and sizes. Mechanical grippers are useful for picking up objects with uneven shapes, such as bottles, crates, and components, as they offer a solid hold as shown in Fig. \ref*{fig:mechanical_gripper}. But because of the tough and rigid mechanical nature of the gripper, it might cause damage while handling delicate and sensitive objects. 
+
+\vspace{5mm}
+
+\textbf{Magnetic Grippers} These devices draw in and hold onto ferromagnetic materials like steel and iron using electromagnetic forces as shown in fig. \ref*{fig:magnetic_gripper}.
+\begin{figure}
+  \centering
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=150pt,height=150pt]{pictures/magnetic_gripper.PNG}
+    \captionof{figure}{Magnetic Grippers\cite{magnetic_gripper}}
+    \label{fig:magnetic_gripper}
+  \end{minipage}%
+  \hspace{1cm}
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=200pt,height=100pt]{pictures/adaptive_gripper.PNG}
+    \captionof{figure}{Adaptive Grippers\cite{adaptive_gripper}}
+    \label{fig:adaptive_gripper}
+  \end{minipage}
+\end{figure}
+As such, the benefits and drawbacks are similar to those of vacuum grippers. They are appropriate for applications where cleanliness or delicate surfaces are a concern since they are perfect for handling metallic objects without the need for direct contact. Therefore, it is possible that the gripper might grab multiple objects at a time instead of a single object which is not desirable. Moreover, because of its magnetic properties, it can induce magnetic behavior to the objects being handled which is not desirable and can have serious implication in certain applications. \cite*{spenrath2022heuristic}
+
+\vspace{5mm}
+
+\textbf{Adaptive Grippers} These grippers can handle a broad range of sizes and forms without the need for exact placement since they are made to conform to the shape of the object being held as shown in Fig. \ref*{fig:adaptive_gripper}. These grippers frequently modify their shape to fit the curves of the object by using inflated bladders or flexible  polymers. However, to facilitate its adaptive property, it demands for complex control algorithms for precise grasping. 
+
+\vspace{5mm}
+
+\textbf{Soft Grippers} Designed to softly grab delicate or unusually shaped objects without causing damage, soft grippers are created from responsive materials like silicone or rubber as shown in Fig. \ref*{fig:soft_gripper}. 
+\begin{figure}
+  \centering
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=170pt,height=120pt]{pictures/soft_gripper.PNG}
+    \captionof{figure}{Soft Grippers\cite{soft_gripper}}
+    \label{fig:soft_gripper}
+  \end{minipage}%
+  \hspace{1cm}
+  \begin{minipage}[t]{.45\textwidth}
+    \centering
+    \includegraphics[width=170pt,height=120pt]{pictures/hybrid_grippers.PNG}
+    \captionof{figure}{Hybrid Grippers with soft and rigid structures\cite{park2018hybrid}}
+    \label{fig:adaptive_gripper}
+  \end{minipage}
+\end{figure}
+They are frequently employed in tasks like picking up food or electrical components, where dexterity and delicate handling are crucial. However, they have lower gripping force as compared rigid grippers, thus limiting suitability for heavier objects. 
+
+\vspace{5mm}
+
+\textbf{Hybrid Grippers} To improve performance and versatility, hybrid grippers integrate many grasping techniques such as vacuum suctions and mechanical clamping. These grippers are frequently employed in intricate bin picking scenarios where a solitary gripping technique would not be adequate. It also requires more calibration and maintenance due to the integration of multiple systems. It also leads to greater power consumption and computational overhead for executing hybrid gripping mechanism.
+Thus, the characteristics of the objects being handled, the capabilities of the robotic system, and the particular requirements of the application all play a role in the gripper selection. Stakeholders can maximize the effectiveness, dependability, and precision of their bin picking processes by choosing the right kind of gripper. Next, we look into the different approaches in bin-picking applications.
 \subsubsection{Model-Based Approaches}
+Model-based  bin picking approaches use a digital model, or representation, of the items in the bin as a guide for organizing and carrying out the bin picking procedure. To enable accurate perception and manipulation, these methods make use of \ac{CAD} data or 3-D models of the items. Fig. \ref*{fig:model_based} 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=400pt,height=250pt]{pictures/model_based.PNG}
+  \caption{Overview of model-based bin picking approach.\cite{spenrath2022heuristic}}
+  \label{fig:model_based}
+\end{figure}
+gives an overview of model-based bin picking approach, an elaboration of which is provided below.
+
+\vspace{5mm}
+
+\textbf{Object Modelling} Creating precise digital models of the objects to be picked is the first stage in a model-based bin-picking strategy. \ac{CAD} software or 3D point cloud generated from real objects through scanning methods like laser scanning or photogrammetry can be used for this. The model ought to be accurately represent the objects surface features, size, and geometry.\cite*{lin2020robotic}
+
+\vspace{5mm}
+
+\textbf{Bin Perception} The robots sensors, including depth cameras or laser scanners, record information about the contents of the bin once the object models are accessible. Based on the shape, size and orientation of each object in the bin, this data is processed to identify and segment each of them. In order to match and align the perceived objects with their corresponding models, the digital models are used as reference templates.\cite*{lin2020robotic}
+
+\vspace{5mm}
+
+\textbf{Pose Estimation} It is the process of figuring out each recognized object's exact location and orientation with respect to the gripper or end effector of the robot. Planning precise gripping trajectories and guaranteeing successful object manipulation depend on this phase. Pose estimation methods include geometric fitting algorithms, point cloud registration, and feature mapping.\cite*{lin2020robotic}
+
+\vspace{5mm}
+
+\textbf{Grasping Planning} After determining the objects posture, the robot arranges its grasping techniques to retrieve the objects from the bin. In order for the robot's arm or gripper to approach, grasp, and safely lift each object, collision-free motion paths must be created. To enable successful gripping, planning algorithms take into account variables including gripper kinematics, object geometry, and workspace limitations. \cite*{lin2020robotic}
+
+\vspace{5mm}
+
+\textbf{Feedback Control} In order to monitor and modify the robot's movements in real-time while it is grasping, feedbacks from the sensors such as force/torque sensors or vision systems is utilized. By using feedback control approaches, the robot may adjust its grip in response to unforeseen disruptions or changes in the surroundings, guaranteeing dependable and durable picking performance.\cite*{lin2020robotic}
+
+\vspace{5mm}
+
+\textbf{Validation and Verification} The system compares the actual results with the predicted result based on model-based planning to determine whether the grasp was successful after selecting each object. Verifying grasp stability, item alignment, and adherence to quality standards are a few examples of validation tasks. The robot can rectify any mistakes by trying to pick the object again or modifying its approach.\cite*{lin2020robotic}
+
 \subsubsection{Model-Free Approaches}
+The goal of model-free bin picking approach is to pick objects from a bin without using \ac{CAD} data or predefined object models. To identify and handle objects based solely on sensor data, these methods use advanced machine learning algorithms and complex perception techniques. Model-free approaches can be broadly categorized into two groups: deep-learning based approach\cite*{bousmalis2018using}, reinforcement learning based approach\cite*{levine2018learning} and hybrid perception-based approach\cite*{jang2018grasp2vec}. 
+
+\vspace{5mm}
+
+\textbf{Deep Learning-Based Approach} Without explicitly modelling the objects, deep learning techniques like \ac{CNN}s are trained on massive amount of sensor data to learn object recognition and grasping policies on their own. Labelled object instances and corresponding grasping actions are collected from large datasets of sensor data (e.g. \ac{RGB} images, depth maps). Using end-to-end optimization, \ac{CNN}s are trained on those data to acquire grasping policies and object representations.based on sensor input, robotic systems with trained models are able to grasp objects and identify them in real-time. To enhance grip execution and boost performance, feedback from sensors (such as force/torque sensors) are employed.\cite*{bousmalis2018using}
+
+\vspace{5mm}
+
+\textbf{Reinforcement Learning-Based Approach} Without explicit object models, robots can acquire grasping policies through trial and error interactions with the environment by using \ac{RL} techniques. By performing grasping movements and getting feedback (like reward signals) when a task is completed successfully, the robot interacts with its surroundings(e.g. a bin).\ac{RL} algorithms learn grasping policies by optimizing the total rewards earned from the accomplished grasps and interactions with the surroundings. In order to maximize the performance, \ac{RL} agents strike a balance between exploring novel grasping tactics and utilizing previously learnt rules. robotic systems are equipped with capability to perform bin-picking tasks in real-time.\cite*{levine2018learning}
+
+\vspace{5mm}
+
+\textbf{Hybrid Perception-Based Approach} Robots can learn graping rules from data by combining perception and action primitives in hybrid techniques, which also incorporate domain knowledge or limitations. Using deep learning models or conventional computer vision approaches, sensor data (e.g. \ac{RGB} images) is processed to extract object representation or features. Machine learning algorithms like imitation learning, reinforcement learning, or a mix of the two are used to learn grasping policies. Using the learnt policies and the sensor data, perception and action modules work together to optimize the grasping performance. The learnt policies are improved over time by adjusting the grip execution based real-time data from sensors.\cite*{jang2018grasp2vec} 
+
 \subsubsection{Robot System}
+For pick and place tasks, delta robots and parallel kinematics are the usual system. For bin-picking applications, however, serial kinematics and articulated robots are the more popular options. The advantages include, a much bigger workspace, more degrees of freedom for the end-effector or gripper, allowing a wider range of gripping poses and less limitations sue to internal collisions. The robot system's main task is to match various positions. The following are the three crucial ones for bin picking systems.
+\begin{itemize}
+  \item The position of the object $\mathbf{W_{P_O}}$ characterizes the object's position in relation to the world coordinates.
+  \item The position of the gripper $\mathbf{W_{P_G}}$ characterizes the end-effector's position in relation to the world coordinates.
+  \item The grasping position $\mathbf{G_{P_O}}$ characterizes the position of the object in relation to the position of the gripper. This is particularly crucial foe the object's precise placement. 
+\end{itemize}
+These three positions constitute the closed transformation chain. In other words, the computation of the third pose is easy is the first two are known. These three poses are shown in Fig. \ref*{fig:robot_workspace}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=400pt,height=250pt]{pictures/robot_pose.PNG}
+  \caption{Important positions the workspace in a  bin-picking application. $W$ is the world coordinate system with it's origin at the centre of the base of the robot. $O$ is the object coordinate system with it's origin at the center of the object. $G$ is the gripper coordinate system with its origin at the center of the gripper. $\mathbf{W_{P_O}}$ is the object's position in relation to the world coordinate system. $\mathbf{W_{P_G}}$ is the end-effector's position in relation to the world coordinate system. $\mathbf{G_{P_O}}$ is the position of the object in relation to the position of the gripper.\cite{buchholz2015bin}}
+  \label{fig:robot_workspace}
+\end{figure}
+A robot can place its end-effector using one of the two movement techniques: \ac{LIN} motion and \ac{PTP} motion. Every robot motor moves synchronously when in \ac{PTP} motion. Generally speaking, figuring out the trajectory of the \ac{TCP} is difficult when in this mode. The benefit of this motion, however, is its potential to achieve maximum speed. Because of this, this mode is employed to travel great distances between certain poses. The \ac{TCP} is a crucial point in the \ac{LIN} motion. In this motion, the \ac{TCP} travels linearly from one place to another in Cartesian space. Its speed is much slower than in \ac{PTP}, which is a drawback for confined workspaces. Inverse kinematics calculation and singularity avoidance are the two components of the \ac{LIN} mode operation. These are articulated robot configurations where the division in the inverse kinematics is close to 0, resulting in high speed rotations of individual axes. these configurations are typically detected by robot controller, which will stop the robot.\cite*{spenrath2022heuristic}
 \subsection{Deep learning-based 3D Image processing}
 \subsubsection{Convolution Neural Network}
-Inspired from the visual cortex of humans, convolutional neural network(\ac{CNN} or ConvNet) is a type of deep neural network designed for processing data which appear in a grid like manner like images, videos, etc.  It was introduced by Yann LeCun et. al in \cite{lecun1998gradient} in 1998.  It gets it name because of the usage of a special kind of linear mathematical operation called the convolution instead of using matrix multiplication as prevalent in the pre-existing neural networks. The key components of a \ac{CNN} are - Convolution layer, activation function, pooling layer, loss function, output layer. The principle building block if a CNN is the convolution layer. It consists of a number of learnable filters (kernels) which can be visualised like a cubic block. The success of \ac{CNN}s can be attributed to three major concepts: sparse interactions, parameter sharing and equivariant representations.
+Inspired from the visual cortex of humans, (\ac{CNN} or ConvNet) is a type of deep neural network designed for processing data which appear in a grid like manner like images, videos, etc.  It was introduced by Yann LeCun et. al in \cite{lecun1998gradient} in 1998.  It gets it name because of the usage of a special kind of linear mathematical operation called the convolution instead of using matrix multiplication as prevalent in the pre-existing neural networks. The key components of a \ac{CNN} are - Convolution layer, activation function, pooling layer, loss function, output layer. The principle building block if a CNN is the convolution layer. It consists of a number of learnable filters (kernels) which can be visualised like a cubic block. The success of \ac{CNN}s can be attributed to three major concepts: sparse interactions, parameter sharing and equivariant representations.
 \paragraph{Sparse interactions}
-In traditional fully connected network, matrix multiplication is performed which involves a parameter matrix. The interaction between input and output units are captured by a distinct parameter in the parameter matrix. But \ac{CNN}s have sparse interactions, i.e. only a subset of units or neurons in a layer is connected to a local region in the preceding layer. This is done by using kernels that are significantly smaller than the input. This implies, less number of parameters need to be stored which reduces the memory consumption and also it is computationally efficient because it has to perform fewer operations. For example, if there are m inputs and n outputs, the fully connected network would need to store \textit{m} x \textit{n} parameters and have a runtime of \textit{O}(\textit{m} x \textit{n}) time complexity per input. On the other hand, if we restrict the number of connections for each unit to be k, then we would have \textit{k} x \textit{n} and have a runtime of \textit{O}(\textit{k} x \textit{n}) time complexity per input, where k is quite some fold lesser in magnitude as compared to m. Moreover, since convolution layers are stacked upon one another in a deep convolution network, units in the deeper layers have a larger receptive field, because of it's indirect interaction with a larger region in the input.
+In traditional fully connected network, matrix multiplication is performed which involves a parameter matrix. The interaction between input and output units are captured by a distinct parameter in the parameter matrix. But \ac{CNN}s have sparse interactions, i.e. only a subset of units or neurons in a layer is connected to a local region in the preceding layer. This is done by using kernels that are significantly smaller than the input. This implies, less number of parameters need to be stored which reduces the memory consumption and also it is computationally efficient because it has to perform fewer operations. For example, if there are m inputs and n outputs, the fully connected network would need to store \textit{m} x \textit{n} parameters and have a runtime of \textit{O}(\textit{m} x \textit{n}) time complexity per input. On the other hand, if we restrict the number of connections for each unit to be k, then we would have \textit{k} x \textit{n} and have a runtime of \textit{O}(\textit{k} x \textit{n}) time complexity per input, where $k$ is quite some fold lesser in magnitude as compared to $m$. Moreover, since convolution layers are stacked upon one another in a deep convolution network, units in the deeper layers have a larger receptive field, because of it's indirect interaction with a larger region in the input.
 \paragraph{Parameter sharing}
 Another important focus behind using the convolution layer was to reduce the number of parameters in a \ac{FCN}. For example in a 1024*1024 image, a \ac{FCN} would have over 1 million hidden units, which means it would have over 1 trillion trainable parameters. But the pixels in an image are only locally correlated. So, \ac{CNN}s make use of the kernels to limit the focus on smaller regions on the image at a time known as the receptive field. This significantly reduces the number of trainable parameters, thus reducing the memory consumption. \cite{ConvNet}.    These layers perform a convolution operation between the input (eg. image) \textit{I} and the kernel \textit{K} to produce an output \textit{S} known as the feature map as in Eq. \ref{eq:conv}.
 \paragraph{Equivariant Representations} 

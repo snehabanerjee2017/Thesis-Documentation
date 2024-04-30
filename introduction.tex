@@ -2,6 +2,48 @@
 \section{Introduction}
 \pagenumbering{arabic}
 \subsection{Motivation}
+Robot-based bin picking process automation offers enormous potential to completely transform by boosting productivity, efficiency, and cost-effectiveness. However, robot's capacity to adapt and learn from a variety of dynamic situations is frequently the deciding factor in the success of bin picking applications. Transfer learning is a potent machine learning technique that could help with this problem by allowing robots to swiftly adapt to new tasks and situations by using the knowledge from pre-trained models. Transfer learning seeks to use information from one domain or task to enhance performance on a related domain or task. Conventional machine learning paradigms involve training models on a given dataset for a certain problem, starting from scratch. This involves a huge computational overhead and time and cost associated with it. But with transfer learning, even when the datasets or domains are distinct, the information obtained from one task can be helpful for completing a related task.
+
+\vspace{5mm}
+
+The increasing requirement for effective and economical solutions in a variety of fields, including robotics, computer vision, natural language processing, and healthcare, gives rise to the necessity of a source library in transfer learning. Below is comprehensive overview of why transfer learning requires a source library:
+\begin{enumerate}
+    \item \textbf{Acceleration of Research and development} It can take a lot of time and resource to create transfer learning solutions from scratch. A source library offers a foundation of proven models, datasets and algorithms, which speeds up research and development. Researchers have the ability to rapidly iterate, explore diverse methodologies, and expand on previous findings to propel the frontiers of transfer learning.
+    \item \textbf{Adaptability to Diverse Domains} Transfer learning can be used in a variety of fields, such as robotics, time series analysis, image recognition, and natural language processing. A source library provides frameworks that are adaptable to specific tasks and datasets, as well as modular components that can be integrated with existing networks to meet the varied needs of diverse domains.
+    \item \textbf{Reproducibility and Accessibility} For transfer learning applications, a source library offers a centralized collection of models, datasets, algorithms, and tools. Through easy to access resources, a source library fosters collaboration, reproducibility, and transparency for academics, developers, and other involved stakeholders. 
+    \item \textbf{Minimization of Redundant Efforts} Creating transfer learning solutions frequently requires researchers to start from scratch when creating comparable algorithms or models. By providing pre-built components and reference implementations, a source library can reduce duplication of effort and free up developers to work on new concepts and applications.
+    \item \textbf{Standardization and Best Practices} To ensure consitency and dependability across implementations, a source library might provide best practices and standards for transfer learning approaches. Researchers can more efficiently compare results, assess performance, and build upon the work each other's work by embracing standard frameworks, interfaces and evaluation criteria.
+    \item \textbf{Encouraging Non-Experts} Complex transfer learning can necessitate domain-specific knowledge, machine learning proficiency, and data preprocessing skills. Technical difficulties are abstracted away by a source library, enabling non-experts to apply transfer learning techniques to their applications. users with limited technical knowledge can efficiently implement transfer learning due to the availability of tools and instructions. 
+\end{enumerate}
+In conclusion, a transfer learning source library acts as a catalyst for new research, expands access to cutting edge methods, and quickens the creation of useful applications in a variety of fields. An ecosystem of collaboration and a centralized repository of information are what enables academics and researchers in machine learning and artificial intelligence to take on challenging tasks and discover new avenues for advancement. 
+
 \subsection{Task and Goal}
+Bin picking is fundamentally a pose estimation problem, which makes it a computer vision task. The solution to the bin picking problem was greatly influence by the advancements in deep learning techniques for computer vision in recent years. At the moment, there are two available methods: model-free solutions and model-based solutions. The model free methods rely on an image to find appropriate grasp positions, whereas the model-based solutions one use \ac{CAD} models of items to detect them in an image\cite*{spenrath2022heuristic}. The bin picking application at \ac{IPA} utilizes an advanced model-based method initially based on PQ-Net++ from \cite*{kleeberger2021precise}. The dataset used for this task is the ABC dataset\cite*{Koch_2019_CVPR} which is a collection of one million \ac{CAD} models without any ground truth labels. It contains a large variety of objects, a handful of which are shown in Fig. \ref*{fig:abc}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=350pt,height=150pt]{pictures/ABC.PNG}
+    \caption{Some random objects from the ABC dataset.\cite{Koch_2019_CVPR}}
+    \label{fig:abc}
+  \end{figure}
+\vspace{5mm}
+
+The goal of this work is to develop a source library consisting of "good" source data which can be used as the data from the source domain in the further steps in a transfer learning pipeline. Therefore, the focus is to identify which features prevalent in an object makes it a "good" source data. A good collection of source data would be the objects that approximately captures the overall variance of the entire 1 million ABC dataset. Thus, it is trivial to think that more objects in the source library could better capture the overall variance of the dataset. But since the bin application is a model-based approach, it would be required to formulate the \ac{CAD} models of all these objects. Thus, having a large number of objects in the source library would entail high computational time for the generation of all the object models. Therefore, it is crucial to determine a permissible number of objects in the source library to facilitate its usage down the pipeline.  To further elaborate on this, if two objects are very similar to one-another than in spite of having a large similarity which just one other object, it loses the generalization capability of being nearly similar to a lot of other objects in the dataset and would therefore require a large amount of objects in the source library to capture the entire variance in the dataset. Thus, there is a trade-off between being very similar to a very small subset of objects and being approximately similar to a larger subset of objects in the dataset. Moreover, it is not universally defined which features in an object qualify as an important feature and how it contributes in deciding whether an object is capable of becoming a good source data. 
 \subsection{Approach}
+The main idea in this work is to train a network that learns the feature representation of the objects. Since it is required to compare the similarity between the objects, an end-to-end autoencoder network was used for this purpose. The autoencoder learns both the local features and the global features of an object. Once the feature representation of the objects are obtained, they are grouped into clusters utilizing multiple clustering algorithm. The clustering algorithm which has the best evaluation metrics is chosen to be the suitable clustering algorithm for this task. Thus, a set of representative objects of the entire cluster in now obtained. A high level overview of the entire method is shown in Fig. \ref*{fig:overview} 
+\begin{figure}[t]
+    \centering
+    \begin{tikzpicture}[node distance=2cm]        
+        \node (autoencoder) [Autoencoder] {Autoencoder};
+        \node (feat_rep) [Feat_Rep, right of=autoencoder, xshift=3cm] {Feature Representation};
+        \node (clustering_algorithm) [Clustering_algorithm, below of=feat_rep, yshift=-0.5cm] {Clustering Algortihm};
+        \node (rep_objs) [Rep_Objs, right of=clustering_algorithm, xshift=4cm] {Representative Objects};
+        \draw [arrow] (autoencoder) -- (feat_rep);
+        \draw [arrow] (feat_rep) -- (clustering_algorithm);  
+        \draw [arrow] (clustering_algorithm) -- (rep_objs);       
+    \end{tikzpicture}
+    \caption{Overview of the entire pipeline for development of source library.}
+    \label{fig:overview}
+  \end{figure}
+\vspace{5mm}
+
 \subsection{Contribution}

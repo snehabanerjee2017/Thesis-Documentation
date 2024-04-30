@@ -40,6 +40,8 @@
 \usepackage{algpseudocode}
 \counterwithin{figure}{subsection}
 \usepackage[symbols,nogroupskip,record]{glossaries-extra}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
 % \GlsXtrLoadResources[
 %  src={symbols.bib},
 %  type=symbols,% put these entries in the 'symbols' glossary
@@ -77,6 +79,13 @@
 \setcounter{secnumdepth}{3}
 \setcounter{tocdepth}{3}
 
+\tikzstyle{Autoencoder} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
+\tikzstyle{Feat_Rep} = [ellipse, x radius=2cm, y radius=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{Clustering_algorithm} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=1cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{Rep_Objs} = [circle, x radius=1cm, y radius=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
 % =========================================================================
 \begin{document}
 \pagenumbering{Roman}

@@ -38,6 +38,7 @@
 \usepackage{chngcntr}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{titlesec}
 \counterwithin{figure}{subsection}
 \usepackage[symbols,nogroupskip,record]{glossaries-extra}
 \usepackage{tikz}
@@ -87,6 +88,12 @@
 \tikzstyle{Rep_Objs} = [circle, x radius=1cm, y radius=1cm, text centered, draw=black, fill=orange!30]
 \tikzstyle{arrow} = [thick,->,>=stealth]
 % =========================================================================
+\pagestyle{fancy}
+\fancyhf{} % clear header and footer
+\fancyhead[R]{\nouppercase{\leftmark}} % section name in the center of header
+\fancyfoot[C]{\thepage} % page number in the center of footer
+\renewcommand{\headrulewidth}{0pt} % optional: add a horizontal line under the header 
+
 \begin{document}
 \pagenumbering{Roman}
 \include{titlepage}

@@ -285,7 +285,7 @@ where $\eta>0$ is a regularization parameter. The value of $\eta$ is set to \tod
 \end{equation}
 
 \subsection{Clustering Algorithm}
-Once
+Once the feature representations were obtained, multiple clustering algorithms were utilized to group the objects in the datasets into clusters. 
 \subsection{Suitable Algorithm and Adjustments}
 \begin{algorithm}[H]
     \caption{Pseudo-code for point-level clustering}\label{alg:point_level}
@@ -353,6 +353,89 @@ Once
             \State $\Gamma *= (c/sum(\Gamma, dim=0)).unsqueeze(0)$            
         \EndFor
         \State $\mathbf{return} \; \Gamma$          
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+    \caption{Pseudo-code for multi-level \ac{HDBSCAN} clustering}\label{alg:multi_level_hdbscan}
+    \textbf{Input:} $\{\mathcal{E}\}$: is the set of feature representations for all objects in the dataset, $K$ is the number of permissible clusters.\\
+    \textbf{Output:} $\{\mathcal{P}_R\}$ is the set of representative members of the dataset.
+    \begin{algorithmic}[1] 
+        \State $\mathcal{E}_R \leftarrow \{\mathcal{E}\}$               
+        \State $classifier,\; predictions,\; num\_clusters = \ac{HDBSCAN}(\mathcal{E}_R)$
+        \State $count \leftarrow 0$
+        \State $C \leftarrow predictions$
+        \State $cluster\_members = get\_cluster\_members(C, \{\mathcal{E}\})$
+        \State $clusters = list(unique(C))$
+        
+        \While{$True$}
+            \State $\mathcal{E}_R, \; C, \; clusters, \; cluster\_members, \; num\_clusters \; classifier = get\_hier\_clusters(\mathcal{E}, \; \mathcal{E}_R, \; C, \; clusters, \; cluster\_members, count)$
+            \State $count +=1$
+            \State $total\_num\_clusters = len(list(unique(C)))$
+            \If{$total\_num\_clusters \leq K \; or \; n\_clusters \; is \; 0$}
+                \State break
+            \EndIf            
+        \EndWhile
+        \State $medoid\_indices = get\_medoid\_indices(\mathcal{E}_R, \mathcal{E}\ )$
+        \State $\{\mathcal{P}_R\} = \{\mathcal{P}_i, \; \mathcal{P}_i \in \{\mathcal{P}\} \; and \; i \in medoid\_indices\}$
+        \State $\mathbf{return \;}\{\mathcal{P}_R\}$          
+    \end{algorithmic}
+\end{algorithm}
+\begin{algorithm}[H]
+    \caption{Pseudo-code for multi-level \ac{HDBSCAN} clustering}\label{alg:hier_cluster}
+    \textbf{Input:} $\{\mathcal{P}\}$: is a set of 3D point clouds with $\mathit{N}$ number of points in it, $\{\mathcal{E}\}$: is the set of feature representations for all objects in the dataset, $\{\mathcal{E}_R\}$ is the set of feature representations for relevant points objects in the dataset, $C$ is the cluster membership of all the points clouds in the dataset, $clusters$ is the list of all clusters, $clusters\_members$ is the list of all the point clouds in the dataset, grouped by their cluster membership, $count$ is the current level of multi-level \ac{HDBSCAN}\\
+    \textbf{Output:} $\mathbf{return \;}\mathcal{E}_R, \; C, \; clusters, \; cluster\_members, \; num\_clusters, \; classifier$ 
+    \begin{algorithmic}[1] 
+        \If{$count \neq 0$}
+            \State $classifier,\; predictions,\; num\_clusters = \ac{HDBSCAN}(\mathcal{E}_R)$
+            \State $medoids = classifier.medoids$
+            \State $cluster\_pointer \leftarrow num\_clusters$
+            \State Assign Empty list to $outlier\_list$
+            \For{$\forall \; obj\_idx, \, object \in enumerate(\mathcal{E}_R)$}
+                \If{$prediction[obj\_idx] < 0$}
+                    \State $AddItem(outlier\_list, \; obj\_idx)$
+                    \For{$\forall \; members \in cluster\_members$}
+                        \If{$object \in any(members)$}
+                            \For{$\forall \; member \in members$}
+                                \State $idx = where(member \in \{\mathcal{P}\})$
+                                \State $C[idx] = cluster\_pointer$
+                            \EndFor
+                            \State $cluster\_pointer+=1$
+                            \State $break$
+                        \EndIf
+                    \EndFor
+                \ElsIf{$prediction[obj\_idx] \geq 0$}
+                    \For{$\forall \; members \in cluster\_members$}
+                        \If{$object \in any(members)$}
+                            \For{$\forall \; member \in members$}
+                                \State $idx = where(member \in \{\mathcal{P}\})$
+                                \State $C[idx] = prediction[obj\_idx]$
+                            \EndFor
+                            \State $break$
+                        \EndIf
+                    \EndFor
+                \EndIf
+            \EndFor
+            \State $\{\mathcal{O}\} = \{\mathcal{E}_i, \; \mathcal{P}_i \in \{\mathcal{E}_R\} \; and \; i \in outlier\_list\}$
+            \State $clusters = list(unique(C))$
+            \For{$\forall \; C_i \in clusters$}
+                \If{$cluster > cluster\_pointer$}
+                    \State $idx = where(cluster \in C)$
+                    \State $C[idx] = cluster\_pointer$
+                    \State $cluster\_pointer+=1$
+                \EndIf
+            \EndFor
+            \State $cluster\_members = get\_cluster\_members(C,\{\mathcal{E}\})$
+        \EndIf
+        \State $medoid\_indices = get\_medoid\_indices(medoids, \mathcal{E}_R\ )$
+        \State $\mathcal{E}_R = \{\mathcal{E}_i, \; \mathcal{E}_i \in \{\mathcal{E}_R\} \; and \; i \in medoid\_indices\}$
+        \If{$count \neq 0$}
+            \State $\mathcal{E}_R = concatenate(\mathcal{E}_R, \; \mathcal{O})$
+        \EndIf
+        \If{$count \; is \; 0$}
+            \State $num\_clusters = len(list(unique(C)))$
+        \EndIf
+        \State $\mathbf{return \;}\mathcal{E}_R, \; C, \; clusters, \; cluster\_members, \; num\_clusters, \; classifier$ 
     \end{algorithmic}
 \end{algorithm}
 \subsection{Whatever new Concept we propose}

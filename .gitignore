@@ -9,3 +9,7 @@
 *.lof
 *.fdb_latexmk
 *.bcf
+*.synctex(busy)
+*.lot
+*.bbl-SAVE-ERROR
+*.run.xml

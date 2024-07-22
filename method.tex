@@ -284,6 +284,88 @@ where $\eta>0$ is a regularization parameter. The value of $\eta$ is set to \tod
     \mathcal{L}_{\mathit{total}} = \mathcal{L}_{\mathit{local}} + \mathcal{L}_{\mathit{global}}
 \end{equation}
 
+\subsection{Dimensionality reduction}
+\subsubsection{T-distributed Stochastic Neighbor Embedding}
+A technique for reducing dimensionality, \ac{t-SNE} is mostly used for data visualization in 2D and 3D maps. This approach has become well-liked since it can identify non-linear relationships in the data. The math underlying \ac{t-SNE} has been walked through in this subsection after providing an intuitive explanation of it. If the data has more than two or three features, one might want to consider looking for clusters in the data.One can use this information to better understand the data and determine how many clusters to use in clustering models like kmeans, if necessary. To further grasp what one hopes to obtain, the following example is used for illustration. It is assumed that the data is to be converted from a 2D space to a 1D dimension as shown in Fig. \ref{fig:2d_data} and Fig. \ref{fig:1d_data} respectively.
+
+\begin{figure}
+    \centering
+    \begin{minipage}[t]{.45\textwidth}
+      \centering
+      \includegraphics[width=150pt,height=120pt]{pictures/2d_data.PNG}
+      \captionof{figure}{The original data in 2-D space}
+      \label{fig:2d_data}
+    \end{minipage}%
+    \hspace{5mm}
+    \begin{minipage}[t]{.45\textwidth}
+      \centering
+      \includegraphics[width=200pt,height=120pt]{pictures/1d_data.PNG}
+      \captionof{figure}{Data projected to 1-D space}
+      \label{fig:1d_data}
+    \end{minipage}  
+\end{figure}
+Every color in this illustration denotes a cluster. It is evident that the densities of each cluster differ. It can be observed that at least two of the clusters overlap when simple projection the data onto one of its dimensions is performed. This highlights that a better method is necessary for the dimension reduction task. This problem is handled by the \ac{t-SNE} algorithm, and its effectiveness is described in the following steps.
+\begin{itemize}
+    \item Determining a joint probability distribution that captures the commonalities amongst the data points.
+    \item Constructing a dataset of the points with the target dimension and thereafter computing the joint probability distribution of those points as well.
+    \item Gradient descent is used to transform the low-dimensional dataset into a joint probability distribution that is as close as feasible to the high-dimensional dataset.
+\end{itemize}
+
+\vspace{5mm}
+
+\textbf{Working principle of \ac{t-SNE}}\\
+\begin{enumerate}
+    \item \textbf{The likelihood of points to belong to the same neighborhood}\\
+    Finding each point's Euclidian distance from every other point is the initial step in the process. Next, these distances are converted into conditional probabilities, which express how similar one pair of points is to the other. This means that it is required to determine the degree of similarity—that is, the likelihood—between any two points in the data. A Gaussian with a standard deviation of $\sigma_i$ and a center at $x_i$ represents the conditional probability of point $x_j$ to be next to point $x_i$. The conditional probability is defined mathematically as shown in Eq. \ref{eq:cond_prob}. The factors that effect $\sigma_i$ are discussed later.
+    \begin{equation}
+        \label{eq:cond_prob}
+        \mathit{p_{j|i}} = \mathit{\frac{exp \left(- \frac{\lVert x_i - x_j \rVert ^2}{2 \sigma_i^2} \right)}{\sum_{k \neq i} exp \left(- \frac{\lVert x_i - x_k \rVert ^2}{2 \sigma_i^2} \right)}} 
+    \end{equation}
+    Since the clusters can have varying densities, which is why the division by the total of all the other points positioned at the Gaussian centered at $x_i$ is necessary. Looking back to Fig. \ref{fig:2d_data} as an example to clarify, the orange cluster has a lesser density than the blue. As a result, there will be less similarity between the orange and blue points if one uses a Gaussian to compute the commonalities between each pair of points. The normalization is performed because it is only necessary to view the clusters as such in the final output, and if any of the clusters have differing densities need not be visualized. The joint probability distribution can be computed from the conditional distributions as shown in Eq. \ref{eq:joint_prob}.
+    \begin{equation}
+        \label{eq:joint_prob}
+        \mathit{p_{ij}} = \mathit{\frac{p_{j|i} + p_{i|j}}{2n}} 
+    \end{equation}
+    One of the ways that the t-SNE approach differs from the previous SNE is that it uses the joint probability distribution instead of the conditional probability. The computation in the third stage of the algorithm is made simpler by the symmetric property of the pairwise similarities $(p_{ij} = p_{ji})$.
+    \item \textbf{Transformation of the data to a lower dimension}\\
+    In this step, a joint probability distribution for the points in the low-dimensional space is computed. In order to achieve that, a new dataset is created at random that has K features (K being the desired dimension) and the same amount of points as the original dataset. As the dimension reduction is performed for visualization, K will often be two or three. Returning to our example, the \ac{t-SNE} algorithm now creates a random dataset of 1D points as shown in Fig. \ref{fig:random_1d_data}.
+    \begin{figure}
+        \centering
+        \begin{minipage}[t]{.45\textwidth}
+          \centering
+          \includegraphics[width=150pt,height=50pt]{pictures/random_1d_data.PNG}
+          \captionof{figure}{A random dataset created in 1D space.}
+          \label{fig:random_1d_data}
+        \end{minipage}%
+        \hspace{5mm}
+        \begin{minipage}[t]{.45\textwidth}
+          \centering
+          \includegraphics[width=150pt,height=50pt]{pictures/tsne_output.PNG}
+          \captionof{figure}{Visualization of the dataset in 1D space after applying \ac{t-SNE}.}
+          \label{fig:tsne_output}
+        \end{minipage}  
+    \end{figure}
+    Similar to the original dataset, the joint probability distribution for this set of points is generated using the t-distribution rather than the Gaussian distribution. The points in this case are denoted as y and the probabilities as q, and thus the joint probability distribution is computed as shown in Fig. \ref{eq:joint_prob_random}
+    \begin{equation}
+        \label{eq:joint_prob_random}
+        \mathit{q_{ij}} = \frac{\left(1 + \lVert y_i - y_j \rVert\right) ^{-1}}{\sum_{k \neq l}\left(1 + \lVert y_k - y_l \rVert\right) ^{-1}}
+    \end{equation}
+    The heavy tails attribute of the t-distribution is the rationale behind selecting it over the Gaussian distribution. This property helps minimize "crowding" of the points in the lower dimension by making moderate gaps between points in the high-dimensional space become extreme in the low-dimensional space. An additional benefit of employing the t-distribution is that it enhances the algorithm's optimization procedure in the third stage.
+    \item \textbf{Modification of the dataset in the low-dimensional space for the best possible data visualization}\\
+    Now, the \ac{KL} divergence is utilized to maximize the similarity between the joint probability distribution of the data points in the low dimensional space and the higher dimensional space. The \ac{KL} divergence serves as a gauge for the degree of difference between two distributions. The \ac{KL} divergence is defined for distributions P and Q in the probability space of $\chi$ by Eq. \ref{eq:kl_div}.
+    \begin{equation}
+        \label{eq:kl_div}
+        \mathit{D}_{\ac{KL}}(\mathit{P} || \mathit{Q}) = \sum_{x \in \chi} \mathit{P(x)} \log \left( \frac{\mathit{P(x)}}{\mathit{Q(x)}} \right)
+    \end{equation}
+    In instances where the distributions are identical, the KL divergence value approaches 0, indicating an increase in similarity between the distributions. The lower dimension dataset is modified so that, in the joint probability distribution, it resembles the original data as soon as possible. To do this, gradient descent is used. The KL divergence between the joint probability distributions P from the high-dimensional space and Q from the low-dimensional space is the cost function that the gradient descent algorithm seeks to minimize as defined in Eq. \ref{eq:kl_div_cost}.
+    \begin{equation}
+        \label{eq:kl_div_cost}
+        \mathit{C} = \mathit{\ac{KL}(P || Q)} = \sum_i \sum_j \mathit{p_{ij}} \log \mathit{\frac{p_{ij}}{q_{ij}}}
+    \end{equation}
+    The low dimension dataset's point values are obtained from this optimization, which is then utilized for visualizing the dataset in the lower dimensional space. Refering to the example before, the clusters in the low-dimensional space appears as in Fig. \ref{fig:tsne_output}. The \ac{t-SNE} model has a number of hyperparameters that can fine-tuned depending on the use-case. A few of these have to do with gradient descent; the two most crucial ones are the number of iterations, the learning rate and perplexity. It serves to select the Gaussian expressing the conditional distribution in high-dimensional space's standard deviation, $\sigma_i$. It can be defined as the count of each point's effective neighbors. For perplexities ranging from 5 to 50, the model is fairly robust.
+
+\end{enumerate}
+
 \subsection{Clustering Algorithm}
 Once the feature representations were obtained, multiple clustering algorithms were utilized to group the objects in the datasets into clusters. For this, one algortihm from each type of clustering algortihms as mentioned in \ref{sec:Clustering_Algorithms} has been implemented to analyse the behavior of different clustering algorithms in this use case. Since the ultimate goal of the task in hand is to find representative members of the dataset, it is more robust to find the medoid of the cluster instead of the arithmetic mean. As mentioned in \label{sec:Distribution_based_Clustering}, the medoids are actual datapoints of the dataset which is more practical to use in this use case instead of using a rather blurred, noisy arithmetic mean of the clusters. So, the scikit-learn implementation of the KMedoids algorithm was one of the clustering algorithm that was analysed for the task in hand.\cite*{scikit_learn_kmedoids}
 
@@ -317,7 +399,50 @@ Different strategies could be adopted to select the initial medoids for the algo
     \item The \ac{HDBSCAN} algorithm is applied again on those $p$ datapoints. As a result of it, $m$ clusters are obtained and $n$ datapoints are labelled as outliers. Thus, there would be $m$ medoids which are the representative members of each of the clusters. From this level onwards, no new datapoints would be discarded as outliers. Thus each of the datapoints labelled as outliers would be assigned to a new cluster along with all the fellow cluster member which was a part of the cluster this particular datapoint was a member of in the previous level. 
     \item Thus, the relevant datapoints for the next level are the $m$ medoids and all the $n$ outliers relabelled as medoids of new clusters. Step 2 and 3 are repeated until convergence, i.e. when $m + n \leq k$ where $k$ is the maximum number of permissible clusters.
 \end{enumerate}
-After the convergence of the algorithm, $c$ medoid points are obtained which are the representative members of the $c$ clusters where $c \leq k$. Similar to the KMedoids algorithm, the Euclidean distance metric as shown in Eq. \ref*{eq:eq_dist} is used to compute the medoids. The pseudo-code for this algorithm is shown in \ref*{alg:multi_level_hdbscan}.
+After the convergence of the algorithm, $c$ medoid points are obtained which are the representative members of the $c$ clusters where $c \leq k$. Similar to the KMedoids algorithm, the Euclidean distance metric as shown in Eq. \ref*{eq:eq_dist} is used to compute the medoids. The pseudo-code for this algorithm is shown in alg. \ref*{alg:multi_level_hdbscan}. The $"min\_cluster\_size"$ hyperparameter controls the minimum number of datapoints to be contained in a cluster. Increasing this value would mean clusters with more number of elements. But this would also mean that groups smaller than this size would be treated as outliers. Thus increasing this value could lead to significant loss of information about the features of different objects in the cluster. To circumvent this issue, the value of this parameter was kept at its default value which is 2. This is the reason why \ac{HDBSCAN} algorithm returns a significantly high number of clusters. Thus, the proposal of multi-level \ac{HDBSCAN} algorithm was deemed necessary for this use case. The \ac{HDBSCAN} algorithm performs the \ac{DBSCAN} algorithm for different epsilon values and hence provides a more robust clustering algorithm. Moreover, the optimum value of epsilon is case-dependent and no single value is suitable for clustering different datasets. This also means that expert domain knowledge is essential for determining the optimum epsilon value and is difficult to obtain in this use case. The \ac{HDBSCAN} algorithm incorporates the result of clustering for different epsilon value and finds the clustering solution that provides the optimum stability over all epsilon. The \ac{HDBSCAN} algorithm can opt for different algorithms like \ac{KD}-trees, Ball Tree or brute-force algorithm. 
+
+\vspace{5mm}
+
+\textbf{\ac{KD}-tree algorithm}
+The \ac{KD}-tree is a data structure that is used for the purpose of effectively organising and searching for points in multi-dimensional spaces. Specifically, \ac{KD}-trees excel at at solving the nearest neighbor search problem, which involves finding the closest data points to a given query point. The structure of a \ac{KD}-Tree resembles a binary tree, where each node can have up to two children. It operates by recursively dividing data points along different dimensions, creating a hierarchical arrangement that facilitates efficient search and retrieval as shown in Fig. \ref*{fig:kd_tree}. 
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=300pt,height=180pt]{pictures/ktree_1.png}
+    \caption{A demonstration of the \ac{KD}-tree algorithm with 7 datapoints having 2 dimensions x and y.\cite{kd_tree}}
+    \label{fig:kd_tree}
+\end{figure} 
+At each level, the tree selects a dimension and splits the data points into two groups based on their values in that dimension. This process continues until all data points are assigned to leaf nodes. One of the key advantages of \ac{KD}-Trees lies in their ability to handle high-dimensional data in static dataset—a common challenge in machine learning applications like computer vision, natural language processing, and bioinformatics. High-dimensional data often suffers from the “curse of dimensionality,” where the search space grows exponentially with the number of dimensions, making nearest neighbor queries time-consuming. As the ABC\cite*{Koch_2019_CVPR} dataset is an immensely high dimensional dataset, the \ac{KD}-Tree algorithm was used in this use case. \ac{KD}-Trees address this by narrowing down the search space at each tree level, resulting in faster queries. Despite their advantages, \ac{KD}-Trees face limitations and challenges. One concern arises when the number of dimensions increases, particularly with non-uniformly distributed data points. In such cases, the tree may become unbalanced, resulting in inefficient search times. But since the datapoints were reduced to 2-dimensional datapoint in this case, the \ac{HDBSCAN} algorithm doesn't result to inefficient search times in this case. Also \ac{KD}-trees are sensitive to outliers. The steps for \ac{KD}-tree algorithm are:\cite*{friedman1975algorithm}
+\begin{enumerate}
+    \item \textbf{Dimension Selection}: A dimension is chosen along which the data is split.
+    \item \textbf{Sorting}: The data points are sorted and arranged.
+    \item \textbf{Median Point}: The median point (root of the current subtree) is selected, splitting the data into two subsets.
+    \item \textbf{Recursive Process}: The process is repeated for each subset, with a new dimension selected at each level.
+\end{enumerate}
+
+\vspace{5mm}
+
+\textbf{Ball-Tree algorithm}
+The ball tree algorithm is designed for organizing and efficiently querying multidimensional data in computational geometry and machine learning. Formally, subsets of points are enclosed within hyperspheres, and the structure is constructed as a binary tree. Each non-leaf node represents a hypersphere containing a subset of the data, and each leaf node corresponds to a small subset of points. The partitioning process involves choosing a ‘pivotal’ point within the subset and constructing a hypersphere centered at this point to enclose the data as shown in Fig. \ref*{fig:ball_tree}.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=300pt,height=180pt]{pictures/ball_tree.png}
+    \caption{A demonstration of the Ball-tree algorithm with 9 datapoints having 2 dimensions x and y.\cite{kd_tree}}
+    \label{fig:ball_tree}
+\end{figure} 
+Fast nearest neighbor searches are facilitated by this hierarchical arrangement, allowing for the rapid elimination of entire subtrees during the search process. Ball trees are particularly useful in scenarios with high-dimensional data, offering improved efficiency over exhaustive search methods in applications such as clustering, classification, and nearest neighbor queries. The steps for ball-tree algorithm are:\cite*{omohundro1989five}
+\begin{enumerate}
+    \item \textbf{Point Selection }: A random data point is chosen as the center of the hypersphere.
+    \item \textbf{Radius Calculation}: The radius of the hypersphere is calculated using distance metrics such as Euclidean distance or Manhattan distance.
+    \item \textbf{Datapoint Assignment}: Data points are assigned to the current node.
+    \item \textbf{Recursive Process}: The process is repeated by selecting new centers and radii.
+\end{enumerate}
+Thus, the memory consumption for the ball-tree algorithm is way more in comparison to the \ac{KD}-tree algorithm. Furthermore, it fails to provide good results in low-dimensional data. It results to inefficient search time for low dimensional queries. This \ac{KD}-tree is suitable for low dimensional static use cases like image recognition and nearest neighbor search in low to medium dimensional dataset. Whereas, the ball tree algorithm is suitable for data clustering in high dimensional spaces and nearest neighbor search in high dimensional datasets.
+
+\vspace{5mm}
+
+\textbf{Brute Force Algorithm}
+A brute force algorithm is a straightforward and exhaustive search strategy that systematically examines all possible options until it finds the solution to a problem. It’s a general approach used for problem-solving when the problem size allows for detailed investigation. In the brute force method, it is iterated through each data point and the density is calculated by considering the distances to other points. However, due to their high time complexity, brute force methods are inefficient for large-scale problems.
+
 \subsection{Suitable Algorithm and Adjustments}
 \begin{algorithm}[H]
     \caption{Pseudo-code for point-level clustering}\label{alg:point_level}

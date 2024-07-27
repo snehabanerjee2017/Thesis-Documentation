@@ -557,29 +557,69 @@ Lastly, in unsupervised transfer learning, the target task is different from the
 \subsection{Optimal Transport Problem}
 \subsection{Sinkhorn-Knopp Algorithm}
 \subsection{Dimensionality reduction}
+Reducing the number of features (i.e., dimensions) in a dataset without sacrificing its relevant attributes is known as dimensionality reduction.\cite*{deng2022dimensionality} This is equivalent to eliminating features that are superfluous or redundant, or just noisy data, in order to build a model with fewer variables. Dimensionality reduction refers to a variety of preprocessing techniques for feature selection and data compression. Although dimensionality reduction techniques operate differently, they all use variable extraction or combination to convert high-dimensional spaces into low-dimensional spaces.
+
+\vspace{5mm}
+
+Dimensions, often known as features or input variables, are predictor variables in machine learning that control a model's output.  Any dataset having a significant number of predictor variables is referred regarded as high-dimensional data. Machine learning algorithms face several practical challenges when dealing with high-dimensional datasets, including longer calculation times and larger data storage requirements. Perhaps the greatest worry, though, is that predictive models are becoming less accurate. Models in machine learning that are trained on high-dimensional datasets frequently have poor generalization.
+
+\vspace{5mm}
+
+\textbf{Curse of dimensionality}\\
+The inverse link between growing model dimensions and declining generalizability is known as the "curse of dimensionality." The model space rises with the amount of model input variables. Conversely, sparse data results from a constant amount of data points. This indicates that much of the feature space of the model is empty, or devoid of observable data points. Data points get so different from one another as data sparsity rises that prediction models are less successful in finding explanatory patterns.\cite*{Goodfellow-et-al-2016} Models may overfit on training data in order to explain patterns in sparse data sufficiently. Thus, poor generalizability may result from increases in dimensionality. By causing multicollinearity, high dimensionality might further impede model interpretability.\cite*{bellman46adaptive} The effect of the number of model parameters on the performance of the model is shown in Fig. \ref*{fig:dimensionality_reduction}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=350pt,height=200pt]{pictures/curse_of_dimensionality.PNG}
+  \caption{The effect of the number of model parameters on the model performance.\cite{dr}}
+  \label{fig:dimensionality_reduction}
+\end{figure} 
+There is a chance that certain variables are unnecessary or associated as the number of model variables rises. The curse of dimensionality can be mitigated by increasing the collection of data by reducing data sparsity. However, the number of data points required to counteract the curse of dimensionality grows exponentially with the number of dimensions in a model. It's not always possible, of course, to gather enough data. Therefore, dimensionality reduction is necessary to enhance data analysis. \ac{PCA}, \ac{LDA}, and \ac{t-SNE} are dimensionality reduction algorithms that improve machine learning models. 
+
+\subsubsection{Linear Discriminant Analysis}
+In supervised machine learning, \ac{LDA} is a method used to resolve multi-class classification problems. \ac{LDA} reduces the dimensionality of the data to enable the separation of several classes with numerous features. A generative model framework is used in \ac{LDA}, which is often referred to as \ac{NDA} or \ac{DFA}. In other words, \ac{LDA} algorithms estimate the distribution of data for each class and classify additional data points by applying Bayes' theorem \cite{bellman46adaptive}. Conditional probabilities, or the likelihood of an event given the occurrence of another event, are computed by Bayes. Bayes is used by \ac{LDA} algorithms to determine the likelihood that a particular data item will be included in a specific output. Finding a linear feature combination that distinguishes any number of categories of objects or events is how \ac{LDA} operates. To facilitate easier classification, \ac{LDA} projects data with at least two dimensions into a single dimension as shown in Fig. \ref*{fig:lda}. 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=350pt,height=200pt]{pictures/lda.PNG}
+  \caption{Projection of the data before and after applying \ac{LDA}\cite{dr}}
+  \label{fig:lda}
+\end{figure} 
+As a result, the method is occasionally called "dimensionality reduction." Unlike logistic regression, for example, which is restricted to binary classification, \ac{LDA}'s adaptability guarantees that it may be applied to multi-class data classification issues. For this reason, \ac{LDA} is frequently used to improve the performance of other machine learning classification methods, such as \ac{SVM}, random forests, and decision trees.
+
 \subsubsection{Principal Component Analysis}
-\ac{PCA} is a statistical method that reduces the number of dimensions in a dataset while maintaining the majority of the original data, making complicated datasets easier to understand. It reduces a huge set of variables to smaller sets that retains the majority of the data from the original set. This is accomplished by generating new variables that are linear combinations of the original variables, known as main components. These principle components are uncorrelated and arranged so that the majority of the variation found in all of the original variables is retained in the first few. \cite*{mackiewicz1993principal}
+Similar to \ac{LDA}, \ac{PCA} is also a dimension reduction method. Unlike \ac{LDA}, \ac{PCA} is not restricted to problems involving supervised learning. In other words, PCA can reduce dimensions for unsupervised learning tasks without taking class labels or categories into account. Mathematician Karl Pearson first presented the \ac{PCA} approach in 1901. It functions under the requirement that the variance of the data in the space of fewer dimensions should be maximal even when data in a space with more dimensions is transformed to data in a lower dimensional space as shown in Fig. \ref*{fig:pca}. In an unsupervised learning paradigm, it can find the correlation between different features in the dataset.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=350pt,height=200pt]{pictures/pca.PNG}
+  \caption{Projection of the data from higher dimensional space to lower dimensional space on applying \ac{PCA}\cite{pca}}
+  \label{fig:pca}
+\end{figure} 
+A linear combination of the the variables in the original dataset gives rise to the principal components.  By combining the variables in this manner, the majority of the information found in the original variables is condensed into the first components, and these new variables, or principal components, are left uncorrelated.The premise is that ten-dimensional data sets provide ten principal components. PCA then attempts to assign the maximum amount of information to the first principal component, the maximum amount of information left to the second principal component, and so on, until the result is somewhat like the Fig. \ref*{fig:pca_variables}. By removing the components with little information and using the ones that remain as the new variables, the dimensionality can be minimized without compromising much information when the data is organized using principle components. It's crucial to understand that because the primary components are created as linear combinations of the original variables, they are less interpretable and have no true significance.From a geometric perspective, the principal components are the data's directions that account for the greatest amount of variance, or the lines that encompass the majority of the data's information. Here, variation and information are related in that a line's variance indicates how dispersed the data points are along it; the more dispersion a line has, the more data it contains. To put all of this into perspective, consider principle components as new vectors that offer the optimal viewpoint for examining and assessing the data, making the variations between the observations easier to observe.
+\begin{figure}[t] 
+  \centering
+  \includegraphics[width=350pt,height=200pt]{pictures/pca_variables.PNG}
+  \caption{The percentge of explained variance for each principal component}
+  \label{fig:pca_variables}
+\end{figure} 
 
 \vspace{5mm}
 
-Initially, the data is scaled to ensure that every variable makes an equal contribution to the study, a process known as standardization. The covariance matrix is then calculated to see how the dataset's variables differ from the mean in relation to one another. The covariance matrix's eigenvalues and eigenvectors are then computed. The new feature space's directions are determined by the eigenvectors, or primary components, and its magnitude is determined by the eigenvalues. The new features V are defined as in Eq. \ref*{eq:pca_feature}
-\begin{equation}
-  \label{eq:pca_feature}
-  \mathit{V} = \mathit{A'X}
-\end{equation}
-where A is a matrix of orthonormal eigenvectors of the variance-covariance matrix S derived from the observations. The eigenvalues $\lambda_i$ of S correspond to the variances of the principal components. The feature vector, which is utilized to build the principal components, is created by sorting the eigenvectors in descending order based on their eigenvalues. Ultimately, this feature vector is used to convert the original data into the new feature space, producing a smaller dataset with fewer dimensions. One can utilize the coefficients of determination between the initial variables and the principal components to interpret the components and ascertain which initial variables account for the largest shares of variation in a given principal component.\cite*{jackson1973relationships}. For the variance-covariance matrix S, the coefficient of correlation is defined as in Eq. \ref*{eq:pca_coeff}
-\begin{equation}
-  \label{eq:pca_coeff}
-  \mathit{r_{ij}} = \mathit{a_{ij}\sqrt{\frac{\lambda_i}{ S_{jj}}}}
-\end{equation}
- Since the matrices employed in \ac{PCA}—variance-covariance and correlation—are merely estimators of the underlying population matrices, hypothesis testing is performed to confirm the findings. Since the size of the sample utilized may have a significant impact on the results, tests based on the asymptotic distributions of the roots and vectors of these matrices are used. \cite*{mackiewicz1993principal} 
-
-\vspace{5mm}
-
-\ac{PCA} reduces dimensionality, reduces noise, and enhances machine learning algorithm performance, among other advantages. Models are made simpler, which facilitates data exploration and visualization. \ac{PCA} has several uses, such as picture compression, which lowers the number of pixels while maintaining important features, genomics, which uses it to find patterns in gene expression data, and finance, which uses it to simplify financial data so that it may be more easily analyzed and predicted. \cite*{mackiewicz1993principal}
-
-\vspace{5mm}
-
-While \ac{PCA} is a useful method for reducing dimensionality, it has certain drawbacks. The assumption of linearity is one major flaw. In real-world data, it may not always be the case that the relationships between variables are linear, as \ac{PCA} assumes. This may reduce its ability to represent intricate, non-linear interactions.
-\subsection{Network generation process with PQ-Net++}
-
+\textbf{Working priniciple for \ac{PCA}}\\
+\begin{enumerate}
+  \item \textbf{Normalization} This step's objective is to normalize the continuous original variable's range to ensure each one makes an equal contribution to the analysis. More precisely, the reason \ac{PCA} is extremely sensitive to the variances of the original variables is the reason normalization must be done first. In other words, if the ranges of the initial variables differ significantly, the variables with greater ranges will take precedence over the variables with smaller ranges (for instance, a variable ranging from 0 to 100 will take precedence over a variable ranging from 0 to 1), which will produce biased results. Therefore, this issue can be avoided by translating the data to similar scales. The mathematical procedure for achieving this is to take each variable's value, subtract the mean, then divide the result by the standard deviation as shown in Eq. \ref*{eq:norm}.
+  \begin{equation}
+    \label{eq:norm}
+    \mathit{z} = \mathit{\frac{value-mean}{standard deviation}}
+  \end{equation}
+  All of these variables will be converted to the same scale after standardization is complete.
+  \item \textbf{Computation of covariance matrix} This step's objective is to determine whether there is a correlation between the variables in the dataset being analyzed and how they differ from the mean in relation to one another. Because variables might occasionally include redundant information due to strong correlations, the matrix of covariance is calculated to find these correlations. The correlation matrix of a 3-D data with variables a, b, c are given by the covariance matrix shown below.
+  $\begin{bmatrix}
+    Cov(a,a) & Cov(a,b) & Cov(a,c)\\
+    Cov(b,a) & Cov(a,b) & Cov(a,c)\\
+    Cov(c,a) & Cov(a,b) & Cov(a,c)
+  \end{bmatrix}$
+  The covariance matrix has all possible pairs of initial variables as entries, and is a p × p symmetric matrix (where p is the number of dimensions).
+  We essentially have the variances of each starting variable along the major diagonal (top left to bottom right), as the variance of a variable with itself is its covariance (Cov(a,a)=Var(a)). Furthermore, because the covariance is commutative (Cov(a,b)=Cov(b,a)), the covariance matrix's entries are symmetric with regard to the main diagonal, meaning that the top and lower triangular sections are equal. When two variables increase or decrease at the same time, i.e. they are correlated, then the value in the covariance matrix is positive. Whereas, if the two variables doesn't follow the same trend, i.e. one increases while the other decreases, then the variables are uncorrelated.
+  \item \textbf{Computation of eigenvectors and eigenvalues} The two necessary mathematical concepts that are essential for the computation of the principal components are eigenvectors and eigenvalues. Every eigenvector has an associated eigenvalue with it. The number of eigenvectors or eigenvalues for the data is equivalent to the dimension of the data. The eigenvector gives the direction of the axis along which most of the variance of the original dataset is preserved or in other words the direction of the principal components. The eigenvalue associated with the eigenvector is the coefficient of the eigenvector, i.e. the amount of variance that particular principal component is responsible for in the total variance. The principal components are obtained by arranging the eigenvectors from highest to lowest of their corresponsing eigenvalues. 
+  \item \textbf{Creation of feature vector} Creating the feature vector involves selecting which elements to keep and which to remove. Generally speaking, components with low eigenvalues won't be as important. A plot is generated to display the cumulative proportion of variation as well as the percentage of total variance explained. Typically, the number of PCA components we wish to include is indicated by the point at which the Y axis of eigenvalues or total variance explained forms a "elbow".
+  \item \textbf{Data transformation along the axis of pricipal components} With the exception of normalization, none of the data is altered in the preceding steps; instead, the input data set is always expressed in terms of the original axes, or the original variables. You just choose the primary components and create the feature vector. The goal of this final step is to reorient the data from the original axis to the ones that the principal components (thus the name Principal Components Analysis) represent by utilizing the feature vector that was created using the eigenvectors of the covariance matrix. To accomplish this, multiply the feature vector's transpose by the original data set's transpose.
+\end{enumerate}

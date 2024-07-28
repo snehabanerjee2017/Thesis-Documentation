@@ -1,4 +1,5 @@
 \section{Method}
+\label{sec:method}
 This chapter gives the details of the networks and clustering algorithms that were examined. The unsupervised feature representation learning approach proposed by Guofeng Mei \textit{et. al.}\cite*{mei2022unsupervised} was adapted to be used in our scenario. The authors proposed an unsupervised learning approach, ConClu that learns both the local features and well as the global features of the point clouds. It was suitable to be used in our scenario, as it would require no point-level annotation of the dataset, which was unavailable in our case. To do so, it performed point-level clustering of the points clouds to generate semantically related regions within the point cloud and performed instance-level contrasting to make the network robust to its global appearance which would be explained in detail in the following subsections.\cite*{mei2022unsupervised}
 
 \vspace{5 mm}
@@ -367,6 +368,7 @@ Every color in this illustration denotes a cluster. It is evident that the densi
 \end{enumerate}
 
 \subsection{Clustering Algorithm}
+\label{sec:clustering_algo}
 Once the feature representations were obtained, multiple clustering algorithms were utilized to group the objects in the datasets into clusters. For this, one algortihm from each type of clustering algortihms as mentioned in \ref{sec:Clustering_Algorithms} has been implemented to analyse the behavior of different clustering algorithms in this use case. Since the ultimate goal of the task in hand is to find representative members of the dataset, it is more robust to find the medoid of the cluster instead of the arithmetic mean. As mentioned in \label{sec:Distribution_based_Clustering}, the medoids are actual datapoints of the dataset which is more practical to use in this use case instead of using a rather blurred, noisy arithmetic mean of the clusters. So, the scikit-learn implementation of the KMedoids algorithm was one of the clustering algorithm that was analysed for the task in hand.\cite*{scikit_learn_kmedoids}
 
 \vspace{5mm}
@@ -442,7 +444,9 @@ Thus, the memory consumption for the ball-tree algorithm is way more in comparis
 
 \textbf{Brute Force Algorithm}
 A brute force algorithm is a straightforward and exhaustive search strategy that systematically examines all possible options until it finds the solution to a problem. It’s a general approach used for problem-solving when the problem size allows for detailed investigation. In the brute force method, it is iterated through each data point and the density is calculated by considering the distances to other points. However, due to their high time complexity, brute force methods are inefficient for large-scale problems.
-
+\subsection{Important aspects of the Studies}
+\subsubsection{Focus and Restrictions}
+\label{sec:restrictions}
 \subsection{Suitable Algorithm and Adjustments}
 \begin{algorithm}[H]
     \caption{Pseudo-code for point-level clustering}\label{alg:point_level}

@@ -78,7 +78,7 @@ As mentioned in Section \ref*{sec:restrictions}, it is extremely inefficient to 
 \end{table}
 
 \subsection{Conclu approach with PointNet as Backbone}
-As mentioned in Section \ref*{sec:method}, wo feature representation learning backbones were used for the experiments. Experiments with the PointNet autoencoder as the backbone is recorded here. The performanceof all the clustering algorithm has been evaluated. Different hyperparameter optimization has been performed which will be elaborated  gradually through this subsection.  
+As mentioned in Section \ref*{sec:method}, two feature representation learning backbones were used for the experiments. Experiments with the PointNet autoencoder as the backbone is recorded here. The performance of all the clustering algorithm has been evaluated. Different hyperparameter optimization has been performed which will be elaborated  gradually through this subsection.  
 
 \subsubsection{Evaluation of increasing datapoints}
 As mentioned in Section \ref*{sec:restrictions}, it is extremely inefficient to compute the \ac{DBCV} for all the datapoints in the ABC datasets \cite*{Koch_2019_CVPR} as once, it was necessary to verify that the results obtained for a smaller subset of the dataset can be interpolated for the entire dataset. In other words, the results obtained for a smaller subset of the dataset generalises the behavior of the entire dataset well. Table \ref{tab:conclu_1000} shows the results of the ConClu approach on 1000 datapoints and table \ref{tab:conclu_2000}  and \ref{tab:conclu_5000} shows the results of the ConClu approach on 2000 datapoints and 5000 datapoints respectively. It was observed that roughly $10\%$ of the datapoints were classified as outliers by the \ac{HDBSCAN} algorithm for all the experiments on 1000, 2000 and 5000 datapoints. The dimension of the latent space representations for table
@@ -623,7 +623,197 @@ Fig. \ref{fig:loss_batch} gives an overview of the training and validation loss 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=400pt,height=300pt]{pictures/loss_early_stopping_patience.png}
+  \includegraphics[width=350pt,height=250pt]{pictures/loss_early_stopping_patience.png}
   \caption{Overview of the validation loss of the models trained with different values of the patience parameter in early stopping when dimension of the latent space representation was fixed to 512, the number of semantix subgroups is 32 and batch size is 128. The y-axis represents the loss. The x-axis represents the number of number of epochs. The solid lines represent the mean training loss after each epoch. The dash dot line represents the mean validation loss after each epoch. The numbers in the legend represent the value of the patience parameter. }
   \label{fig:loss_early_stopping_patience}
 \end{figure} 
+
+\subsubsection{Evaluation of the effect of learning rate}
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the learning rat is 0.01. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.417	& HDBSCAN	& 285	& 0.109	& 0.128	& 315.829 \\ \cline{2-7} 
+    & 3.455	& Kmedoids	& 175	& 0.246	& -0.038	& 147.585 \\ \cline{2-7} 
+    & 3.270	& Spectral	& 175	& 6.347	& -0.057	& 156.651 \\ \cline{2-7}
+    & 3.844	& Agglomerative	& 175	& 0.037	& -0.083	& 162.778 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:conclu_lr_01}
+\end{table}
+
+The learning rate is one of the crucial hyperparameters when building a machine learning model. When the model weights are updated, it regulates how much the model is to be altered after calculating the estimated error. Carefully selecteing the learning rate is extremely necessary because if te learning rate is too small, then the training process will be extremely low and it can get stuck at a local optima. Whereas, if the learning rate s too high, then the model can oscillate around the global optima without raching a convergence. Table \ref{tab:conclu_32} already shows the performance of the model when the learning rate was set ot 0.001. Table \ref{tab:conclu_lr_01}. The model required a training time of 28 hours for 40 epochs. It took almost the same number of epochs to converge as did the model with learning rate 0.001. Furthermore, it can be observed that the performance of the model detoriated when the learning rate was changed to 0.01 from 0.001. There was a 6\% degradation in performance when the learning rate was increased by a factor of 10. 
+
+\subsubsection{Evaluation of the effect of decay factor of the learning rate}
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the learning rat is 0.001 and the decay factor is 0.5. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.351	& HDBSCAN	& 303	& 0.113	& 0.212	& 334.613 \\ \cline{2-7} 
+    & 3.734	& Kmedoids	& 175	& 0.273	& -0.033	& 164.001 \\ \cline{2-7} 
+    & 3.192	& Spectral	& 175	& 6.865	& 0.030	& 109.385 \\ \cline{2-7}
+    & 3.722	& Agglomerative	& 175	& 0.043	& -0.001	& 92.632 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:conclu_lr_decay_5}
+\end{table}
+
+Keeping the learning rate and the rest of the parameters constant, experiments were performed to evaluate the effect of the decay factor of the learning rate on the performance of the model. The decay factor determines the value of the new learning rate as shown in Eq. \ref{eq:lr_decay} when the metrices for the performance of the model stops improving.
+
+\begin{equation}
+  \label{eq:lr_decay}
+  new \; learning \; rate = decay \; factor \times current \; learning \; rate
+\end{equation}
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the learning rat is 0.001 and the decay factor is 0.9. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.265	& HDBSCAN	& 287	& 0.114	& 0.184	& 225.236 \\ \cline{2-7} 
+    & 3.298	& Kmedoids	& 175	& 0.144	& 0.010	& 95.764 \\ \cline{2-7} 
+    & 4.107	& Spectral	& 175	& 14.298	& 0.036	& 116.901 \\ \cline{2-7}
+    & 3.297	& Agglomerative	& 175	& 0.033	& 0.017	& 96.614 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:conclu_lr_decay_9}
+\end{table}
+
+Table \ref{tab:conclu_32} already shows the performance of the model when the learning rate was set to 0.001 and the decay factor was 0.1. Table \ref{tab:conclu_lr_decay_5} shows the performance of th model when the learning rate remained constant at 0.001 but the decay factor was change to 0.5. The performance of this model is seen to improve as compared to model with decay factor 0.1. There was almost a 3\% increase in the performance of the model. The decay factor was further improved and tab. \ref{tab:conclu_lr_decay_9} recordes the performance of the model when the decay factor is 0.9. All the remaining parameters of the model remained constant. The model took a training time of 20 hours for 26 epochs until convergence. A decrease in performance of the model was observed as compared to the model with decay rate 0.5.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=300pt,height=280pt]{pictures/loss_lr.png}
+  \caption{Overview of the validation loss of the models trained with different values of learning rate and decay factor of the learning rate when dimension of the latent space representation was fixed to 512, the number of semantix subgroups is 32 and batch size is 128. The y-axis represents the loss. The x-axis represents the number of number of epochs. The solid lines represent the mean training loss after each epoch. The dash dot line represents the mean validation loss after each epoch. The numbers in the legend represent the learning rate and decay factor of the learning rate.}
+  \label{fig:loss_lr}
+\end{figure} 
+
+Fig. \ref{fig:loss_lr} gives an overview of the training and validation loss of the models for learning rate and decay factor of the learning rate used during training the models. Even with a lower higher learning rate, the model takes almost the same number of epoch until convergence. But it can be noticed that the model reaches a comparable valiation loss quite early on as compared to the model with a lower learning rate. The model with learning rate  0.001 as decay factor 0.9 takes the least training time. 
+
+\subsection{Conclu approach with \ac{DGCNN} as Backbone}
+
+As mentioned in Section \ref*{sec:method}, two feature representation learning backbones were used for the experiments. Experiments with the \ac{DGCNN} as the backbone is recorded here. The performance of all the clustering algorithm has been evaluated.
+
+\subsubsection{Evaluation of dimension of feature space representations}
+As discussed earlier, the dimension of the latent space representation is an extremely crucial parameter while training the network. Since the original dataset had the point clouds with 2048, for the sake of completeness of the experimentation, the evaluation has been performed for all dimensions on a logarithmic scale of 2 from 1024 to down until 4. Table \ref{tab:dgcnn_1024} shows the experiments when the dimension of the latent space representations was set to be 1024. For all the models in this subsection, the number of nearest neighbors required for a \ac{DGCNN} graph was set to 20 as per \cite*{mei2022unsupervised}. It was observed that training the models with the \ac{DGCNN} backbone took extremely large training time. The model with the dimension of latent space representation of 1024 took 168 hours for 37 epochs until convergence. This is more than twice the time required for the model with PointNet autoencoder as backbone, which required 73 hours for 65 epochs. This is because of the dynamic graph creation step involved for this method in each epoch before every convolutional layer. Also the performance of this model is a little worse as compared to the model with PointNet autoencoder as the backbone with same dimension for the latent space representation, the performance of which is recorded in tab. \ref{tab:conclu_1000} on Page 54. 
+
+\begin{table}[t]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 1024. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.022 secs	& HDBSCAN	& 295	& 0.121 & 0.112	& 228.925 \\ \cline{2-7} 
+    & 3.519 & Kmedoids	& 175	& 0.151 & -0.067	& 92.043 \\ \cline{2-7} 
+    & 3.212 & Spectral	& 175	& 6.712 & -0.038 	& 92.080 \\ \cline{2-7}
+    & 3.683 & Agglomerative	& 175	& 0.037 & -0.089	& 124.850 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:dgcnn_1024}
+\end{table}
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 512. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.214 & HDBSCAN	& 299	& 0.125 & 0.129	& 327.926 \\ \cline{2-7} 
+    & 3.739 & Kmedoids	& 175	& 0.248 & -0.060	& 162.210 \\ \cline{2-7} 
+    & 3.212 & Spectral	& 175	& 6.712 & -0.038 & 92.080 \\ \cline{2-7}
+    & 3.683 & Agglomerative	& 175	& 0.037 & -0.089	& 124.850 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:dgcnn_512}
+\end{table}
+
+Table \ref{tab:dgcnn_512} records the performance of the model when the dimension of the latent space representation is 512. All other parameters of the model remains constant. This model takes a training time of 231 hours for 60 epochs. This is four times the time required by the model when PointNet autoencoder as the backbone. Even with such high training time, the performance of the model is seen to deteriorate by atleast 3\% in case of \ac{HDBSCAN} algorithm and atmost 5\% in case of agglomerative clustering algorithm. Table. \ref{tab:dgcnn_256} records the performance of the model when the dimension was further reduced to 256. On reducing the dimension by a factor of 2, the model training time required by the model also decreased by a factor of 2. Now the model requires a training time of 120 hours for 31 epochs. But unlike the model with the PointNet autoencoder as backbone, this model had a degradation in the performance when the dimension was reduced to 256. There was a 3\% decrease in performance for the \ac{HDBSCAN} algorithm, and roughly $5\%$ degradation for the KMedoids algorithm and spectral clustering algorithm. However, the performance of the agglomerative clustering algorithm remained almost similar.  
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 256. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.374	& HDBSCAN	& 278	& 0.112	& 0.098	& 240.169 \\ \cline{2-7} 
+    & 3.673	& Kmedoids	& 175	& 0.171	& -0.151	& 103.629 \\ \cline{2-7} 
+    & 3.579	& Spectral	& 175	& 6.933	& -0.078	& 105.700 \\ \cline{2-7}
+    & 3.722	& Agglomerative	& 175	& 0.044	& -0.001	& 92.631 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:dgcnn_256}
+\end{table}
+
+Table \ref{tab:dgcnn_128} records the performance of the model when the dimension of the latent space representation was further reduced to 128. The learning rate for all the models in this subsection is set to be 0.001 with a decay factor of 0.1. It was also noticed that the models in with the \ac{DGCNN} backbone has a higher \ac{GPU} consumption. So, a batch size of a maximum of 32 could be used according to the hardware settings available at \ac{IPA} as mentioned in sec. \ref{sec:restrictions}. The model required a training time of 91 hours for 33 epochs until convergence. The performance of the \ac{HDBSCAN} algorithm remained almost constant whereas the performance of the Kmedoids algorithm improved by 2\% as compared to the model with dimension 256. The performance of the spectral clustering algorithm degraded by 2\% whereas the performance of the agglomerative clustering. Furthermore, the performance of all the clustering algorithm deteriorated for this model as compared to its other counterpart with PointNet autoencoder backbone. 
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 128. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.498	& HDBSCAN	& 289	& 0.118	& 0.103	& 250.010 \\ \cline{2-7} 
+    & 3.839	& Kmedoids	& 175	& 0.131	& -0.116	& 106.311 \\ \cline{2-7} 
+    & 3.559	& Spectral	& 175	& 6.662	& -0.108	& 103.972 \\ \cline{2-7}
+    & 3.590	& Agglomerative	& 175	& 0.045	& -0.099	& 104.450 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:dgcnn_128}
+\end{table}
+
+For the purpose of completeness of the evaluation, the dimension of the model was further reduced to 64, 32, 16, 8 and 4. Table \ref{tab:dgcnn_64} and tab. \ref{tab:dgcnn_32} are the models with dimension 64 and 32 respectively. As mentioned earlier, early stopping criteria was used during the training of the models to prevent overfitting. A patience of 5 was used for all the models in this subsection. Similar to the setup of the ConClu approach with PointNet autoencoder as backbone. A very high number of epochs was set for the training so that the training always terminates only when the early stopping criteria is triggered. Thus, the number of epochs was set to 200. The model with dimension 64 took a training time of 
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 64. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.430	& HDBSCAN	& 289	& 0.113	& 0.083	& 253.259 \\ \cline{2-7} 
+    & 3.572	& Kmedoids	& 175	& 0.137	& -0.074	& 107.411 \\ \cline{2-7} 
+    & 3.384	& Spectral	& 175	& 6.879	& -0.090	& 105.169 \\ \cline{2-7}
+    & 3.298	& Agglomerative	& 175	& 0.030	& -0.104	& 104.248 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:dgcnn_64}
+\end{table}
+
+\begin{table}[H]
+  \setlength\extrarowheight{10pt}
+  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 32. The unit of time is in seconds.}
+  \centering
+  \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
+    \toprule
+    \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering time & \ac{DBCV} score & \ac{DBCV} time\\
+    \midrule
+    \multirow{4}{30pt}{2}	& 3.390	& HDBSCAN	& 284	& 0.179	& 0.088	& 308.699 \\ \cline{2-7} 
+    & 4.151	& Kmedoids	& 175	& 0.304	& -0.098	& 178.198 \\ \cline{2-7} 
+    & 4.199	& Spectral	& 175	& 34.680	& -0.065	& 185.643 \\ \cline{2-7}
+    & 3.067	& Agglomerative	& 175	& 0.032	& -0.110	& 99.183 \\ 
+    \bottomrule
+  \end{tabular}
+  \label{tab:dgcnn_32}
+\end{table}

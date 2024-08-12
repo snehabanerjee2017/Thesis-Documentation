@@ -5,16 +5,16 @@ Robot-based bin picking process automation offers enormous potential to complete
 
 \vspace{5mm}
 
-The increasing requirement for effective and economical solutions in a variety of fields, including robotics, computer vision, natural language processing, and healthcare, gives rise to the necessity of a source library in transfer learning. Below is comprehensive overview of why transfer learning requires a source library:
+As the demand for efficient and cost effective machine learning solutions are on a rise in multiple sectors like robotic, computer vision, natural language processing and healthcare, more and more is the call for a source library in transfer learning. A handful number of reasons why a source library is necessary for transfer learning is elaborated below.
 \begin{enumerate}
-    \item \textbf{Acceleration of Research and development} It can take a lot of time and resource to create transfer learning solutions from scratch. A source library offers a foundation of proven models, datasets and algorithms, which speeds up research and development. Researchers have the ability to rapidly iterate, explore diverse methodologies, and expand on previous findings to propel the frontiers of transfer learning.
+    \item \textbf{Acceleration of Research and development} The entire pipeline for developing and testing a deep neural network from scratch can be intensely difficult and time-consuming. Research and development are sped up by the pool of tested models, datasets, and algorithms that a source library provides. To advance the limitations of transfer learning, researchers can quickly iterate, investigate a variety of approaches, and build on prior discoveries.
     \item \textbf{Adaptability to Diverse Domains} Transfer learning can be used in a variety of fields, such as robotics, time series analysis, image recognition, and natural language processing. A source library provides frameworks that are adaptable to specific tasks and datasets, as well as modular components that can be integrated with existing networks to meet the varied needs of diverse domains.
-    \item \textbf{Reproducibility and Accessibility} For transfer learning applications, a source library offers a centralized collection of models, datasets, algorithms, and tools. Through easy to access resources, a source library fosters collaboration, reproducibility, and transparency for academics, developers, and other involved stakeholders. 
-    \item \textbf{Minimization of Redundant Efforts} Creating transfer learning solutions frequently requires researchers to start from scratch when creating comparable algorithms or models. By providing pre-built components and reference implementations, a source library can reduce duplication of effort and free up developers to work on new concepts and applications.
-    \item \textbf{Standardization and Best Practices} To ensure consitency and dependability across implementations, a source library might provide best practices and standards for transfer learning approaches. Researchers can more efficiently compare results, assess performance, and build upon the work each other's work by embracing standard frameworks, interfaces and evaluation criteria.
-    \item \textbf{Encouraging Non-Experts} Complex transfer learning can necessitate domain-specific knowledge, machine learning proficiency, and data preprocessing skills. Technical difficulties are abstracted away by a source library, enabling non-experts to apply transfer learning techniques to their applications. users with limited technical knowledge can efficiently implement transfer learning due to the availability of tools and instructions. 
+    \item \textbf{Reproducibility and Accessibility} A collection of tested models, dataset and algorithms are received on using a source library in the transfer learnign paradigm. Hence it facilitates cooperation, repeatability, and transparency for researchers, developers, and other stake-holders.
+    \item \textbf{Minimization of Redundant Efforts} When developing similar algorithms or models, researchers frequently have to start from scratch in order to provide transfer learning solutions. A source library can eliminate effort duplication and free up developers to work on new ideas and applications by offering pre-built components and reference implementations.
+    \item \textbf{Standardization and Best Practices} To ensure consistency and dependability across implementations, a source library might provide best practices and standards for transfer learning approaches. Researchers can more efficiently compare results, assess performance, and build upon the work each other's work by embracing standard frameworks, interfaces and evaluation criteria.
+    \item \textbf{Encouraging Non-Experts} Transfer learning approaches require  knowledge about domain adaptation, machine learning algorithms and data preprocessing skills. A source library  encapsulates the technical details and enables non-experts to use transfer learning in their applications in an abstract way. In the presence of proper information and guidelines, transfer learning approaches could be easily used by non -experts.
 \end{enumerate}
-In conclusion, a transfer learning source library acts as a catalyst for new research, expands access to cutting edge methods, and quickens the creation of useful applications in a variety of fields. An ecosystem of collaboration and a centralized repository of information are what enables academics and researchers in machine learning and artificial intelligence to take on challenging tasks and discover new avenues for advancement. 
+In summary, a transfer learning source library fosters new research, increases access to state-of-the-art techniques, and expedites the development of practical applications across a range of disciplines. Academics and researches are made possible by a centralized information repository and an ecology of collaboration using artificial intelligence and machine learning to tackle difficult challenges and find new opportunities for progress.
 
 \subsection{Task and Goal}
 Bin picking is fundamentally a pose estimation problem, which makes it a computer vision task. The solution to the bin picking problem was greatly influence by the advancements in deep learning techniques for computer vision in recent years. At the moment, there are two available methods: model-free solutions and model-based solutions. The model free methods rely on an image to find appropriate grasp positions, whereas the model-based solutions one use \ac{CAD} models of items to detect them in an image\cite{spenrath2022heuristic}. The bin picking application at \ac{IPA} utilizes an advanced model-based method initially based on PQ-Net++ from \cite{kleeberger2021precise}. The dataset used for this task is the ABC dataset\cite{Koch_2019_CVPR} which is a collection of one million \ac{CAD} models without any ground truth labels. It contains a large variety of objects, a handful of which are shown in Fig. \ref{fig:abc}
@@ -52,10 +52,10 @@ An end-to-end autoencoder proposed by \cite{mei2022unsupervised} was used to get
     \toprule
     Step & Time \\
     \midrule
-    Training the model & \\
-    Dimensionality reduction &  \\        
-    Clustering Algorithm &  \\
-    Similarity evaluation & \\
+    Training the model & 28 hours\\
+    Dimensionality reduction & 4 hours \\        
+    Clustering Algorithm & 3 hours \\
+    Similarity evaluation & 11 minutes\\
     \bottomrule
   \end{tabular}
   \label{tab:overview_time}

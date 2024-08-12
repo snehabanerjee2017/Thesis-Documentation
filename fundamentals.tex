@@ -190,8 +190,23 @@ A function is said to be equivariant if the input to a function is changed, then
 \paragraph{Activation function}
 The next step in a \ac{CNN} is to apply an activation function. the purpose of using a non linear activation function is to capture the non-linearity in the data. Moreover if non-linearity is not used in between the multiple layers of a neural network, the network is effectively only one layer deep which is not capable even to capture the non-linearity in real world datasets. \ac{ReLU} is the most commonly used non-linear activation function used in \ac{CNN}s because unlike sigmoid function or tanh function it does not penalise "too correct" data points. Another remarkable benefit of using \ac{ReLU} is it's ability to propagate gradient through deep networks with a constant factor. Also it is more memory efficient to use \ac{ReLU} as it doesn't require to store the \ac{ReLU} outputs separately as compared to tanh outputs.
 \paragraph{Pooling}
-The third step of a \ac{CNN} is to use the pooling layer. The main purpose of this operation is to make the detection of the features robust to the exact location of the eye (i.e. invariant to small translations). The different types of pooling operations are - max pooling and average pooling. It also helps in reducing the dimensionality of the input without losing too much information. This is done to make the computations faster down the deeper layers of the network. If the pooling operations are performed after every k pixels, then the next layer processes inputs that are k times lesser. Since the number of parameters in a layer are dependent on the size of the input to the layer, it significantly reduces the computational overhead on using pooling operations.
-\todo{Complete CNN} 
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=400pt,height=250pt]{pictures/pooling.PNG}
+  \caption{Max pooling operation on the left and average pooling operation on the right.\cite{pooling}}
+  \label{fig:pooling}
+\end{figure} 
+
+The third step of a \ac{CNN} is to use the pooling layer. The main purpose of this operation is to make the detection of the features robust to the exact location of the eye (i.e. invariant to small translations). The different types of pooling operations are - max pooling and average pooling. It also helps in reducing the dimensionality of the input without losing too much information. This is done to make the computations faster down the deeper layers of the network. If the pooling operations are performed after every k pixels, then the next layer processes inputs that are k times lesser as shown in fig. \ref{fig:pooling}. As the name suggest, the maximum value within the kernel is taken during max-pooling and the average value during average pooling. Since the number of parameters in a layer are dependent on the size of the input to the layer, it significantly reduces the computational overhead on using pooling operations.
+
+\paragraph{Batch Normalization}
+Another very important aspect in \ac{CNN} is batch normalization. In this step, it takes the output of the convolution layer and reassigns the pictures in the feature maps to a new mean and standard deviation. At first, the pixels values are normalized by calculating the z-score of all the pixels. It is then multiplied by a learnable parameter commonly referred as alpha which denotes the range and is then added to another learnable parameter beta which controls the offset value as shown in Eq. \ref{eq:batch_norm}. 
+\begin{equation}
+  \label{eq:batch_norm}
+  x'= (\frac{(x-mean)}{standard \, deviation} \times alpha) + beta
+\end{equation}
+where $x'$ is the normalized value after each batch, $x$ is the value of the pixel in the feature map. Batch normalization method is crucial because it handles the exploring gradient problem. 
 
 \subsubsection{Autoencoders}
 \begin{figure}
@@ -399,114 +414,6 @@ where $T_i$ are the number of datapoints in the cluster $i$, and $X_j$ are the r
 \end{equation}
 where $a_{ki}$ is the k-th component of the vector representation of $a_i$ which is the centroid of the cluster $i$. $M_{i,j}$ is the Minkowski metric of the centroids of the clusters $i$ and $j$, i.e., when $p=1$, it is the Manhattan distance and when $p=2$ it is the euclidean distance between the centroids. When both p and q are 2, then $R_{i,j}$ is the Fisher similarity measure between the two clusters\cite{vergani2018soft}. But this metric too is not without its limitations. It is not robust to noise and outliers, thus giving an incorrect sense of good clustering. This index too is biased towards spherical clusters with similar sizes, thus making it inappropriate for many real world applications. Moreover, since it is a metric of the clustering results on a global level and gives no information about the individual clusters, even a single "too good" or "too bad" cluster can heavily influence the final result.
 
-\subsubsection{Density Based Cluster Validition Index}
-
-Thus, we could see how even the evaluation metrics using just the intrinsic features of the dataset are still not efficient in the presence of noise, outliers or non-convex clusters.As pointed out by Jain and Dubes, "without a strong effort in this direction, cluster analysis will remain a black art accessible only to those true believers who have experience and great courage" \cite{jain1988algorithms}. The fact that this statement holds even today, 35 years after he said it is even more astonishing. To tackle the problem of inefficient evaluation metrics for non-convex clusters or where the different clusters have a difference in size Moulavi \textit{et. al.} proposed the \ac{DBCV} Index \cite{moulavi2014density}. The authors have utilised the theory of Hartigan's model of density-contour trees\cite{hartigan1975clustering}. The least dense region within a cluster and the most dense region outside a cluster is calculated with it which is analogous to computing the within cluster and between cluster density connectedness. As per the definition of Density Contour Trees\cite{hartigan1975clustering} by Hartigan, density based clusters are regions of high density which are separated by low density regions. Having such model as a backdrop, it is expected that a good clustering algorithm which generate clusters such that the least dense region within a cluster is still more dense as compared to regions surrounding a cluster. Traditional intrinsic measure based evaluation mterics uses distance between the datapoints to compute cluster-variance and then incorporates it with the separation between the clusters to eventually compute the quality of the clustering algorithm. But this was not the target for \ac{DBCV}. So they proposed a metric which was defined by densities instead of distances. \ac{DBCV} wanted to take into account both the density and the shape pf the cluster. So at first, the authors defined the concept of "all-points-core-distance"($a_{pts}coredist$). It was the inverse of the density of each object with respect to all other objects inside its cluster as given in Eq. \ref{eq:aptscoredist}.
-\begin{equation}
-  \label{eq:aptscoredist}
-  \mathit{a_{pts}coredist(\textbf{o})}= \mathit{\left\{\frac{\sum_{i=2}^{n_i}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n_i - 1}\right\}^{-\frac{1}{d}}} 
-\end{equation}
-Using the above-mentioned equation, they defined a symmetric reachability distance which was then utilized to generate the \ac{MST} inside each clusters. Because the \ac{MST}s are built on the transformed space of symmetric reachabilty distances, it is capable of capturing both the density and shape of the cluster. On using these \ac{MST}s, they were able to find the least dense region within each of the clusters and the most dense regions between the pair of clusters. As per the definitions provided by the authors, $\textbf{O} = {o_1, o_2, ...., o_n}$ is the dataset containing $n$ objects in the $\mathbb{R}^d$ feature space. $\textbf{Dist}$ is an $n \times n$ matrix of pairwise distance $d(o_p,o_q)$ between the objects of the dataset, such that $o_p,o_q \in \textbf{O}$. $KNN(\textbf{o},i)$ is the distance between the object $o$ and its $i^{th}$ nearest neighbor. $C=({C_i},N) 1 \leq i \leq l$ is the results returned by the clustering algorithms having $l$ clusters and a set of $N$ noise objects. $n_i$ is the size of the $i^{th}$ cluster and $n_N$ is the number of objects in that particular cluster. To get an estimate of the density of an object within a cluster, traditional approaches use the notion o ´f taking the inverse of the threshold distance required to find $K$ objects within this threshold\cite{hartigan1975clustering, campello2012simpler}. But a drawback of this method would be that one would need to decide the value of the parameter $K$, which is not desirable. Moreover, with this approach, the density of the object is dependent to its distance from only one other object i.e. the $k^th$ nearest neighbor. This approach is not as robust as compared to considering more objects in its neighborhood as done in Gaussian kernel density estimate. Thus in order to propose a more robust density estimate, the authors proposed the use of a new parameterless core distance which can be elucidated as the inverse of a density estimate and thus can be used in defining the \ac{MRD}. So now instead of using just one point in the cluster, all the points are taken into account such that the objects closer to it contribute to the density more as compared to the objects further away. We can see in Eq. \ref{eq:aptscoredist}, that the inverse of the $KNN$ distances raised to the power of dimensions has been calculated such that closer objects gets a higher weight as compared to further objects. This effect can further be increased by using squared Euclidean distance instead of Euclidean distances. Also, as per the definition of \ac{MRD}\cite{lelis2009semi}, the core distance of an object is compared to the distances of the object to other objects in the cluster. Hence, the core distance needs to be comparable to these distances. With the help of the following proof the authors have could rightfully conclude that for each object $\textbf{o}$ in the cluster, the "all-points-core-distance" $a_{pts}coredist(\textbf{o})$ lies between the second and the last nearest neighbor distance of the object\cite{moulavi2014density} as in Eq. \ref{eq:knndist}. 
-\begin{proof}
-  We have $\forall2 \leq i \leq n$,
-  \begin{align*}
-    \mathit{KNN(\textbf(o),2)} &\leq \mathit{KNN(\textbf(o),i)} \implies \\
-    \left(\frac{1}{KNN(\textbf{o},i)}\right)^d &\leq \left\{\frac{1}{KNN(\textbf{o},2)}\right\}^d
-  \end{align*}
-  Therefore,
-  \begin{align*}
-    \sum_{i=2}^{n}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d&\leq (n-1)\left(\frac{1}{KNN(\textbf{o},2)}\right)^d\\
-    \mathit{\left((n-1)\frac{\frac{1}{KNN(\textbf{o},2)}^d}{n-1}\right)^{-\frac{1}{d}}} &\leq \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n-1}\right)^{-\frac{1}{d}}}\\
-    \mathit{KNN(\textbf{o},2)} &\leq \mathit{a_{pts}coredist(\textbf{o})}          
-  \end{align*}
-  The upper bound of the equation can be proved similarly giving rise to
-  \begin{align*}
-    \mathit{a_{pts}coredist(\textbf{o})} &\leq \mathit{KNN(\textbf{o},n)}  
-  \end{align*}
-\end{proof}
-\begin{equation}
-  \label{eq:knndist}
-  \mathit{KNN(\textbf{o},2)} \leq \mathit{a_{pts}coredist(\textbf{o})} \leq \mathit{KNN(\textbf{o},n)}
-\end{equation}
-Moreover, the core distance is approximated to the distance of the object to its $k^{th}$ nearest neighbor such that $k$ is not too large. This means, that only a small neighborhood of the object is to be considered. Furthermore, let n objects be uniformly distributed random variables in a d-dimensional unit hypersphere. Then the core distance of object $\textbf{o}$ is given by Eq. \ref{eq:aptsln} which can be proved as following.
-\begin{equation}
-  \label{eq:aptsln}
-  \mathit{a_{pts}coredist(\textbf{o})} = \mathit{\ln(n)^{-\frac{1}{d}}}
-\end{equation}
-
-\begin{proof}
-  First the authors proved the following:
-  \begin{equation}
-    \label{eq:knnij}
-    \forall1 \leq i \leq j \leq n, \mathit{\frac{KNN(\textbf{o},i)}{KNN(\textbf{o},j)}} \approx \mathit{\left(\frac{i-1}{j-1}\right)^\frac{1}{d}} 
-  \end{equation}
-  where $KNN(\textbf{o},i)$ is the distance between the object o and its $i_{th}$ nearest neighbor in the hypersphere. Now, the minimum volume of the hypersphere containing the $i_{th}$ nearest neighbor of the object when the object is at the center of the hypersphere is given by Eq. \ref{eq:volume}
-  \begin{equation}
-    \label{eq:volume}
-    \mathit{V_i} \approx \frac{\pi^{\frac{d}{2}}}{\Gamma(\frac{d}{2}+1)}r_i^d
-  \end{equation}
-  where $V_i$ is the minimum volume of the hypersphere with radius $r_i$ that contains $KNN(\textbf{o},i)$. So, we get $KNN(\textbf{o},i)=r_i$. So in case of a unit hypersphere, $KNN(\textbf{o},i) \approx 1$. Also, because the objects are uniformly distributed, the ratio of the volume of the hyperspheres which contains the $i_{th}$ and $j_{th}$  nearest neighbors to the object $\textbf{o}$ is $\frac{v_i}{V_j} \approx \frac{i-1}{j-1}$
-  \begin{equation}
-    \label{eq:volume_ratio}
-    \mathit{\frac{V_i}{V_j}} \approx \left(\frac{r_i}{r_j}\right)^d
-  \end{equation}
-  \begin{equation}
-    \label{eq:radius_ratio}
-    \mathit{\frac{r_i}{r_j}} = \mathit{\frac{KNN(\textbf{o},i)}{KNN(\textbf{o},j)}} \approx \left(\frac{i-1}{j-1}\right)^{\frac{1}{d}}
-  \end{equation}
-  From Eq. \ref{eq:knnij}, we have,
-  \begin{align*}
-    \mathit{\frac{1}{KNN(\textbf{o},i)}} &= \mathit{\left(\frac{n-1}{i-1}\right)^{\frac{1}{d}}\frac{1}{KNN(\textbf{o},n)}}         
-  \end{align*}
-  Therefore,
-  \begin{align*}
-    \mathit{a_{pts}coredist(\textbf{o})} &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}^{\frac{1}{d}}\frac{1}{KNN(\textbf{o},n)}\right)^d}{n-1}\right)^{-\frac{1}{d}}}         
-  \end{align*}
-  Since we have $KNN(\textbf{o},n) \approx 1$, therefore,
-  \begin{align*}
-    \mathit{a_{pts}coredist(\textbf{o})} &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}^{\frac{1}{d}}\right)^d}{n-1}\right)^{-\frac{1}{d}}} \\
-    &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}\right)}{n-1}\right)^{-\frac{1}{d}}} \\
-    &= \mathit{\left((n-1)\frac{\sum_{i=2}^{n}\left(\frac{1}{i-1}\right)}{n-1}\right)^{-\frac{1}{d}}} \\
-    &= \mathit{\left(\sum_{i=2}^{n}\left(\frac{1}{i-1}\right)\right)^{-\frac{1}{d}}} \\
-    &= \mathit{(\ln(n-1) + \gamma + \epsilon)^{-\frac{1}{d}}} \\
-    & \mathit{\approx \ln(n)^{-\frac{1}{d}}}
-  \end{align*}
-  where $\sum_{i=1}^{n}\left(\frac{1}{i}\right)$ is a harmonic series. Furthermore, from Eq. \ref{eq:knnij},
-  \begin{align*}
-    \mathit{\frac{KNN(\textbf{o},\frac{n}{\ln(n)})}{KNN(\textbf{o},n)}} & \approx \mathit{\left(\frac{\frac{n}{\ln(n)}-1}{n-1}\right)^\frac{1}{d}} \\
-    & \approx \mathit{\left(\frac{\frac{n}{\ln(n)}}{n}\right)^\frac{1}{d}} \\
-    \mathit{\frac{KNN(\textbf{o},\frac{n}{\ln(n)})}{KNN(\textbf{o},n)}} & \approx \mathit{\ln(n)^{-\frac{1}{d}}} \\
-  \end{align*}
-  Since $KNN(\textbf{o},n) \approx 1$,
-  \begin{align*}
-    \mathit{KNN\left(\textbf{o},\frac{n}{\ln(n)}\right)} & \approx \mathit{\ln(n)^{-\frac{1}{d}}} \\
-  \end{align*}
-  Therefore, $\mathit{a_{pts}coredist(\textbf{o})} \approx \mathit{\ln(n)^{-\frac{1}{d}}} \approx KNN(\textbf{o},j)$. where $j$ is the closest natural number to $\frac{n}{\ln(n)}$. 
-\end{proof}
-This proves that the core distance of the object $\textbf{o}$ is approximately equal to the same nearest neighbor distance and is independent of the dimension of the data space, if the objects are uniformly distributed. If the dataset doesn't have a uniform distribution, which is the case for most real world datasets, only the first property holds i.e. the density of the object doesn't depend on just one other object but on all objects in the cluster. 
-
-\vspace{5 mm}
-
-Now the $a_{pts}coredist$ was used to compute the symmetric reachability distance which I would delve into deeper in the following pragraphs. As per the authors, the \ac{MRD} between two objects $o_i$ and $o_j$ as in Eq. \ref{eq:mut_reach_dist}.
-\begin{equation}
-  \label{eq:mut_reach_dist}
-  \mathit{d_{mreach}(\textbf{o}_i, \textbf{o}_j)} = \mathit{max\{a_{pts}coredist(\textbf{o}_i), a_{pts}coredist(\textbf{o}_j), d(\textbf{o}_i, \textbf{o}_j)\}}
-\end{equation}
-where $ d(\textbf{o}_i, \textbf{o}_j)$ is the Euclidean distance between object $\textbf{o}_i$ and $\textbf{o}_j$. Once the \ac{MRD} was computed, it could now be used to generate the mutual reachability graph where the objects are the different vertices and the graph and the \ac{MRD} calculated above are the edge weights between the pair of vertices. Now with the set of objects $\textbf{O}$ and the mutual reachability graph $G$, we get the \ac{MST} of graph $G$ as $\ac{MST}_{\ac{MRD}}$. So if we now quickly overview the process of \ac{DBCV}, for a single cluster $C_i$ having objects $O$, we first calculate the $a_{pts}coredist$ of each object in the cluster. This is then used to computer the \ac{MRD} between all pair of objects in the cluster. Depending on the \ac{MRD}, the \ac{MST} is generated. This process is then performed for all the clusters generated by the clustering algorithm, eventually giving rise to $l$ \ac{MST}s if the clustering algorithms returns $l$ clusters in total. Thus, we can notice that the number of \ac{MST}s increase linearly with the increase in the number of clusters. Also, the size of the tree depends on the number of objects in the clusters and thus can blow up exponentially in case of very large datasets having a lot of elements in each cluster.  
-
-\vspace{5 mm}
-
-From the \ac{MST}s generated above, the authors have crafted a new measure to validate the quality of the clustering algorithm depending on the density sparseness and density separation as explained below. The \ac{DSC} $C_i$ can be visualized as the least dense region within the cluster and thus can be obtained from the maximum edge weight of the $\ac{MST}_{\ac{MRD}}$ of that particular cluster. On the other hand, \ac{DSPC} $C_i$ and $C_j$ where $1 \leq i,j \leq l, i \neq j$  can be visualized as the region of highest density in between adjacent clusters and can be formulated as the minimum \ac{MRD} between the objects of a cluster to the objects of it's neighboring cluster. The \ac{DSC} and the \ac{DSPC} together then give the validity index of a cluster as in Eq. \ref{eq:val_index}.
-\begin{equation}
-  \label{eq:val_index}
-  \mathit{V_C(C_i)} = \mathit{\frac{\underset{1 \leq j \leq l, i \neq j}{min}\left(\ac{DSPC}(C_i,C_j)\right) - \ac{DSC}(C_i)}{max\left(\underset{1 \leq j \leq l, i \neq j}{min}\left(\ac{DSPC}(C_i,C_j)\right) - \ac{DSC}(C_i)\right)}}
-\end{equation}
-Once we have the validity index of each cluster, the final \ac{DBCV} score of the clustering algorithm can be defined as the weighted average of the validity index of all the clusters in $C$ generated by the clustering algorithm as in Eq. \ref{eq:dbcv}. It is to be noted that even if noisy elements aren't explicitly present in the formula as a cluster, but it does however implicitly affects the overall score as the weighted average takes into consideration both the cardinality of individual clusters and well as the total number of elements in the dataset, which includes noise and outliers. 
-\begin{equation}
-  \label{eq:dbcv}
-  \mathit{\ac{DBCV}(C)} = \mathit{\sum_{i=1}^{l}\frac{|C_i|}{|O|}V_C(C_i)}
-\end{equation}
-If a cluster has better density compactness within the cluster as compared to density separation in between adjacent clusters, than the validity index of the cluster would take a positive value. On the other hand, if the density outside the cluster separting it from adjacent clusters is more than density compactedness inside the cluster than it would take a negative value. Thus, the \ac{DBCV} score can vary in the range $[-1,1]$ where greater \ac{DBCV} score indicates to a better density-based clustering algorithm.
 \subsection{Transfer learning}
 Transfer learning is an optimization in machine learning techniques where a model trained for a particular task let's say task 1 is used for another task, task 2. It uses the knowledge learnt by the model in the previous task to be adapted for the new task. Transfer learning has its benefits in a multitude of applications because real world problems doesn't necessarily always have an abundant amount of labelled data which can be used to train a model from scratch\cite{weiss2016survey}. It can be used for tasks which intend to solve different but related problems\cite{weiss2016survey}. In other words, if the domain of the data for task 2 is similar to that of task 1, transfer learning can be used as shown in Fig.\ref{fig:source_target}. Several approaches have been adapted to use transfer learning. Let's say we want to solve task $T_{1}$, but we don't have adequate data to train a deep neural network for it. But we have ample data to solve a similar task $T_{2}$. So we can train a model for task $T_{2}$ and then use it for task $T_{1}$. We might need to re-train only the later layers or all the layers of the model, but that heavily depends on the problem at hand. Another approach could be to use an existing pre-trained network. There are a lot of available open-source models which can be re-trained and re-used depending on the problem. Some of the popular models that are used as pre-trained models in transfer learning are Oxford VGG Model\cite{simonyan2014very},Google Inception model\cite{szegedy2015going}, Microsoft ResNet model\cite{he2016deep}. Another approach could be to use transfer learning for the purpose of feature extraction. Transfer learning has found a lot of application in the domain of computer vision and natural language processing because it requires a lot of data for training such complex models from scratch. In the domain of computer vision, we know that the early layers of a deep neural network focuses on learning the low level features like the detection of edges, while the middle layers focus on learning the mid level features like the detection of shapes. In transfer learning, these pre-trained early and middle layers could be used verbatim and only the latter layers which focus on the high level features could be re-trained for the new task as shown in fig\ref{fig:transfer_learning}.
 \begin{figure}

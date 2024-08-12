@@ -1080,15 +1080,15 @@ Once the representative objects were objects, it was necessary to compare how si
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Similarity metric for the Conclu approach with PointNet Autoencoder backbone.}
+  \caption{Similarity metric for the Conclu approach with \ac{DGCNN} backbone.}
   \centering
   \begin{tabular}{|p{50pt}|p{50pt}|p{50pt}|p{60pt}|p{40pt}|}
     \toprule
     Dataset Size(Whole)	& No. of  representative objects	& Dataset Size(Test)	& Clustering Algo	& Average Hausdorff Distance\\
     \midrule
     949647	& 94	& 49981	& multi-level \ac{HDBSCAN} &  0.170 \\ \cline{1-5} 
-    949647	& 175	& 49981	& KMedoids	& 0.134 \\ \cline{1-5}
-    949647	& 175	& 49981	& Spectral	&	0.155  \\ \cline{1-5}
+    949647	& 175	& 49981	& KMedoids	& 0.133 \\ \cline{1-5}
+    949647	& 175	& 49981	& Spectral	&	0.152  \\ \cline{1-5}
     949647	& 175	& 49981	& Agglomerative	& 0.137 \\   
     \bottomrule
   \end{tabular}

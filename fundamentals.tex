@@ -182,11 +182,11 @@ A function is said to be equivariant if the input to a function is changed, then
  Since convolution operations are commutative in nature, Eq. \ref{eq:conv} can also be written as Eq. \ref{eq:conv_com}. Typically, Eq. \ref{eq:conv_com} is easier to incorporate into a machine learning library since values for both $'m'$ and $'n'$ varies within a small range.\cite{Goodfellow-et-al-2016}
 \begin{equation}
     \label{eq:conv}
-    \mathit{S(i,j)}= \mathit{(I*K)(i,j)} = \sum_{m}\sum_{n}\mathit{I(m,n)K(i-m,j-n)}
+    \mathit{S(i,j)}= \mathit{(I*K)(i,j)} = \sum_{m}\sum_{n}\mathit{I(m,n)K(i-m,j-n)}.
 \end{equation}
 \begin{equation}
     \label{eq:conv_com}
-    \mathit{S(i,j)}= \mathit{(I*K)(i,j)} = \sum_{m}\sum_{n}\mathit{I(i-m,j-n)K(m,n)}
+    \mathit{S(i,j)}= \mathit{(I*K)(i,j)} = \sum_{m}\sum_{n}\mathit{I(i-m,j-n)K(m,n)}.
 \end{equation}
 \paragraph{Activation function}
 The next step in a \ac{CNN} is to apply an activation function. the purpose of using a non linear activation function is to capture the non-linearity in the data. Moreover if non-linearity is not used in between the multiple layers of a neural network, the network is effectively only one layer deep which is not capable even to capture the non-linearity in real world datasets. \ac{ReLU} is the most commonly used non-linear activation function used in \ac{CNN}s because unlike sigmoid function or tanh function it does not penalise "too correct" data points. Another remarkable benefit of using \ac{ReLU} is its ability to propagate gradient through deep networks with a constant factor. Also it is more memory efficient to use \ac{ReLU} as it doesn't require to store the \ac{ReLU} outputs separately as compared to tanh outputs.\cite{Goodfellow-et-al-2016}
@@ -205,7 +205,7 @@ The third step of a \ac{CNN} is to use the pooling layer. The main purpose of th
 Another very important aspect in \ac{CNN} is batch normalization. In this step, it takes the output of the convolution layer and reassigns the pictures in the feature maps to a new mean and standard deviation. At first, the pixels values are normalized by calculating the z-score of all the pixels. It is then multiplied by a learnable parameter commonly referred as alpha which denotes the range and is then added to another learnable parameter beta which controls the offset value as shown in Eq. \ref{eq:batch_norm}. 
 \begin{equation}
   \label{eq:batch_norm}
-  x'= (\frac{(x-mean)}{standard \, deviation} \times alpha) + beta
+  x'= (\frac{(x-mean)}{standard \, deviation} \times alpha) + beta,
 \end{equation}
 where $x'$ is the normalized value after each batch, $x$ is the value of the pixel in the feature map. Batch normalization method is crucial because it handles the exploring gradient problem. 
 
@@ -276,12 +276,12 @@ Traditional deep learning models have shown ground breaking results in a multitu
 
 \begin{equation}
   \label{eq:contrastive_loss}
-  \mathcal{L}_{\textrm{con}}(Y,D_{w})= (1-Y)\frac{1}{2}(D_{w})^2 + (Y)\frac{1}{2}{max(0,m-D_{w})}^2
+  \mathcal{L}_{\textrm{con}}(Y,D_{w})= (1-Y)\frac{1}{2}(D_{w})^2 + (Y)\frac{1}{2}{max(0,m-D_{w})}^2,
 \end{equation}
-where $\mathcal{L}_{\textrm{con}}$ is the calculated contrastive loss, $D_{w}$ is the Euclidean distance between the outputs of the twin networks\cite{siamese_network}. Y takes the value 0 or 1. If the two datapoints belong to the same class then Y takes the value 0, otherwise it takes the value 1\cite{siamese_network}. max() is a function to choose the higher of the two values, 0 or $m-D_{w}$ where $m$ is the margin and has a value greater than 0\cite{siamese_network}. The usage of a margin in this equation ensures that the pair of datapoints which the dissimilar beyond this margin value are excluded while calculating the loss function\cite{siamese_network}. The euclidean distance between the embeddings of the two datapoints are given by the Eq. \ref{eq:euclidean_dist}\cite{siamese_network}
+where $\mathcal{L}_{\textrm{con}}$ is the calculated contrastive loss, $D_{w}$ is the Euclidean distance between the outputs of the twin networks\cite{siamese_network}. Y takes the value 0 or 1. If the two datapoints belong to the same class then Y takes the value 0, otherwise it takes the value 1\cite{siamese_network}. max() is a function to choose the higher of the two values, 0 or $m-D_{w}$ where $m$ is the margin and has a value greater than 0\cite{siamese_network}. The usage of a margin in this equation ensures that the pair of datapoints which the dissimilar beyond this margin value are excluded while calculating the loss function\cite{siamese_network}. The euclidean distance between the embeddings of the two datapoints are given by the Eq. \ref{eq:euclidean_dist}.\cite{siamese_network}
 \begin{equation}
   \label{eq:euclidean_dist}
-  D_{w}(X_{1},X_{2})= \sqrt[2]{\{G_{w}(X_{1}) - G_{w}(X_{2})\}^2}
+  D_{w}(X_{1},X_{2})= \sqrt[2]{\{G_{w}(X_{1}) - G_{w}(X_{2})\}^2},
 \end{equation}
 where $G_{w}(X_{i})$ is the output of the twin network such that $i \in \{1,2\}$ as show in Fig.\ref{fig:siamese_network}.
 \begin{figure}
@@ -303,10 +303,10 @@ where $G_{w}(X_{i})$ is the output of the twin network such that $i \in \{1,2\}$
 
 \vspace{5mm}
 
-\textbf{Triplet loss} function\cite{weinberger2009distance} trains the Siamese Network in a way that a triplet of datapoints are presented to the Siamese Network. By applying triplet loss the model tries to group the datapoints similar to the anchor datapoint, close to one another while increasing the distance between the anchor datapoint and the datapoints dissimilar to it as shown in Fig.\ref{fig:triplet_loss}. In order to do so, a positive value called margin is used which increases the distance between dissimilar datapoints and also eliminates the output of any trivial solution. Euclidean distance or cosine distance is used as the distance metric while calculating the triplet loss and shown in Eq. \ref{eq:triplet_loss}\cite{hermans2017defense,siamese_network}
+\textbf{Triplet loss} function\cite{weinberger2009distance} trains the Siamese Network in a way that a triplet of datapoints are presented to the Siamese Network. By applying triplet loss the model tries to group the datapoints similar to the anchor datapoint, close to one another while increasing the distance between the anchor datapoint and the datapoints dissimilar to it as shown in Fig.\ref{fig:triplet_loss}. In order to do so, a positive value called margin is used which increases the distance between dissimilar datapoints and also eliminates the output of any trivial solution. Euclidean distance or cosine distance is used as the distance metric while calculating the triplet loss and shown in Eq. \ref{eq:triplet_loss}. \cite{hermans2017defense,siamese_network}
 \begin{equation}
   \label{eq:triplet_loss}
-  \mathcal{L}_{\textrm{tri}}(a,p,n)=\sum_{\substack{a,p,n \\ y_{a}=y_{p}!=y_{n}}} max(0,d(a,p)-d(a,n)+margin)
+  \mathcal{L}_{\textrm{tri}}(a,p,n)=\sum_{\substack{a,p,n \\ y_{a}=y_{p}!=y_{n}}} max(0,d(a,p)-d(a,n)+margin),
 \end{equation}
 where $y_{x}$ is the class label for the datapoint $x$ for $x \in \{a,p,n\}$, $a$ is the anchor datapoint, $p$ is the positive example having the same class label as the anchor datapoint and $n$ is the negative example having a different class label as compared to the anchor datapoint. But there are some practical problems related to the use of triplet loss function. The number of possible triplets grow cubically with the increase in the size of the dataset. Also most of the triplets are often uninformative. Thus, mining "hard triplets" or the ones crucial for the learning of the model becomes a challenging task. As per the definition of the triplet loss function, the triplets can be of three types: easy triplets, hard triplets and medium hard triplets. The triplets which satisfy the condition $d(a,p)+margin<d(a,n)$ results to the loss value being 0, hence are called the easy triplets\cite{triplet_loss}. For the triplet for which the negative datapoint is closer to the anchor as compared to the positive datapoint i.e. $d(a,n)<d(a,p)$ are the examples of hard triplets.\cite{triplet_loss} And the medium hard triplets are the ones where the negative datapoints are not closer to the anchor datapoint as compared to the positive datapoint but still results in positive loss i.e. $d(a,p)<d(a,n)<d(a,p)+margin$.\cite{triplet_loss} Thus, the medium hard triplets are the most essential for the model training as they constitute for the most useful information. Two triplet mining procedures are used to mitigate the issue of excessive computational overhead with increase in dataset size. They are offline triplet mining and online triplet mining. In offline hard triplet mining, at first the dataset is manually processed to find hard triplets and then they are used for training the model. But manually finding the hard triplets can be quite tedious. Online triplet mining is a better approach as compared to the one mentioned above. The model is trained in minibatches of the dataset as shown in Fig.\ref{fig:offline_triplet}. Using only the triplets that were mined from the dataset could be a wasteful design choice in such scenario. So in a minibatch, it contains way more potential triplets than the ones that were mined. So each member of another triplet becomes an additional negative datapoint example. But both hard positive and hard negative datapoints are required for training. An even better design to mitigate that would be to choose let's say $c$ datapoints from P different classes in the dataset, where the $K$ positive examples serve as hard positives while the rest of the datapoints in the minibatch serve as hard negatives as shown in Fig.\ref{fig:online_triplet}\cite{hermans2017defense}.
 
@@ -368,7 +368,7 @@ The ground truth or labels are available in supervised learning. So to determine
 Silhouette Score is used to calculate the distance between points within a cluster as compared to its distance from the points in the neighbouring cluster and is given by Eq. \ref{eq:silhouette_score}.
 \begin{equation}
   \label{eq:silhouette_score}
-  \mathit{S_{c}}= \mathit{\frac{(n_{c}-i_{c})}{max(n_{c},i_{c})}}
+  \mathit{S_{c}}= \mathit{\frac{(n_{c}-i_{c})}{max(n_{c},i_{c})}},
 \end{equation}
 where $S_{c}$ is the Silhouette Coefficient, $n_{c}$ is the average of the nearest-cluster distance of each datapoint and $i_{c}$ is the average distance between the datapoint within the cluster. The Silhouette coefficient lies within the range $[-1,1]$, where the the more closer the coefficient is to 1, the better is the clustering results. When the Silhouette Coefficient is close to 0, it implies that the datapoints are on or very close to the decision boundary between adjacent clusters, whereas negative values imply that the datapoints have been wrongly classified. But the drawbacks of using this metric is, that is tends to favour dense and convex clusters. Since it takes into account the average of the distance within a cluster as well as between adjacent clusters, it doesn't perform well if different clusters have a significant difference in their respective sizes, which is quite a common phenomenon in real world datasets. The chosen distance metric for the calculation of the Silhouette score also has a significant effect on it and can lead to very different results.
 
@@ -377,16 +377,16 @@ where $S_{c}$ is the Silhouette Coefficient, $n_{c}$ is the average of the neare
 Calinski-Harabasz Index(C-H Index) or the Variance Ratio Criterion is used to measure the dispersion between the datapoints within a cluster as compared to in-between clusters as in given by Eq. \ref{eq:c-h index}.
 \begin{equation}
   \label{eq:c-h index}
-  \mathit{S_{CH}}= \mathit{\frac{tr(B_{k})}{tr(W_{k})}} \times \mathit{\frac{(n_{E}-k)}{k-1}}
+  \mathit{S_{CH}}= \mathit{\frac{tr(B_{k})}{tr(W_{k})}} \times \mathit{\frac{(n_{E}-k)}{k-1}},
 \end{equation}
 where $S_{CH}$ is the C-H Index, $tr(B_{k})$ is the trace of the in-between cluster dispersion matrix. $B_{k}$ is in Eq. \ref{eq:Bk}  and $tr(W_{k})$ is the trace of the within-cluster dispersion matrix. $W_{k}$ is shown in Eq. \ref{eq:Wk}.
 \begin{equation}
   \label{eq:Bk}
-  \mathit{B_{k}}= \mathit{\sum_{q=1}^{k}n_{q}(c_{q}-c_{o})(c_{q}-c_{o})^T} 
+  \mathit{B_{k}}= \mathit{\sum_{q=1}^{k}n_{q}(c_{q}-c_{o})(c_{q}-c_{o})^T}, 
 \end{equation}
 \begin{equation}
   \label{eq:Wk}
-  \mathit{W_{k}}= \mathit{\sum_{q=1}^{k}\sum_{x \in C_{q}}(x-c_{q})(x-c_{q})^T} 
+  \mathit{W_{k}}= \mathit{\sum_{q=1}^{k}\sum_{x \in C_{q}}(x-c_{q})(x-c_{q})^T}, 
 \end{equation}
 where $c_{q}$ is the centroid of the cluster $q$ and $c_{o}$ is the overall centroid of the datapoints. $B_{k}$ calculates the quality of the separation between two clusters, i.e., higher the value of $B_{k}$, better it is. $W_{k}$ calculates the distance of a datapoint ($x$) from the centroid of the cluster and thus, measures the cohesiveness or compactness of the datapoints within a cluster, i.e smaller the value of $W_{k}$ the better it is. Distribution-based clustering algorithms like k-means tries to minimize the value of $W_{k}$. Thus, according to the equation of C-H Index in Eq. \ref{eq:c-h index}, the higher the C-H index, the better is the clustering results. Because sum-of squared Euclidean distance is used to calculate the distance of the datapoints from their respective cluster centroids, C-H Index tends to favour convex clusters, which is a major drawback of using this metric similar to that in Silhouette Coefficient.\cite{chindex}
 
@@ -403,7 +403,7 @@ David-Bouldin Index is another metric used for evaluating clustering algorithms,
 where $M_{ij}$ is the distance between the centroids of the clusters $i$ and $j$ and $S_i$ and $S_j$ are their respective dispersion measures. The conditions enforce that the cluster similarity measure R is non-negative and symmetrical in nature. It becomes 0 if and only if the dispersions of the two clusters disappear. If the distance $M_{ij}$ increases even if $S_i$, $S_j$ are constant, then the cluster similarity measure R decreases and vice versa. Also if $M_{ij}$ remains constant and $S_i$, $S_j$ increases, then R increases. Thus, the David-Bouldin Index was defined as the average of the similarities of each cluster as in Eq. \ref{eq:dbi}, using the same notations as the authors.
 \begin{equation}
   \label{eq:dbi}
-  \mathit{\bar{R}}= \mathit{\frac{1}{C}\sum_{i=1}^{C}R_i} 
+  \mathit{\bar{R}}= \mathit{\frac{1}{C}\sum_{i=1}^{C}R_i}, 
 \end{equation}
 where C is the total number of clusters and $R_i$ is the $max_{j \neq i}{R_{i,j}}$. Thus, $\bar{R}$ or the David-Bouldin Index is the average of the similarity measures R of each cluster with its most similar cluster. Thus, David-Bouldin Index has a lower bound of 0, while a higher value means bad clustering. In other words, the less is the average similarity, the better is the clustering results. Because of this, it acts as a good measure to decide on the number of clusters that actually exists in the dataset. Therefore, this index can be used to determine the number of clusters in distribution-based clustering algorithms like k-means. $R_{i,j}$ is more formally defined as in Eq. \ref{eq:ri}.
 \begin{equation}
@@ -418,7 +418,7 @@ The dispersion measure of a cluster $i$ is defined by $S_I$ as in Eq. \ref{eq:si
 where $T_i$ are the number of datapoints in the cluster $i$ and $X_j$ are the respective vector representations of the datapoints in the cluster $i$. For $q=1$, The dispersion measure $S_i$ is the average Euclidean distance of the vector representation of the datapoints from the centroid of the cluster $i$, while for $q=2$, it is the standard deviation of the metric about the datapoints in the cluster with respect to its centroid \cite{vergani2018soft}. It is different as compared to the distance defined between the centroids of the clusters which are defined as in Eq. \ref{eq:mij}.
 \begin{equation}
   \label{eq:mij}
-  \mathit{M_{i,j}}= \mathit{\left\{\sum_{k=1}^{N} \lVert a_{ki} - a_{kj} \rVert^p\right\}^{\frac{1}{p}}} 
+  \mathit{M_{i,j}}= \mathit{\left\{\sum_{k=1}^{N} \lVert a_{ki} - a_{kj}, \rVert^p\right\}^{\frac{1}{p}}} 
 \end{equation}
 where $a_{ki}$ is the k-th component of the vector representation of $a_i$ which is the centroid of the cluster $i$. $M_{i,j}$ is the Minkowski metric of the centroids of the clusters $i$ and $j$, i.e. when $p=1$, it is the Manhattan distance and when $p=2$ it is the euclidean distance between the centroids. When both p and q are 2, then $R_{i,j}$ is the Fisher similarity measure between the two clusters \cite{vergani2018soft}. But this metric too is not without its limitations. It is not robust to noise and outliers, thus, giving an incorrect sense of good clustering. This index too is biased towards spherical clusters with similar sizes, thereby making it inappropriate for many real world applications. Moreover, since it is a metric of the clustering results on a global level and gives no information about the individual clusters, even a single "too good" or "too bad" cluster can heavily influence the final result.
 

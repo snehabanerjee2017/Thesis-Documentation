@@ -65,7 +65,7 @@ where $\mathit{f}: 2_{\mathbb{R}_{\mathit{N}} \rightarrow \mathbb{R}}, \mathbb{R
 \textbf{Joint Alignment Network} The network should be invariant to certain geometric transformations like rigid body transformations. A trivial solution to this issue is aligning every input set to a canonical order prior to feature extraction. But this would require an additional layers for aligning all input sets. On the contrary, the authors in \cite{qi2017pointnet} utilized a "mini-network" (\textit{T-net}) as shown in Fig. \ref{fig:pointnet_arch}. This predicts a transformation matrix which is then applied to the coordinates of the points in the point cloud. The mini-network takes after the main network and is made up of point independent feature extraction module, max pooling layers and the fully connected layers. To align the point-features from different point cloud sets, another alignment network could be introduced. It would predict the transformation matrix required for the alignment. But that would significantly increase the difficulty of optimization since the transformation matrix has much higher dimensions as compared to the spatial transformation matrix. To circumvent this issue, a regularization term is used in the softmax training loss. The constraint enforced in this case is that the feature transformation matrix is to be approximated by an orthogonal matrix as given in Eq. \ref{eq:loss_reg}.
 \begin{equation}
     \label{eq:loss_reg}
-    L_{reg} = \lVert I - AA_T \rVert _F^2
+    L_{reg} = \lVert I - AA_T \rVert _F^2,
 \end{equation}
 where $\lVert . \rVert _F$ is the Frobenius-norm, $I$ is the Identity matrix and $A$ is the feature alignment matrix predicted by the mini-network. The feature transformation matrix has been approximated by an orthogonal matrix because orthogonal transformations ensure that no information about the input is lost.
 
@@ -91,7 +91,7 @@ Unlike PointNet, the \ac{DGCNN} network captures the topological information by 
 A directed graph $G = (V,E)$ which captures the topology of the point cloud where $V=\{p_i | i = \{1,2,...,n\}\}$ is the set of vertices and $E \subset V \times V$ is the set of edges. The graph $G$ is the \ac{k-NN} graph of $\mathcal{P}$ in $\mathbb{R}^F$. The graph has self-loops which means, each point in the point cloud has an edge to itself. The edge features computed by the EdgeConv block is defined as $e_{ij} = h_{\theta}(p_i, p_j)$ where $h_{\theta}: \mathbb{R}^F \times \mathbb{R}^F \rightarrow \mathbb{R}^{F'}$ is a non-linear function with a set of trainable parameters $\theta$. The EdgeConv operation is defined as a symmetric aggregation operation $\square$ which is applied on a channel wise manner. Summation or max are some of the examples of aggregation functions. It is applied on the edge features associated with all the edges that orginate from each connected vertex. Therefore, the output of the EdgeConv layer for $i$-th vertex is given by Eq. \ref{eq:EdgeConv}
 \begin{equation}
     \label{eq:EdgeConv}
-    p'_i = \underset{j:(i,j) \in E}{\square} h_{\theta}(p_i, p_j)
+    p'_i = \underset{j:(i,j) \in E}{\square} h_{\theta}(p_i, p_j).
 \end{equation}
 Drawing similarity with convolution on images, $p_i$ is the central pixel and $\{p_j:(i,j) \in E\}$ is a patch around the central pixel as shown in Fig. \ref{fig:EdgeConv_op}. Therefore, for a point cloud with $F$ dimensions and $n$ points in it, the EdgeConv layer generates a point cloud with $F'$ dimensions and $n$ points in it.
 \begin{figure}
@@ -116,7 +116,7 @@ Drawing similarity with convolution on images, $p_i$ is the central pixel and $\
 Deciding the non-linear function $h_{\theta}$ and the symmetric aggregation function $\square$ plays a pivotal role in deciding the properties of the EdgeConv layer. To further illustrate on this point, if $p_1, ..., p_n$ are the points in the point cloud and the graph $G$ encapsulates the topological information of patches of fixed size around each central pixel, then if $\theta _m \cdot p_j$ is chosen as the non-linear function and sum is chosen as the aggregation operation, then it would behave as a standard convolution operation as in Eq. \ref{eq:std_conv}.
 \begin{equation}
     \label{eq:std_conv}
-    p'_{im} = \sum_{j:(i,j) \in E}\theta _m \cdot p_j
+    p'_{im} = \sum_{j:(i,j) \in E}\theta _m \cdot p_j,
 \end{equation}
 where $\theta = (\theta _1, \theta _2, ... , \theta _M)$ are the weights of $M$ different filters used in the convolution operation. Each entry in $\theta _m$ has the dimensionality as $p_i$ and $\cdot$ is the Euclidean inner product. Another variation of $h$ could be Eq. \ref{eq:EdgeConv_pointnet}. 
 \begin{equation}
@@ -148,7 +148,7 @@ This explicitly takes into account the global feature information as in Eq.\ref{
     \label{eq:EdgeConv_op}
     e'_{ijm} = \ac{ReLU}(\theta _m \cdot (p_j - p_i) + \phi _m \cdot p_i).
 \end{equation}
-This operator could be implemented as a shared \ac{MLP} and then performing a max-pooling operation as 
+This operator could be implemented as a shared \ac{MLP} and then performing a max-pooling operation as in Eq. \ref{eq:EdgeConv_max}.
 \begin{equation}
     \label{eq:EdgeConv_max}
     p'_{im} = \underset{j:(i,j) \in E}{max}e'_{ijm},
@@ -309,18 +309,18 @@ where $ \lVert \cdot \rVert _1 $ is the $l_{1}$-norm or the Manhattan distance a
 This module plays a crucial role in learning the global features of the point clouds. The architecture of which is shown in Fig. \ref{fig:global_level}. The network is fed with two augmented views $\mathcal{P}^a$, $\mathcal{P}^b$ of the same point cloud $\mathcal{P}$. The feature representation obtained as the output of the encoder backbone $f_{\varphi}$, are fed to a MaxPooling layer $\rho$, the output of which is fed to a projection \ac{MLP} head $g$ \cite{chen2021exploring}. The encoder backbone $f_{\varphi}$ and the projection head $g$ shares the weights for both the augmented views. The output of the projection head of one of the augmented views (the top branch) is fed to the prediction head $q$. The purpose of this unit is to transform the output of one of the augmented views to match the other. The operation is applied to only one augmented view to make the network asymmetric \cite{grill2020bootstrap}. In other words, the output vectors can be realized as  $ \mathit{q^a} \triangleq \mathit{\mathbf{q}(g(\rho(\mathbf{\mathcal{F}}^a)))}$ and $\mathit{\mathbf{z}^b} \triangleq \mathit{g(\rho(\mathbf{\mathcal{F}}^b))}$ where $\mathbf{\mathcal{F}}^a = f_{\phi}(\mathbf{\mathcal{P}}^a)$ and $\mathbf{\mathcal{F}}^b = f_{\phi}(\mathbf{\mathcal{P}}^b)$. Keeping in line with \cite{chen2021exploring}, \ac{stopgrad} is applied on the second branch $z^b$ to resist the network from generating a constant mapping without using negative samples for contrastive learning. The network is constructed such that the similarity between $\mathit{q^a}$ and $\mathit{z^b}$ is maximized. Mathematically speaking, the mean-squared error between the $\mathit{l}_2$-normalized prediction $q^a$ and projection $\mathit{z_b}$ is minimized as shown in Eq. \ref{eq:error}. 
 \begin{equation}
     \label{eq:error}
-    \mathcal{D}(\mathit{q^a, z^b}) \triangleq \lVert \frac{\mathit{q^a}}{\lVert \mathit{q^a} \rVert _2} - \frac{\mathit{z^b}}{\lVert \mathit{z^b} \rVert _2} \rVert _2^2 = 2 - \frac{2\mathit{q^{aT}z^b}}{\lVert q^a \rVert _2 \cdot \lVert z^b \rVert _2},
+    \mathcal{D}(\mathit{q^a, z^b}) \triangleq \lVert \frac{\mathit{q^a}}{\lVert \mathit{q^a} \rVert _2} - \frac{\mathit{z^b}}{\lVert \mathit{z^b} \rVert _2} \rVert _2^2 = 2 - \frac{2\mathit{q^{aT}z^b}}{\lVert q^a \rVert _2 \cdot \lVert z^b \rVert _2}.
 \end{equation}
 
 In other words, it is the negative cosine similarity, up to a scale of 2. Since, \ac{stopgrad} is enforced on $z^b$, Eq. \ref{eq:error} is modified by the following
 \begin{equation}
     \label{eq:error_stopgrad}
-    \mathcal{D}(\mathit{q^a, \ac{stopgrad}(z^b)}) 
+    \mathcal{D}(\mathit{q^a, \ac{stopgrad}(z^b)}), 
 \end{equation}
-which means, $z^b$ acts as a constant vector in this equation. Keeping in line with \cite{chen2021exploring}, a global symmetrized loss is defined as in Eq. \ref{eq:sym_loss}
+which means $z^b$ acts as a constant vector in this equation. Keeping in line with \cite{chen2021exploring}, a global symmetrized loss is defined as in Eq. \ref{eq:sym_loss}.
 \begin{equation}
     \label{eq:sym_loss}
-    \mathcal{L}_{\mathit{global}} = \mathcal{D}(\mathit{q^a, \ac{stopgrad}(z^b)})  + \mathcal{D}(\mathit{q^b, \ac{stopgrad}(z^a)}) 
+    \mathcal{L}_{\mathit{global}} = \mathcal{D}(\mathit{q^a, \ac{stopgrad}(z^b)})  + \mathcal{D}(\mathit{q^b, \ac{stopgrad}(z^a)}). 
 \end{equation}
 The minimum value the above equation can attain is 0. This is because, in the first term of the equation, the encoder backbone $q^a$ gets no gradient flow from $z^b$. But it gets gradients from $q^b$ in the second term. In the same way, in the second term of the equation, the encoder backbone $q^b$ gets no gradient flow from $z^a$. But it gets gradients from $q^a$ in the first term. if the \ac{stopgrad} mechanism is not applied, then in spite of having a loss of zero during training, the representations learnt by the network would be futile i.e., all the point clouds would be mapped to the same feature representation. or in other words, the network would crumble to  constant mapping \cite{chen2021exploring}. The pseudo-code for this module is shown in Alg. \ref{alg:instance_level}.
 
@@ -351,7 +351,7 @@ The minimum value the above equation can attain is 0. This is because, in the fi
 \end{algorithm}
 
 \subsection{Loss function}
-The objective of the network is to simultaneously minimize both the point-level clustering loss and the instance level contrasting loss. If the two augmented views of the point cloud $\mathcal{P}$ are $\mathcal{P}^a$ and $\mathcal{P}^b$, then the point-level clustering loss can be calculated by Eq. \ref{eq:local_loss}
+The objective of the network is to simultaneously minimize both the point-level clustering loss and the instance level contrasting loss. If the two augmented views of the point cloud $\mathcal{P}$ are $\mathcal{P}^a$ and $\mathcal{P}^b$, then the point-level clustering loss can be calculated by Eq. \ref{eq:local_loss}.
 \begin{equation}
     \label{eq:local_loss}
     \mathcal{L}_{\mathit{local}} = \epsilon(\gamma^{a}, S^a) + \epsilon(\gamma^{b}, S^b) + \eta(\mathcal{L}_{orth}(C^a) + \mathcal{L}_{orth}(C^b))
@@ -359,7 +359,7 @@ The objective of the network is to simultaneously minimize both the point-level 
 where $\eta>0$ is a regularization parameter. Here $\gamma^a$ is the posterior class probability of the point belonging to one of the subcategories, $S^a$ is the predicted class probability and $C^a$ is the normalized center of the augmented view of the point cloud $\mathcal{P}^a$. In the same way, the corresponding terms for the other augmented view $\mathcal{P}^b$ are $\gamma^b$, $S^b$ and $C^b$. Therefore, the total loss could be calculated as the linear combination of $\mathcal{L}^{global}$ and $\mathcal{L}^{local}$ as 
 \begin{equation}
     \label{eq:ttotal_loss}
-    \mathcal{L}_{\mathit{total}} = \mathcal{L}_{\mathit{local}} + \mathcal{L}_{\mathit{global}}
+    \mathcal{L}_{\mathit{total}} = \mathcal{L}_{\mathit{local}} + \mathcal{L}_{\mathit{global}}.
 \end{equation}
 
 \subsection{Dimensionality reduction}
@@ -397,12 +397,12 @@ Every color in this illustration denotes a cluster. It is evident that the densi
     Finding each point's Euclidian distance from every other point is the initial step in the process. Next, these distances are converted into conditional probabilities, which express how similar one pair of points is to the other. This means that it is required to determine the degree of similarity—that is, the likelihood—between any two points in the data. A Gaussian with a standard deviation of $\sigma_i$ and a center at $x_i$ represents the conditional probability of point $x_j$ to be next to point $x_i$. The conditional probability is defined mathematically as shown in Eq. \ref{eq:cond_prob}. The factors that effect $\sigma_i$ are discussed later.
     \begin{equation}
         \label{eq:cond_prob}
-        \mathit{p_{j|i}} = \mathit{\frac{exp \left(- \frac{\lVert x_i - x_j \rVert ^2}{2 \sigma_i^2} \right)}{\sum_{k \neq i} exp \left(- \frac{\lVert x_i - x_k \rVert ^2}{2 \sigma_i^2} \right)}} 
+        \mathit{p_{j|i}} = \mathit{\frac{exp \left(- \frac{\lVert x_i - x_j \rVert ^2}{2 \sigma_i^2} \right)}{\sum_{k \neq i} exp \left(- \frac{\lVert x_i - x_k \rVert ^2}{2 \sigma_i^2} \right)}}. 
     \end{equation}
     Since the clusters can have varying densities, which is why the division by the total of all the other points positioned at the Gaussian centered at $x_i$ is necessary. Looking back to Fig. \ref{fig:2d_data} as an example to clarify, the orange cluster has a lesser density than the blue. As a result, there will be less similarity between the orange and blue points if one uses a Gaussian to compute the commonalities between each pair of points. The normalization is performed because it is only necessary to view the clusters as such in the final output and if any of the clusters have differing densities need not be visualized. The joint probability distribution can be computed from the conditional distributions as shown in Eq. \ref{eq:joint_prob}.
     \begin{equation}
         \label{eq:joint_prob}
-        \mathit{p_{ij}} = \mathit{\frac{p_{j|i} + p_{i|j}}{2n}} 
+        \mathit{p_{ij}} = \mathit{\frac{p_{j|i} + p_{i|j}}{2n}}. 
     \end{equation}
     One of the ways that the t-SNE approach differs from the previous SNE is that it uses the joint probability distribution instead of the conditional probability. The computation in the third stage of the algorithm is made simpler by the symmetric property of the pairwise similarities $(p_{ij} = p_{ji})$.
     \item \textbf{Transformation of the data to a lower dimension}\\
@@ -423,22 +423,22 @@ Every color in this illustration denotes a cluster. It is evident that the densi
           \label{fig:tsne_output}
         \end{minipage}  
     \end{figure}
-    Similar to the original dataset, the joint probability distribution for this set of points is generated using the t-distribution rather than the Gaussian distribution. The points in this case are denoted as y and the probabilities as q and thus, the joint probability distribution is computed as shown in Fig. \ref{eq:joint_prob_random}
+    Similar to the original dataset, the joint probability distribution for this set of points is generated using the t-distribution rather than the Gaussian distribution. The points in this case are denoted as y and the probabilities as q and thus, the joint probability distribution is computed as shown in Eq. \ref{eq:joint_prob_random}.
     \begin{equation}
         \label{eq:joint_prob_random}
-        \mathit{q_{ij}} = \frac{\left(1 + \lVert y_i - y_j \rVert\right) ^{-1}}{\sum_{k \neq l}\left(1 + \lVert y_k - y_l \rVert\right) ^{-1}}
+        \mathit{q_{ij}} = \frac{\left(1 + \lVert y_i - y_j \rVert\right) ^{-1}}{\sum_{k \neq l}\left(1 + \lVert y_k - y_l \rVert\right) ^{-1}}.
     \end{equation}
     The heavy tails attribute of the t-distribution is the rationale behind selecting it over the Gaussian distribution. This property helps minimize "crowding" of the points in the lower dimension by making moderate gaps between points in the high-dimensional space become extreme in the low-dimensional space. An additional benefit of employing the t-distribution is that it enhances the algorithm's optimization procedure in the third stage.
     \item \textbf{Modification of the dataset in the low-dimensional space for the best possible data visualization}\\
     Now, the \ac{KL} divergence is utilized to maximize the similarity between the joint probability distribution of the data points in the low dimensional space and the higher dimensional space. The \ac{KL} divergence serves as a gauge for the degree of difference between two distributions. The \ac{KL} divergence is defined for distributions P and Q in the probability space of $\chi$ by Eq. \ref{eq:kl_div}.
     \begin{equation}
         \label{eq:kl_div}
-        \mathit{D}_{\ac{KL}}(\mathit{P} || \mathit{Q}) = \sum_{x \in \chi} \mathit{P(x)} \log \left( \frac{\mathit{P(x)}}{\mathit{Q(x)}} \right)
+        \mathit{D}_{\ac{KL}}(\mathit{P} || \mathit{Q}) = \sum_{x \in \chi} \mathit{P(x)} \log \left( \frac{\mathit{P(x)}}{\mathit{Q(x)}} \right).
     \end{equation}
     In instances where the distributions are identical, the KL divergence value approaches 0, indicating an increase in similarity between the distributions. The lower dimension dataset is modified so that, in the joint probability distribution, it resembles the original data as soon as possible. To do this, gradient descent is used. The KL divergence between the joint probability distributions P from the high-dimensional space and Q from the low-dimensional space is the cost function that the gradient descent algorithm seeks to minimize as defined in Eq. \ref{eq:kl_div_cost}.
     \begin{equation}
         \label{eq:kl_div_cost}
-        \mathit{C} = \mathit{\ac{KL}(P || Q)} = \sum_i \sum_j \mathit{p_{ij}} \log \mathit{\frac{p_{ij}}{q_{ij}}}
+        \mathit{C} = \mathit{\ac{KL}(P || Q)} = \sum_i \sum_j \mathit{p_{ij}} \log \mathit{\frac{p_{ij}}{q_{ij}}}.
     \end{equation}
     The low dimension dataset's point values are obtained from this optimization, which is then utilized for visualizing the dataset in the lower dimensional space. Refering to the example before, the clusters in the low-dimensional space appears as in Fig. \ref{fig:tsne_output}. The \ac{t-SNE} model has a number of hyperparameters that can fine-tuned depending on the use-case. A few of these have to do with gradient descent; the two most crucial ones are the number of iterations, the learning rate and perplexity. It serves to select the Gaussian expressing the conditional distribution in high-dimensional space's standard deviation, $\sigma_i$. It can be defined as the count of each point's effective neighbors. For perplexities ranging from 5 to 50, the model is fairly robust.
 
@@ -461,14 +461,14 @@ Once the feature representations are obtained, multiple clustering algorithms ar
 After the algorithm converges, \textit{k} medoid points are obtained which are the representative members of \textit{k} clusters. The Euclidean distance metric or the $l2$-norm as shown in Eq. \ref{eq:eq_dist} is used for this algorithm.
 \begin{equation}
     \label{eq:eq_dist}
-    d_{eq}(p,q) = \sqrt[2]{(p_1-q_1)^2 + (p_2-q_2)^2 + ... + (p_n-q_n)^2}
+    d_{eq}(p,q) = \sqrt[2]{(p_1-q_1)^2 + (p_2-q_2)^2 + ... + (p_n-q_n)^2},
 \end{equation}
 where, $p$ and $q$ are the cartesian coordinates of the datapoints in the $n$-dimensional Euclidean space. Other distance metrices like the Manhattan distance or the $l1$-norm as shown in Eq. \ref{eq:man_dist} could also be used for this purpose.
 \begin{equation}
     \label{eq:man_dist}
-    d_{man}(p,q) = \lvert p_1-q_1 \rvert + \lvert p_2-q_2 \rvert + ... + \lvert p_n-q_n \rvert
+    d_{man}(p,q) = \lvert p_1-q_1 \rvert + \lvert p_2-q_2 \rvert + ... + \lvert p_n-q_n \rvert.
 \end{equation}
-Different strategies could be adopted to select the initial medoids for the algoithm. It could be "random", "heuristic", "k-medoids++" or "build". The "random" initialization method selects $k$ elements from the dataset at random. The "heuristic" method selects the $k$ points such that the distance it has the smallest sum opf distance to all other points. The "k-medoids++" methods adopts a strategy similar to the "k-means++". It tends to choose the initial points in a way such that the initial medoids are more separated than the other methods. The "build" is a greedy initialization method that is originally used in the \ac{PAM} algorithm.\cite{scikit_learn_kmedoids}. Another clustering algorithm that is suggested for this task is the "multi-level \ac{HDBSCAN}" clustering. The traditional implementation of the \ac{HDBSCAN} algorithm available in scikit-learn can provide hierarchical density based clusters. However, this algorithm does not provide any control on the number of clusters that can be generated. Thus, in the presence of very large datasets like the ABC \cite{Koch_2019_CVPR} dataset, it can potentially generate more than a hundred thousand clusters and thus, that many number of cluster representative members. Generating that many data for the source library in the current infrastructure present at \ac{IPA} is extremely computationally expensive and thus, technically infeasible. Increasing the minimum cluster size to be considered as a cluster and increasing the minimum number of samples around a point to be considered as a core point can decrease the overall number of cluster, but that would also mean that the algorithm would label more datapoints as outliers. Losing too much information about the objects as outliers can jeopardize the purpose of a source library which is expected to generalize the feature of maximum possible objects in the dataset. 
+Different strategies could be adopted to select the initial medoids for the algorithm. It could be "random", "heuristic", "k-medoids++" or "build". The "random" initialization method selects $k$ elements from the dataset at random. The "heuristic" method selects the $k$ points such that the distance it has the smallest sum opf distance to all other points. The "k-medoids++" methods adopts a strategy similar to the "k-means++". It tends to choose the initial points in a way such that the initial medoids are more separated than the other methods. The "build" is a greedy initialization method that is originally used in the \ac{PAM} algorithm.\cite{scikit_learn_kmedoids}. Another clustering algorithm that is suggested for this task is the "multi-level \ac{HDBSCAN}" clustering. The traditional implementation of the \ac{HDBSCAN} algorithm available in scikit-learn can provide hierarchical density based clusters. However, this algorithm does not provide any control on the number of clusters that can be generated. Thus, in the presence of very large datasets like the ABC \cite{Koch_2019_CVPR} dataset, it can potentially generate more than a hundred thousand clusters and thus, that many number of cluster representative members. Generating that many data for the source library in the current infrastructure present at \ac{IPA} is extremely computationally expensive and thus, technically infeasible. Increasing the minimum cluster size to be considered as a cluster and increasing the minimum number of samples around a point to be considered as a core point can decrease the overall number of cluster, but that would also mean that the algorithm would label more datapoints as outliers. Losing too much information about the objects as outliers can jeopardize the purpose of a source library which is expected to generalize the feature of maximum possible objects in the dataset. 
 
 \vspace{5mm}
 
@@ -589,94 +589,33 @@ Thus, we could see how even the evaluation metrics using just the intrinsic feat
 The authors have utilised the theory of Hartigan's model of density-contour trees\cite{hartigan1975clustering}. The least dense region within a cluster and the most dense region outside a cluster is calculated with it which is analogous to computing the within cluster and between cluster density connectedness. As per the definition of Density Contour Trees\cite{hartigan1975clustering} by Hartigan, density based clusters are regions of high density which are separated by low density regions. Having such model as a backdrop, it is expected that a good clustering algorithm which generate clusters such that the least dense region within a cluster is still more dense as compared to regions surrounding a cluster. Traditional intrinsic measure based evaluation mterics uses distance between the datapoints to compute cluster-variance and then incorporates it with the separation between the clusters to eventually compute the quality of the clustering algorithm. But this is not the target for \ac{DBCV}. So they proposed a metric which is defined by densities instead of distances. \ac{DBCV} wanted to take into account both the density and the shape pf the cluster. So at first, the authors defined the concept of "all-points-core-distance"($a_{pts}coredist$). It is the inverse of the density of each object with respect to all other objects inside its cluster as given in Eq. \ref{eq:aptscoredist}.
 \begin{equation}
   \label{eq:aptscoredist}
-  \mathit{a_{pts}coredist(\textbf{o})}= \mathit{\left\{\frac{\sum_{i=2}^{n_i}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n_i - 1}\right\}^{-\frac{1}{d}}} 
+  \mathit{a_{pts}coredist(\textbf{o})}= \mathit{\left\{\frac{\sum_{i=2}^{n_i}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n_i - 1}\right\}^{-\frac{1}{d}}}.
 \end{equation}
-Using the above-mentioned equation, they defined a symmetric reachability distance which is then utilized to generate the \ac{MST} inside each clusters. Because the \ac{MST}s are built on the transformed space of symmetric reachabilty distances, it is capable of capturing both the density and shape of the cluster. On using these \ac{MST}s, they are able to find the least dense region within each of the clusters and the most dense regions between the pair of clusters. As per the definitions provided by the authors, $\textbf{O} = {o_1, o_2, ...., o_n}$ is the dataset containing $n$ objects in the $\mathbb{R}^d$ feature space. $\textbf{Dist}$ is an $n \times n$ matrix of pairwise distance $d(o_p,o_q)$ between the objects of the dataset, such that $o_p,o_q \in \textbf{O}$. $KNN(\textbf{o},i)$ is the distance between the object $o$ and its $i^{th}$ nearest neighbor. $C=({C_i},N) 1 \leq i \leq l$ is the results returned by the clustering algorithms having $l$ clusters and a set of $N$ noise objects. $n_i$ is the size of the $i^{th}$ cluster and $n_N$ is the number of objects in that particular cluster. To get an estimate of the density of an object within a cluster, traditional approaches use the notion o ´f taking the inverse of the threshold distance required to find $K$ objects within this threshold\cite{hartigan1975clustering, campello2012simpler}. But a drawback of this method would be that one would need to decide the value of the parameter $K$, which is not desirable. Moreover, with this approach, the density of the object is dependent to its distance from only one other object i.e. the $k^th$ nearest neighbor. This approach is not as robust as compared to considering more objects in its neighborhood as done in Gaussian kernel density estimate. Thus, in order to propose a more robust density estimate, the authors proposed the use of a new parameterless core distance which can be elucidated as the inverse of a density estimate and thus, can be used in defining the \ac{MRD}. So now instead of using just one point in the cluster, all the points are taken into account such that the objects closer to it contribute to the density more as compared to the objects further away. We can see in Eq. \ref{eq:aptscoredist}, that the inverse of the $KNN$ distances raised to the power of dimensions has been calculated such that closer objects gets a higher weight as compared to further objects. This effect can further be increased by using squared Euclidean distance instead of Euclidean distances. Also, as per the definition of \ac{MRD}\cite{lelis2009semi}, the core distance of an object is compared to the distances of the object to other objects in the cluster. Hence, the core distance needs to be comparable to these distances. With the help of the following proof the authors have could rightfully conclude that for each object $\textbf{o}$ in the cluster, the "all-points-core-distance" $a_{pts}coredist(\textbf{o})$ lies between the second and the last nearest neighbor distance of the object\cite{moulavi2014density} as in Eq. \ref{eq:knndist}. 
-\begin{proof}
-  We have $\forall2 \leq i \leq n$,
-  \begin{align*}
-    \mathit{KNN(\textbf(o),2)} &\leq \mathit{KNN(\textbf(o),i)} \implies \\
-    \left(\frac{1}{KNN(\textbf{o},i)}\right)^d &\leq \left\{\frac{1}{KNN(\textbf{o},2)}\right\}^d
-  \end{align*}
-  Therefore,
-  \begin{align*}
-    \sum_{i=2}^{n}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d&\leq (n-1)\left(\frac{1}{KNN(\textbf{o},2)}\right)^d\\
-    \mathit{\left((n-1)\frac{\frac{1}{KNN(\textbf{o},2)}^d}{n-1}\right)^{-\frac{1}{d}}} &\leq \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{1}{KNN(\textbf{o},i)}\right)^d}{n-1}\right)^{-\frac{1}{d}}}\\
-    \mathit{KNN(\textbf{o},2)} &\leq \mathit{a_{pts}coredist(\textbf{o})}          
-  \end{align*}
-  The upper bound of the equation can be proved similarly giving rise to
-  \begin{align*}
-    \mathit{a_{pts}coredist(\textbf{o})} &\leq \mathit{KNN(\textbf{o},n)}  
-  \end{align*}
-\end{proof}
+Using the above-mentioned equation, they defined a symmetric reachability distance which is then utilized to generate the \ac{MST} inside each clusters. Because the \ac{MST}s are built on the transformed space of symmetric reachabilty distances, it is capable of capturing both the density and shape of the cluster. On using these \ac{MST}s, they are able to find the least dense region within each of the clusters and the most dense regions between the pair of clusters. As per the definitions provided by the authors, $\textbf{O} = {o_1, o_2, ...., o_n}$ is the dataset containing $n$ objects in the $\mathbb{R}^d$ feature space. $\textbf{Dist}$ is an $n \times n$ matrix of pairwise distance $d(o_p,o_q)$ between the objects of the dataset, such that $o_p,o_q \in \textbf{O}$. $KNN(\textbf{o},i)$ is the distance between the object $o$ and its $i^{th}$ nearest neighbor. $C=({C_i},N) 1 \leq i \leq l$ is the results returned by the clustering algorithms having $l$ clusters and a set of $N$ noise objects. $n_i$ is the size of the $i^{th}$ cluster and $n_N$ is the number of objects in that particular cluster. To get an estimate of the density of an object within a cluster, traditional approaches use the notion o ´f taking the inverse of the threshold distance required to find $K$ objects within this threshold\cite{hartigan1975clustering, campello2012simpler}. But a drawback of this method would be that one would need to decide the value of the parameter $K$, which is not desirable. Moreover, with this approach, the density of the object is dependent to its distance from only one other object i.e. the $k^th$ nearest neighbor. This approach is not as robust as compared to considering more objects in its neighborhood as done in Gaussian kernel density estimate. Thus, in order to propose a more robust density estimate, the authors proposed the use of a new parameterless core distance which can be elucidated as the inverse of a density estimate and thus, can be used in defining the \ac{MRD}. So now instead of using just one point in the cluster, all the points are taken into account such that the objects closer to it contribute to the density more as compared to the objects further away. We can see in Eq. \ref{eq:aptscoredist}, that the inverse of the $KNN$ distances raised to the power of dimensions has been calculated such that closer objects gets a higher weight as compared to further objects. This effect can further be increased by using squared Euclidean distance instead of Euclidean distances. Also, as per the definition of \ac{MRD}\cite{lelis2009semi}, the core distance of an object is compared to the distances of the object to other objects in the cluster. Hence, the core distance needs to be comparable to these distances. For each object $\textbf{o}$ in the cluster, the "all-points-core-distance" $a_{pts}coredist(\textbf{o})$ lies between the second and the last nearest neighbor distance of the object\cite{moulavi2014density} as in Eq. \ref{eq:knndist}. 
+
 \begin{equation}
   \label{eq:knndist}
-  \mathit{KNN(\textbf{o},2)} \leq \mathit{a_{pts}coredist(\textbf{o})} \leq \mathit{KNN(\textbf{o},n)}
-\end{equation}
-Moreover, the core distance is approximated to the distance of the object to its $k^{th}$ nearest neighbor such that $k$ is not too large. This means, that only a small neighborhood of the object is to be considered. Furthermore, let n objects be uniformly distributed random variables in a d-dimensional unit hypersphere. Then the core distance of object $\textbf{o}$ is given by Eq. \ref{eq:aptsln} which can be proved as following.
-\begin{equation}
-  \label{eq:aptsln}
-  \mathit{a_{pts}coredist(\textbf{o})} = \mathit{\ln(n)^{-\frac{1}{d}}}
+  \mathit{KNN(\textbf{o},2)} \leq \mathit{a_{pts}coredist(\textbf{o})} \leq \mathit{KNN(\textbf{o},n)}.
 \end{equation}
 
-\begin{proof}
-  First the authors proved the following:
-  \begin{equation}
-    \label{eq:knnij}
-    \forall1 \leq i \leq j \leq n, \mathit{\frac{KNN(\textbf{o},i)}{KNN(\textbf{o},j)}} \approx \mathit{\left(\frac{i-1}{j-1}\right)^\frac{1}{d}} 
-  \end{equation}
-  where $KNN(\textbf{o},i)$ is the distance between the object o and its $i_{th}$ nearest neighbor in the hypersphere. Now, the minimum volume of the hypersphere containing the $i_{th}$ nearest neighbor of the object when the object is at the center of the hypersphere is given by Eq. \ref{eq:volume}
-  \begin{equation}
-    \label{eq:volume}
-    \mathit{V_i} \approx \frac{\pi^{\frac{d}{2}}}{\Gamma(\frac{d}{2}+1)}r_i^d
-  \end{equation}
-  where $V_i$ is the minimum volume of the hypersphere with radius $r_i$ that contains $KNN(\textbf{o},i)$. So, we get $KNN(\textbf{o},i)=r_i$. So in case of a unit hypersphere, $KNN(\textbf{o},i) \approx 1$. Also, because the objects are uniformly distributed, the ratio of the volume of the hyperspheres which contains the $i_{th}$ and $j_{th}$  nearest neighbors to the object $\textbf{o}$ is $\frac{v_i}{V_j} \approx \frac{i-1}{j-1}$
-  \begin{equation}
-    \label{eq:volume_ratio}
-    \mathit{\frac{V_i}{V_j}} \approx \left(\frac{r_i}{r_j}\right)^d
-  \end{equation}
-  \begin{equation}
-    \label{eq:radius_ratio}
-    \mathit{\frac{r_i}{r_j}} = \mathit{\frac{KNN(\textbf{o},i)}{KNN(\textbf{o},j)}} \approx \left(\frac{i-1}{j-1}\right)^{\frac{1}{d}}
-  \end{equation}
-  From Eq. \ref{eq:knnij}, we have,
-  \begin{align*}
-    \mathit{\frac{1}{KNN(\textbf{o},i)}} &= \mathit{\left(\frac{n-1}{i-1}\right)^{\frac{1}{d}}\frac{1}{KNN(\textbf{o},n)}}         
-  \end{align*}
-  Therefore,
-  \begin{align*}
-    \mathit{a_{pts}coredist(\textbf{o})} &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}^{\frac{1}{d}}\frac{1}{KNN(\textbf{o},n)}\right)^d}{n-1}\right)^{-\frac{1}{d}}}         
-  \end{align*}
-  Since we have $KNN(\textbf{o},n) \approx 1$, therefore,
-  \begin{align*}
-    \mathit{a_{pts}coredist(\textbf{o})} &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}^{\frac{1}{d}}\right)^d}{n-1}\right)^{-\frac{1}{d}}} \\
-    &= \mathit{\left(\frac{\sum_{i=2}^{n}\left(\frac{n-1}{i-1}\right)}{n-1}\right)^{-\frac{1}{d}}} \\
-    &= \mathit{\left((n-1)\frac{\sum_{i=2}^{n}\left(\frac{1}{i-1}\right)}{n-1}\right)^{-\frac{1}{d}}} \\
-    &= \mathit{\left(\sum_{i=2}^{n}\left(\frac{1}{i-1}\right)\right)^{-\frac{1}{d}}} \\
-    &= \mathit{(\ln(n-1) + \gamma + \epsilon)^{-\frac{1}{d}}} \\
-    & \mathit{\approx \ln(n)^{-\frac{1}{d}}}
-  \end{align*}
-  where $\sum_{i=1}^{n}\left(\frac{1}{i}\right)$ is a harmonic series. Furthermore, from Eq. \ref{eq:knnij},
-  \begin{align*}
-    \mathit{\frac{KNN(\textbf{o},\frac{n}{\ln(n)})}{KNN(\textbf{o},n)}} & \approx \mathit{\left(\frac{\frac{n}{\ln(n)}-1}{n-1}\right)^\frac{1}{d}} \\
-    & \approx \mathit{\left(\frac{\frac{n}{\ln(n)}}{n}\right)^\frac{1}{d}} \\
-    \mathit{\frac{KNN(\textbf{o},\frac{n}{\ln(n)})}{KNN(\textbf{o},n)}} & \approx \mathit{\ln(n)^{-\frac{1}{d}}} \\
-  \end{align*}
-  Since $KNN(\textbf{o},n) \approx 1$,
-  \begin{align*}
-    \mathit{KNN\left(\textbf{o},\frac{n}{\ln(n)}\right)} & \approx \mathit{\ln(n)^{-\frac{1}{d}}} \\
-  \end{align*}
-  Therefore, $\mathit{a_{pts}coredist(\textbf{o})} \approx \mathit{\ln(n)^{-\frac{1}{d}}} \approx KNN(\textbf{o},j)$. where $j$ is the closest natural number to $\frac{n}{\ln(n)}$. 
-\end{proof}
-This proves that the core distance of the object $\textbf{o}$ is approximately equal to the same nearest neighbor distance and is independent of the dimension of the data space, if the objects are uniformly distributed. If the dataset doesn't have a uniform distribution, which is the case for most real world datasets, only the first property holds i.e. the density of the object doesn't depend on just one other object but on all objects in the cluster. 
+Moreover, the core distance is approximated to the distance of the object to its $k^{th}$ nearest neighbor such that $k$ is not too large. This means, that only a small neighborhood of the object is to be considered. Furthermore, let n objects be uniformly distributed random variables in a d-dimensional unit hypersphere. Then the core distance of object $\textbf{o}$ is given by Eq. \ref{eq:aptsln}.\cite{moulavi2014density}
+
+\begin{equation}
+  \label{eq:aptsln}
+  \mathit{a_{pts}coredist(\textbf{o})} = \mathit{\ln(n)^{-\frac{1}{d}}}.
+\end{equation}
+
+The core distance of the object $\textbf{o}$ is approximately equal to the same nearest neighbor distance and is independent of the dimension of the data space, if the objects are uniformly distributed. If the dataset doesn't have a uniform distribution, which is the case for most real world datasets, only the first property holds i.e. the density of the object doesn't depend on just one other object but on all objects in the cluster.\cite{moulavi2014density}
 
 \vspace{5 mm}
 
-Now the $a_{pts}coredist$ is used to compute the symmetric reachability distance which I would delve into deeper in the following pragraphs. As per the authors, the \ac{MRD} between two objects $o_i$ and $o_j$ as in Eq. \ref{eq:mut_reach_dist}.
+Now the $a_{pts}coredist$ is used to compute the symmetric reachability distance which is delved into deeper in the following paragraphs. As per the authors, the \ac{MRD} between two objects $o_i$ and $o_j$ as in Eq. \ref{eq:mut_reach_dist}.
+
 \begin{equation}
   \label{eq:mut_reach_dist}
-  \mathit{d_{mreach}(\textbf{o}_i, \textbf{o}_j)} = \mathit{max\{a_{pts}coredist(\textbf{o}_i), a_{pts}coredist(\textbf{o}_j), d(\textbf{o}_i, \textbf{o}_j)\}}
+  \mathit{d_{mreach}(\textbf{o}_i, \textbf{o}_j)} = \mathit{max\{a_{pts}coredist(\textbf{o}_i), a_{pts}coredist(\textbf{o}_j), d(\textbf{o}_i, \textbf{o}_j)\}},
 \end{equation}
+
 where $ d(\textbf{o}_i, \textbf{o}_j)$ is the Euclidean distance between object $\textbf{o}_i$ and $\textbf{o}_j$. Once the \ac{MRD} is computed, it could now be used to generate the mutual reachability graph where the objects are the different vertices and the graph and the \ac{MRD} calculated above are the edge weights between the pair of vertices. Now with the set of objects $\textbf{O}$ and the mutual reachability graph $G$, we get the \ac{MST} of graph $G$ as $\ac{MST}_{\ac{MRD}}$. So if we now quickly overview the process of \ac{DBCV}, for a single cluster $C_i$ having objects $O$, we first calculate the $a_{pts}coredist$ of each object in the cluster. This is then used to computer the \ac{MRD} between all pair of objects in the cluster. Depending on the \ac{MRD}, the \ac{MST} is generated. This process is then performed for all the clusters generated by the clustering algorithm, eventually giving rise to $l$ \ac{MST}s if the clustering algorithms returns $l$ clusters in total. Thus, we can notice that the number of \ac{MST}s increase linearly with the increase in the number of clusters. Also, the size of the tree depends on the number of objects in the clusters and thus, can blow up exponentially in case of very large datasets having a lot of elements in each cluster.  
 
 \vspace{5 mm}
@@ -684,12 +623,12 @@ where $ d(\textbf{o}_i, \textbf{o}_j)$ is the Euclidean distance between object 
 From the \ac{MST}s generated above, the authors have crafted a new measure to validate the quality of the clustering algorithm depending on the density sparseness and density separation as explained below. The \ac{DSC} $C_i$ can be visualized as the least dense region within the cluster and thus, can be obtained from the maximum edge weight of the $\ac{MST}_{\ac{MRD}}$ of that particular cluster. On the other hand, \ac{DSPC} $C_i$ and $C_j$ where $1 \leq i,j \leq l, i \neq j$  can be visualized as the region of highest density in between adjacent clusters and can be formulated as the minimum \ac{MRD} between the objects of a cluster to the objects of its neighboring cluster. The \ac{DSC} and the \ac{DSPC} together then give the validity index of a cluster as in Eq. \ref{eq:val_index}.
 \begin{equation}
   \label{eq:val_index}
-  \mathit{V_C(C_i)} = \mathit{\frac{\underset{1 \leq j \leq l, i \neq j}{min}\left(\ac{DSPC}(C_i,C_j)\right) - \ac{DSC}(C_i)}{max\left(\underset{1 \leq j \leq l, i \neq j}{min}\left(\ac{DSPC}(C_i,C_j)\right) - \ac{DSC}(C_i)\right)}}
+  \mathit{V_C(C_i)} = \mathit{\frac{\underset{1 \leq j \leq l, i \neq j}{min}\left(\ac{DSPC}(C_i,C_j)\right) - \ac{DSC}(C_i)}{max\left(\underset{1 \leq j \leq l, i \neq j}{min}\left(\ac{DSPC}(C_i,C_j)\right) - \ac{DSC}(C_i)\right)}}.
 \end{equation}
 Once we have the validity index of each cluster, the final \ac{DBCV} score of the clustering algorithm can be defined as the weighted average of the validity index of all the clusters in $C$ generated by the clustering algorithm as in Eq. \ref{eq:dbcv}. It is to be noted that even if noisy elements aren't explicitly present in the formula as a cluster, but it does however implicitly affects the overall score as the weighted average takes into consideration both the cardinality of individual clusters and well as the total number of elements in the dataset, which includes noise and outliers. 
 \begin{equation}
   \label{eq:dbcv}
-  \mathit{\ac{DBCV}(C)} = \mathit{\sum_{i=1}^{l}\frac{|C_i|}{|O|}V_C(C_i)}
+  \mathit{\ac{DBCV}(C)} = \mathit{\sum_{i=1}^{l}\frac{|C_i|}{|O|}V_C(C_i)}.
 \end{equation}
 If a cluster has better density compactness within the cluster as compared to density separation in between adjacent clusters, than the validity index of the cluster would take a positive value. On the other hand, if the density outside the cluster separting it from adjacent clusters is more than density compactedness inside the cluster than it would take a negative value. Thus, the \ac{DBCV} score can vary in the range $[-1,1]$ where greater \ac{DBCV} score indicates to a better density-based clustering algorithm.
 

@@ -1,24 +1,29 @@
 \section{Method}
 \label{sec:method}
-This chapter gives the details of the networks and clustering algorithms that are examined. The unsupervised feature representation learning approach proposed by Guofeng Mei \textit{et. al.}\cite{mei2022unsupervised} is adapted to be used in the existing scenario at \ac{IPA}. The authors proposed an unsupervised learning approach ConClu that learns both the local features as well as the global features of the point clouds. It is suitable to be used in this scenario, as it would require no point-level annotation of the dataset, which is unavailable in our case. To do so, it performed point-level clustering of the points clouds to generate semantically related regions within the point cloud and performed instance-level contrasting to make the network robust to its global appearance which would be explained in detail in the following subsections.\cite{mei2022unsupervised}
+This chapter gives the details of the network, clustering algorithms and the evaluation metrics that are utilized and examined in this thesis. 
+\subsection{Network}
+\subsubsection{Selection of network}
+The unsupervised feature representation learning approach proposed by Guofeng Mei \textit{et. al.}\cite{mei2022unsupervised} is adapted to be used in the existing scenario at \ac{IPA}. The primary motivation behind using an unsupervised learning  methodology is that annotation of point clouds can be really challenging. To really focus on the point level features of a point cloud, it is required to have a high number of points in the point cloud. And labelling such high number of points in each point cloud in large real world datasets can be really expensive and severely inefficient. Unsupervised learning facilitates high quality feature representation without the need for humans in the loop. Moreover, sporadic and non-uniform distribution of the point clouds can also add further challenges in point-level annotation of the point clouds. Thus, in the absence of such annotations, it is impossible to get supervised feature representations for computer vision tasks. 
 
 \vspace{5 mm}
 
-The primary motivation behind using an unsupervised learning  methodology is that annotation of point clouds can be really challenging. To really focus on the point level features of a point cloud, it is required to have a high number of points in the point cloud. And labelling such high number of points in each point cloud in large real world datasets can be really expensive and severely inefficient. Unsupervised learning facilitates high quality feature representation without the need for humans in the loop. Moreover, sporadic and non-uniform distribution of the point clouds can also add further challenges in point-level annotation of the point clouds. Thus, in the absence of such annotations, it is impossible to get supervised feature representations for computer vision tasks.
+An unsupervised learning approach "ConClu" is proposed in \cite{mei2022unsupervised} that learns both the local features as well as the global features of the point clouds. It is suitable to be used in this scenario, as it would require no point-level annotation of the dataset, which is unavailable in this case. To do so, it performed point-level clustering of the points clouds to generate semantically related regions within the point cloud and performed instance-level contrasting to make the network robust to its global appearance which would be explained in detail in the following subsections.\cite{mei2022unsupervised}. Other related works like \cite{zhu2016deep} also worked in the domain of learning object feature representations using autoencoders but depth images were used in such cases. \cite{mei2022unsupervised} on the other hand worked with point clouds which is similar to the ABC dataset used at \ac{IPA}. Furthermore, as mentioned in the Ch. \ref{sec:related_works}, discriminative models have the capability of distinguishing between different data augmentations. Amongst them \cite{rao2020global} and \cite{sanghi2020info3d} is seen to have promising results because of the use of contrastive learning techniques. But it is computationally expensive generate negative samples required in contrastive learning in unsupervised learning. On the other hand, the mechanism of learning the global features which encapsulate the high-level semantic information reduces the necessity to rely on negative samples of contrastive learning. Therefore, the network used in \cite{mei2022unsupervised} is deemed suitable for the task in hand.\cite{mei2022unsupervised}
 
-\subsection{Architecture}
-Analysing how humans perceive an object, they do not focus merely on the individual points but rather semantically related points that form a group and act as the fundamental block for the entire object as a whole. The global features focus on the entire shape of the object while the local features attains to the more detailed information in the different parts of the object. In this work, the 3D point cloud $\mathcal{\textbf{P}} = \{\textbf{p}_i \in \mathbb{R}^3| i= 1,2,3,....,N\}$, where $N$ is the number of points in each point cloud and $\textbf{p}_i$ is each point in the point cloud representated in 3D cartesian coordinate system. The point cloud $\mathcal{\textbf{P}}$ is fed to an encoder backbone $f_{\varphi}$ which generates a point-wise feature matrix $\mathcal{\textbf{F}} = \{ f_{p_i}\}_{i=1}^{N}$ where $f_{p_i}$ is the point-wise feature vector. The objective is to train a feature encoder $f_{\varphi}$, PointNet in our case, having parameters $\varphi$ in an unsupervised learning paradigm. The entire pipeline of the process is elaborated in Fig.\ref{fig:conclu_arch}.
+
+\subsubsection{Architecture}
+Analysing how humans perceive an object, they do not focus merely on the individual points but rather semantically related points that form a group and act as the fundamental block for the entire object as a whole. The global features focus on the entire shape of the object while the local features attains to the more detailed information in the different parts of the object. In this work, the 3D point cloud $\mathcal{\textbf{P}} = \{\textbf{p}_i \in \mathbb{R}^3| i= 1,2,3,....,N\}$, where $N$ is the number of points in each point cloud and $\textbf{p}_i$ is each point in the point cloud representated in 3D cartesian coordinate system. The point cloud $\mathcal{\textbf{P}}$ is fed to an encoder backbone $f_{\varphi}$ which generates a point-wise feature matrix $\mathcal{\textbf{F}} = \{ f_{p_i}\}_{i=1}^{N}$ where $f_{p_i}$ is the point-wise feature vector. The objective is to train a feature encoder $f_{\varphi}$, PointNet in this case, having parameters $\varphi$ in an unsupervised learning paradigm. The entire pipeline of the process is elaborated in Fig.\ref{fig:conclu_arch}.
 \begin{figure}[h]
     \centering
     \includegraphics[width=320pt,height=200pt]{pictures/conclu_arch.jpg}
     \caption{The Conclu model pipeline including the two modules: point -level clustering and instance-level contrasting.\cite{mei2022unsupervised}}
     \label{fig:conclu_arch}
 \end{figure} 
- As we can see, it has two parts: the point-level clustering for learning the local features and the instance-level contrasting for learning the global features. Before we go into a detailed analysis of each module, here is a brief overview of the entire process. The augmented views $\mathcal{\textbf{P}}^a$ and $\mathcal{\textbf{P}}^b$ are obtained for each point cloud $\mathcal{\textbf{P}}$ and are fed to the encoder $f_{\varphi}$ such that it generates the feature matrices $\mathcal{\textbf{F}}^a$ and $\mathcal{\textbf{F}}^b$ respectively. Thus, the inputs to the point-level clustering are $\mathcal{\textbf{P}}^a$ and $\mathcal{\textbf{F}}^a$. It is to be noted here that the feature encoder $f_{\varphi}$ shares the weights between the two augmented views. $f_{\varphi}$ is trained in a way such that it minimizes the point-level clustering and the instance-level contrasting loss together. It is also to be noted here, that the encoder receives the gradient only from the top branch. After the training is completed, both the loses are cast aside and only the encoder is needed for further tasks.\cite{mei2022unsupervised}
+ As it can be seen that the architecture has two main parts: the point-level clustering for learning the local features and the instance-level contrasting for learning the global features. Before a detailed analysis of each module is given, here is a brief overview of the entire process. The augmented views $\mathcal{\textbf{P}}^a$ and $\mathcal{\textbf{P}}^b$ are obtained for each point cloud $\mathcal{\textbf{P}}$ and are fed to the encoder $f_{\varphi}$ such that it generates the feature matrices $\mathcal{\textbf{F}}^a$ and $\mathcal{\textbf{F}}^b$ respectively. Thus, the inputs to the point-level clustering are $\mathcal{\textbf{P}}^a$ and $\mathcal{\textbf{F}}^a$. It is to be noted here that the feature encoder $f_{\varphi}$ shares the weights between the two augmented views. $f_{\varphi}$ is trained in a way such that it minimizes the point-level clustering and the instance-level contrasting loss together. It is also to be noted here, that the encoder receives the gradient only from the top branch. After the training is completed, both the loses are cast aside and only the encoder is needed for further tasks.\cite{mei2022unsupervised}
 
-\subsection{Encoder Backbone}
+\subsubsection{Encoder Backbone}
 Keeping in line with \cite{mei2022unsupervised}, two feature representation learning backbones are used for the experiments, the PointNet \cite{qi2017pointnet} and the \ac{DGCNN} \cite{wang2019dynamic} backbone. The mechanism and the architecture of the feature extraction backbones are elaborated further in the following sections.
-\subsubsection{PointNet Autoencoder}
+\subsubsection*{PointNet Autoencoder}
+
 For the purpose of weight sharing and other kernel optimization methods, traditional convolution networks need extremely regular formats for the input data as prevalent in \ac{RGB} or depth images and 3D voxels. But point clouds are not regular data structures. It is just a set of 3D points which is permutation invariant to its constituent points. Or in other words, the order in which the individual points of a point cloud are processed is inconsequential. In \cite{qi2017pointnet} the authors suggested an end-to-end architecture that accepts the point clouds as input and generates the class label of the entire object or a class label for each of the individual points in the point cloud. The PointNet architecture is shown in Fig. \ref{fig:pointnet_arch}.
 \begin{figure}[t]
     \centering
@@ -69,7 +74,7 @@ where $\mathit{f}: 2_{\mathbb{R}_{\mathit{N}} \rightarrow \mathbb{R}}, \mathbb{R
 \end{equation}
 where $\lVert . \rVert _F$ is the Frobenius-norm, $I$ is the Identity matrix and $A$ is the feature alignment matrix predicted by the mini-network. The feature transformation matrix has been approximated by an orthogonal matrix because orthogonal transformations ensure that no information about the input is lost.
 
-\subsubsection{Dynamic Graph Convolutional Neural Network}
+\subsubsection*{Dynamic Graph Convolutional Neural Network}
 Another more general feature encoder is used in this work. It is seen that the PointNet architecture treated each point of the point cloud independently. The model is made invariant to the different possible permutations by applying a symmetric function to aggregate the features. But a limitation to this method is that it doesn't take into consideration the topology of the points. It ignores the connectedness in between the points and thus, cannot learn the local features. This limitation is addressed by Y. Wang \textit{et al.} in \cite{wang2019dynamic}. The authors proposed the EdgeConv operation which is able to learn the local features of the point cloud while still meeting the requirement of being permutation invariant. EdgeConv generated the edge features which are capable of capturing the topological information of the points i.e. the connection between a point and its neighbors. In other words, the EdgeConv operation computes a local graph for each of the points in the point cloud which is capable of learning the edge embeddings for the edges in the graph. So the model group points based on both the Euclidean distance between the points and also how they are semantically related. The EdgeConv is a plug-and-play module that would be used combined into any existing model architecture to further enhance its performance. The approach has been further elaborated in the following passages.
 
 \vspace{5mm}
@@ -176,7 +181,7 @@ where $\theta = (\theta _1, \theta _2, ... , \theta _M)$ are the weights of $M$ 
     Therefore, if $\phi _m =0$, then EdgeConv operator is completely translation invariant. But this however restricts the model to recognize an object depending on only the unordered set of patches, i.e. it disregards the orientation and the exact location of the patches. On the other hand, with both $p_j-p_i$ and $p_i$, the model considers both the local orientation of the patches as well as the global information about the shape of the object. 
 \end{itemize}
 
-\subsection{Point-level Clustering Module}
+\subsubsection{Point-level Clustering Module}
 \begin{figure}[t]
     \centering
     \includegraphics[width=300pt,height=180pt]{pictures/point_level.jpg}
@@ -190,7 +195,7 @@ where $\theta = (\theta _1, \theta _2, ... , \theta _M)$ are the weights of $M$ 
 \end{equation}
 But to train a network with a cross-entropy loss, the ground truth labels of the points in the point cloud are required. Since that is not available, one needs to assign the label $\gamma$ automatically, which is explained in details in the following passage. 
 
-\subsubsection{Class Probability Prediction}
+\subsubsection*{Class Probability Prediction}
 As mentioned in the last passage, the output of the encoder $f_{\varphi}$ is fed as input to a classification head $\phi_\alpha$ and it generates a logit score for each of the feature vector as shown in Fig.\ref{fig:class_prob}. The vector for the logit score is given by $\textbf{g}_i = (g_{i1}, g_{i2},....., g_{iJ}), where \textbf{g}_i = \gamma_\alpha(f_{p_i})$. The classification head has 2 fully connected layers where each layer is a linear layer followed by a batch normalization. The leakyReLU activation function is used in all the layers except the last layer. As the output of the last layer N vectors for each of the N points in the point cloud is received where each of the output vector has $J$ dimensions, the number of predetermined subcategories each point cloud is to be segmented into. Thus, each entry of the feature vector is the probability of that point belonging to $j$-th category. Therefore, the logit score matrix $\textbf{G} = \{ g_{ij}\}_{i,j}^{N,J}$ has the dimension $N \times J$. The prediction that the point $p_i$ belongs to the category $j$ is computed by the application of a row-wise softmax operation on $\textbf{G}$ given by Eq.\ref{eq:softmax}.
 \begin{equation}
     \label{eq:softmax}
@@ -214,7 +219,7 @@ As mentioned in the last passage, the output of the encoder $f_{\varphi}$ is fed
     \end{minipage}
 \end{figure}
 
-\subsubsection{Label reassigning}
+\subsubsection*{Label reassigning}
 In order to calculate the labels shown in Fig.\ref{fig:label_reassign}, the representative members of each of the semantic subgroups is needed. It can be done by selecting the cluster mean or cluster centers of each of these subgroups as the representative member of the cluster. The class probability matrix $S$ can be infered as the soft assignment of each point $p_i$ in the point cloud to $J$ semantic partitions. So the softly weighted mean of each of these partitions can be calculated as in Eq.\ref{eq:soft_mean}.
 
 \begin{equation}
@@ -299,7 +304,7 @@ where $ \lVert \cdot \rVert _1 $ is the $l_{1}$-norm or the Manhattan distance a
     \end{algorithmic}
 \end{algorithm}
 
-\subsection{Instance-Level Contrasting Module}
+\subsubsection{Instance-Level Contrasting Module}
 \begin{figure}[t]
     \centering
     \includegraphics[width=300pt,height=180pt]{pictures/ConClu.png}
@@ -350,7 +355,7 @@ The minimum value the above equation can attain is 0. This is because, in the fi
     \end{algorithmic}
 \end{algorithm}
 
-\subsection{Loss function}
+\subsubsection{Loss function}
 The objective of the network is to simultaneously minimize both the point-level clustering loss and the instance level contrasting loss. If the two augmented views of the point cloud $\mathcal{P}$ are $\mathcal{P}^a$ and $\mathcal{P}^b$, then the point-level clustering loss can be calculated by Eq. \ref{eq:local_loss}.
 \begin{equation}
     \label{eq:local_loss}
@@ -363,6 +368,7 @@ where $\eta>0$ is a regularization parameter. Here $\gamma^a$ is the posterior c
 \end{equation}
 
 \subsection{Dimensionality Reduction}
+\subsubsection{Reasons for Dimension Reduction}
 \subsubsection{T-distributed Stochastic Neighbor Embedding}
 A technique for reducing dimensionality, \ac{t-SNE} is mostly used for data visualization in 2D and 3D maps. This approach has become well-liked since it can identify non-linear relationships in the data. If the data has more than two or three features, it might be necessary to consider looking for clusters in the data. To better understand the data and determine how many clusters to use in clustering models like kmeans, if necessary. To further grasp what one hopes to obtain, the following example is used for illustration. It is assumed that the data is to be converted from a 2D space to a 1D dimension as shown in Fig. \ref{fig:2d_data} and Fig. \ref{fig:1d_data} respectively.
 
@@ -444,11 +450,13 @@ Every color in this illustration denotes a cluster. It is evident that the densi
 
 \end{enumerate}
 
-\subsection{Clustering Algorithm}
+\subsection{Clustering Algorithms}
+
+\subsubsection{Requirements and Conditions}
 \label{sec:clustering_algo}
 Once the feature representations are obtained, multiple clustering algorithms are utilized to group the objects in the datasets into clusters. For this, one algorithm from each type of clustering algorithms as mentioned in \ref{sec:Clustering_Algorithms} are implemented to analyze the behavior of different clustering algorithms in this use case. Since the ultimate goal of the task in hand is to find representative members of the dataset, it is more robust to find the medoid of the cluster instead of the arithmetic mean. As mentioned in \ref{sec:Distribution_based_Clustering}, the medoids are actual datapoints of the dataset which is more practical to use in this use case instead of using a rather blurred, noisy arithmetic mean of the clusters. So, the scikit-learn implementations of the KMedoids algorithm \cite{scikit_learn_kmedoids}, spectral clustering algorithm \cite{scikit-learn} and agglomerative clustering algorithm \cite{scikit-learn} are used for this purpose. Since the spectral clustering algorithm and agglomerative clustering algorithm implementations provide the cluster centres and not the cluster medoids at the end, an additional step is necessary to compute the cluster medoids. 
 
-\vspace{5mm}
+\subsubsection{Selected Clustering Algorithms}
 
 Another clustering algorithm that is suggested for this task is the "multi-level \ac{HDBSCAN}" clustering. The traditional implementation of the \ac{HDBSCAN} algorithm available in scikit-learn can provide hierarchical density based clusters. However, this algorithm does not provide any control on the number of clusters that can be generated. Thus, in the presence of very large datasets like the ABC \cite{Koch_2019_CVPR} dataset, it can potentially generate more than a hundred thousand clusters and thus, that many number of cluster representative members. Generating that many data for the source library in the current infrastructure present at \ac{IPA} is extremely computationally expensive and thus, technically infeasible. Increasing the minimum cluster size to be considered as a cluster and increasing the minimum number of samples around a point to be considered as a core point can decrease the overall number of cluster but that would also mean that the algorithm would label more datapoints as outliers. Losing too much information about the objects as outliers can jeopardize the purpose of a source library which is expected to generalize the feature of maximum possible objects in the dataset. 
 
@@ -563,10 +571,10 @@ Thus, the memory consumption for the ball-tree algorithm is way more in comparis
 \textbf{Brute Force Algorithm}
 A brute force algorithm is a straightforward and exhaustive search strategy that systematically examines all possible options until it finds the solution to a problem. It’s a general approach used for problem-solving when the problem size allows for detailed investigation. In the brute force method, it is iterated through each data point and the density is calculated by considering the distances to other points. However, due to their high time complexity, brute force methods are inefficient for large-scale problems.
 
-\subsection{Evaluation of Clustering Algorithms}
+\subsubsection{Evaluation of Clustering Algorithms}
 It is evident how even the evaluation metrics using just the intrinsic features of the dataset are still not efficient in the presence of noise, outliers or non-convex clusters. As pointed out by the authors of \cite{jain1988algorithms}, "without a strong effort in this direction, cluster analysis will remain a black art accessible only to those true believers who have experience and great courage". The fact that this statement holds even today, 35 years after he said it is even more astonishing. To tackle the problem of inefficient evaluation metrics for non-convex clusters or where the different clusters have a difference in size Moulavi \textit{et. al.} proposed the \ac{DBCV} Index \cite{moulavi2014density}.
 
-\subsubsection{Density Based Cluster Validition Index}
+\subsubsection*{Density Based Cluster Validition Index}
 
 The authors have utilised the theory of Hartigan's model of density-contour trees \cite{hartigan1975clustering}. The least dense region within a cluster and the most dense region outside a cluster is calculated with it which is analogous to computing the within cluster and between cluster density connectedness. As per the definition of Density Contour Trees \cite{hartigan1975clustering} by Hartigan, density based clusters are regions of high density which are separated by low density regions. Having such model as a backdrop, it is expected that a good clustering algorithm which generate clusters such that the least dense region within a cluster is still more dense as compared to regions surrounding a cluster. Traditional intrinsic measure based evaluation metrics uses distance between the datapoints to compute cluster-variance and then incorporates it with the separation between the clusters to eventually compute the quality of the clustering algorithm. But this is not the target for \ac{DBCV}. So a metric is proposed which is defined by densities instead of distances. \ac{DBCV} wants to take into account both the density and the shape of the cluster. So at first, the authors defined the concept of "all-points-core-distance"($a_{pts}coredist$). It is the inverse of the density of each object with respect to all other objects inside its cluster as given in Eq. \ref{eq:aptscoredist}.
 \begin{equation}
@@ -618,7 +626,7 @@ Once the validity index of each cluster is calculated, the final \ac{DBCV} score
 \end{equation}
 If a cluster has better density compactness within the cluster as compared to density separation in between adjacent clusters, than the validity index of the cluster would take a positive value. On the other hand, if the density outside the cluster separting it from adjacent clusters is more than density compactedness inside the cluster than it would take a negative value. Thus, the \ac{DBCV} score can vary in the range $[-1,1]$ where greater \ac{DBCV} score indicates to a better density-based clustering algorithm.
 
-\subsection{Important aspects of the Studies}
+\subsection{Important Aspects of the Studies}
 \subsubsection{Focus and Restrictions}
 \label{sec:restrictions}
 The aim of this thesis is to find "good" representative members of the dataset which can be used as source library for transfer learning approaches to be used in bin picking applications. in order to do so, it is necessary to evaluate the performance of the clustering algorithms. But calculating the cluster evaluation metric like \ac{DBCV} for a very large high dimensional data can be extremely time consuming and inefficient. In order to circumvent this issue, the evaluation is carried on smaller subset of the dataset. But in order to ensure that the results can be interpolated to the entire dataset, subsets of varying sizes of the dataset have been evaluated on to confirm that the conclusions are consistent. 
@@ -639,7 +647,7 @@ The data generation procedure currently used at \ac{IPA} requires 24 hours for c
     \end{split}    
 \end{equation}
 
-\subsubsection{Hardware and environment setup}
+\subsubsection{Hardware and Environment Setup}
 \label{sec:hardware}
 All the aspects of this thesis work has been carried on into a single setup, a powerful workstation computer, ML-Lab-2 at \ac{IPA}. It is a Ubuntu server. The \ac{CPU} are two ”Quad Core Intel Xeon Silver 4112 @ 2.60 GHz” with a total installed \ac{RAM} of 275 GB. \todo{ensure the specification for CPU}. The system has two \ac{GPU} which are "Tesla V100-PCIE-32GB" and "NVIDIA GeForce RTX 3090" with 32 \ac{GB} and 24 \ac{GB} memory respectively. Each of the individual model training is executed on a single GPU. 
 

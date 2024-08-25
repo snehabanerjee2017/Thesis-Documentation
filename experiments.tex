@@ -17,7 +17,7 @@ Tab. \ref{tab:basic_without_tsne} shows the results of the baseline algorithm wh
       No. of datapoints & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
       \midrule
       \multirow{4}{1.0in}{1000} & \ac{HDBSCAN} & 232 & 0.182 & -0.189 & 297.031 \\ \cline{2-6} 
-                                & KMedoids & 175	& 3.960 & -0.332 & 237.640 \\ \cline{2-6} 
+                                & k-medoids & 175	& 3.960 & -0.332 & 237.640 \\ \cline{2-6} 
                                 & Spectral & 175 & 2.396 & -0.339	& 161.604 \\ \cline{2-6}
                                 & Agglomerative	& 175 & 0.115 & -0.327 & 157.584  \\ 
       \bottomrule
@@ -54,7 +54,7 @@ As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compu
       No. of datapoints & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
       \midrule
       \multirow{4}{1.0in}{2000} & \ac{HDBSCAN}	& 436	& 0.444 & -0.234	& 2115.777 \\ \cline{2-6} 
-                                & KMedoids	& 175	& 0.793 & -0.462	& 764.222 \\ \cline{2-6} 
+                                & k-medoids	& 175	& 0.793 & -0.462	& 764.222 \\ \cline{2-6} 
                                 & Spectral	& 175	& 20.607 & -0.617	& 749.487 \\ \cline{2-6}
                                 & Agglomerative	& 175	& 0.205 & -0.502	& 756.480 \\ 
       \bottomrule
@@ -71,7 +71,7 @@ As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compu
       No. of datapoints & \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
       \midrule
       \multirow{4}{30pt}{2000} & 2	& 6.689 & \ac{HDBSCAN}	& 626	& 0.237 & 0.172	& 4497.151 \\ \cline{2-8} 
-                                & 2	& 7.450 & KMedoids	& 175	& 0.155 & -0.226 &	932.509 \\ \cline{2-8} 
+                                & 2	& 7.450 & k-medoids	& 175	& 0.155 & -0.226 &	932.509 \\ \cline{2-8} 
                                 & 2	& 157.017& Spectral	& 175	& 91.684 & -0.125 & 755.647 \\ \cline{2-8}
                                 & 2	&  5.155 & Agglomerative & 175 & 0.112 & -0.192 & 363.605 \\ 
       \bottomrule
@@ -79,7 +79,7 @@ As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compu
     \label{tab:basic_2000_with_tsne}
 \end{table}
 
-\subsection{Conclu approach with PointNet as Backbone}
+\subsection{ConClu approach with PointNet as Backbone}
 \label{sec:conclu_with_pointnet}
 As mentioned in Ch. \ref{sec:method}, two feature representation learning backbones are used for the experiments. Experiments with the PointNet autoencoder as the backbone is recorded here. The performance of all the clustering algorithm is evaluated. Different hyperparameter optimizations are performed which will be elaborated  gradually through this subsection.  
 
@@ -97,14 +97,14 @@ As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compu
       \midrule
       \multirow{4}{1.0in}{1000} & \ac{HDBSCAN}	& 288	& 0.228 & 0.137	& 437.956 \\ \cline{2-6} 
                                 & Agglomerative	& 175	& 0.063 & -0.057	& 191.887 \\ \cline{2-6} 
-                                & KMedoids	& 175	& 0.763 & -0.120 	& 192.580 \\ \cline{2-6}
+                                & k-medoids	& 175	& 0.763 & -0.120 	& 192.580 \\ \cline{2-6}
                                 & Spectral	& 175	& 7.831 & -0.051	& 186.879 \\ 
       \bottomrule
     \end{tabular}
     \label{tab:conclu_1000}
 \end{table}
 
- Tab. \ref{tab:conclu_1000_levels} shows the performance of the multi-level \ac{HDBSCAN} algorithm for 1000 datapoints. The performance of this algorithm is seen to deteriorate as compare to the traditional \ac{HDBSCAN} algorithm. This is because, clusters are combined to form bigger clusters in this algorithm to limit the number of maximum clusters returned by it. But it is still seen to perform better as compared to other traditional clustering algorithm like KMedoids, spectral clustering and agglomerative clustering. The next best clustering algorithm in this case is spectral clustering. It is also to be noted that the clustering time even for multiple levels in multi-level \ac{HDBSCAN} algorithm is less than that of spectral clustering algorithm by quite some factors. The number of outliers after the first level denotes the number of datapoints that is newly classified as outlier which is not classified as outliers in the previous layer. These new outliers and its associated cluster members are then re-assigned as a new cluster. Thus, outliers of the dataset remains constant after the first iteration of the multi-level \ac{HDBSCAN} clustering algorithm. This means, more information is not lost and no new datapoint is classified as an outlier. This is necessary to ensure that not too many objects in the dataset is discarded as outliers and the representative members at the end is actually a general representative of almost the entire dataset. 
+ Tab. \ref{tab:conclu_1000_levels} shows the performance of the multi-level \ac{HDBSCAN} algorithm for 1000 datapoints. The performance of this algorithm is seen to deteriorate as compare to the traditional \ac{HDBSCAN} algorithm. This is because, clusters are combined to form bigger clusters in this algorithm to limit the number of maximum clusters returned by it. But it is still seen to perform better as compared to other traditional clustering algorithm like k-medoids, spectral clustering and agglomerative clustering. The next best clustering algorithm in this case is spectral clustering. It is also to be noted that the clustering time even for multiple levels in multi-level \ac{HDBSCAN} algorithm is less than that of spectral clustering algorithm by quite some factors. The number of outliers after the first level denotes the number of datapoints that is newly classified as outlier which is not classified as outliers in the previous layer. These new outliers and its associated cluster members are then re-assigned as a new cluster. Thus, outliers of the dataset remains constant after the first iteration of the multi-level \ac{HDBSCAN} clustering algorithm. This means, more information is not lost and no new datapoint is classified as an outlier. This is necessary to ensure that not too many objects in the dataset is discarded as outliers and the representative members at the end is actually a general representative of almost the entire dataset. 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
   \caption{Results of the ConClu approach on 1000 datapoints for multi-level \ac{HDBSCAN} clustering algorithm. }
@@ -133,7 +133,7 @@ It can be noticed that the \ac{DBCV} score for the \ac{HDBSCAN} algorithm increa
       \midrule
       \multirow{4}{1.0in}{2000} & \ac{HDBSCAN}	& 605	& 1.030 & 0.159	& 8278.394 \\ \cline{2-6} 
                                 & Agglomerative	& 175	& 0.196 & -0.212	& 786.866 \\ \cline{2-6} 
-                                & KMedoids	& 175	& 6.322 & -0.209	& 1079.195 \\ \cline{2-6}
+                                & k-medoids	& 175	& 6.322 & -0.209	& 1079.195 \\ \cline{2-6}
                                 & Spectral	& 175	& 80.008 & -0.145	& 1187.477 \\ 
       \bottomrule
     \end{tabular}
@@ -151,7 +151,7 @@ Also it is noteworthy how the time to calculate the \ac{DBCV} score doesn't incr
       \midrule
       \multirow{4}{1.0in}{5000} & \ac{HDBSCAN}	& 1.586	& 1.904 & 0.210	& 165884.854 \\ \cline{2-6} 
                                 & Agglomerative	& 175	& 1.345 & -0.380	& 4945.410 \\ \cline{2-6} 
-                                & KMedoids	& 175	& 9.142 & -0.427	& 8289.148 \\ \cline{2-6}
+                                & k-medoids	& 175	& 9.142 & -0.427	& 8289.148 \\ \cline{2-6}
                                 & Spectral	& 175	& 641.189 & -0.359	& 5069.388 \\ 
       \bottomrule
     \end{tabular}
@@ -164,7 +164,7 @@ As mentioned in Ch. \ref{sec:restrictions}, it is essential to perform dimension
 
 \begin{table}[H]
     \setlength\extrarowheight{10pt}
-    \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints with \ac{PCA} as dimensionality reduction technique in both steps. }
+    \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints with \ac{PCA} as dimensionality reduction technique in both steps. }
     \centering
     \begin{tabular}{p{30pt}|p{30pt}|p{30pt}|p{30pt}|l|p{30pt}|p{40pt}|p{30pt}|p{30pt}}
       \toprule
@@ -172,7 +172,7 @@ As mentioned in Ch. \ref{sec:restrictions}, it is essential to perform dimension
       \midrule
       \multirow{4}{30pt}{512}	& 32.921 & 154	& 11.249 & \ac{HDBSCAN}	& 169	& 0.459 & -0.410	& 234.172 \\ \cline{2-9} 
                                 & 41.230 & 154	& 14.891 & Agglomerative	& 175	& 0.216 & -0.151	& 209.954 \\ \cline{2-9} 
-                                & 38.408 & 154	& 13.032 & KMedoids	& 175	& 7.001 & -0.184	& 212.482 \\ \cline{2-9}
+                                & 38.408 & 154	& 13.032 & k-medoids	& 175	& 7.001 & -0.184	& 212.482 \\ \cline{2-9}
                                 & 44.171 & 154	& 13.897 & Spectral	& 175	& 46.703 &-0.481 & 221.064 \\ 
       \bottomrule
     \end{tabular}
@@ -183,7 +183,7 @@ Also it is to be noted that the \ac{HDBSCAN} algorithm performs significantly ba
 
 \begin{table}[H]
     \setlength\extrarowheight{10pt}
-    \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints with \ac{PCA} as dimensionality reduction technique in the first step and \ac{t-SNE} as the second. }
+    \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints with \ac{PCA} as dimensionality reduction technique in the first step and \ac{t-SNE} as the second. }
     \centering
     \begin{tabular}{p{30pt}|p{30pt}|p{30pt}|p{30pt}|l|p{30pt}|p{40pt}|p{30pt}|p{30pt}}
       \toprule
@@ -191,7 +191,7 @@ Also it is to be noted that the \ac{HDBSCAN} algorithm performs significantly ba
       \midrule
       \multirow{4}{30pt}{512}	& 32.530 & 2	& 143.024 & \ac{HDBSCAN}	& 288	& 0.228 & 0.137	& 437.956 \\ \cline{2-9} 
                                 & 38.832 & 2	& 141.566 & Agglomerative & 175	& 0.063 & -0.057 & 191.887 \\ \cline{2-9} 
-                                & 39.326 & 2	& 162.957 & KMedoids	& 175	& 7.763 & -0.120 	& 192.580 \\ \cline{2-9}
+                                & 39.326 & 2	& 162.957 & k-medoids	& 175	& 7.763 & -0.120 	& 192.580 \\ \cline{2-9}
                                 & 71.552 & 2	& 177.427 & Spectral	& 175	& 28.831 & -0.051	& 186.879 \\ 
       \bottomrule
     \end{tabular}
@@ -202,14 +202,14 @@ The effect of two step dimensionality reduction is also compared against only on
 
 \begin{table}[H]
     \setlength\extrarowheight{10pt}
-    \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints with only \ac{t-SNE} as dimensionality reduction technique as the only  step. }
+    \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints with only \ac{t-SNE} as dimensionality reduction technique as the only  step. }
     \centering
     \begin{tabular}{p{30pt}|l|l|l|p{50pt}|p{40pt}|p{30pt}|p{30pt}}
         \toprule
         No. of datapoints & \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
         \midrule
         \multirow{4}{30pt}{1000} & 2	& 6.769 & \ac{HDBSCAN}	& 314	& 0.189 & -0.120 & 337.313 \\ \cline{2-8} 
-                                  & 2	& 4.872 & KMedoids	& 175	& 0.337 & -0.132
+                                  & 2	& 4.872 & k-medoids	& 175	& 0.337 & -0.132
                                   & 131.622 \\ \cline{2-8} 
                                   & 2	& 5.831	& Spectral	& 175	& 7.592 & -0.122	& 130.678 \\ \cline{2-8}
                                   & 2	& 4.478 & Agglomerative	& 175	& 0.033 & -0.085 & 128.358 \\ 
@@ -222,7 +222,7 @@ The effect of two step dimensionality reduction is also compared against only on
 Latent space representations are lower dimensional representations of the dataset. It is expensive to work with very high dimensional data. Thus, the dimension of the latent space representations is immensely important. It is necessary that the original high dimensional data is compressed to a lower dimensional latent space without severe loss of information in the process. Since the original dataset has the point clouds with 2048, for the sake of completeness of the experimentation, the evaluation is performed for all dimensions on a logarithmic scale of 2 from 2048 to down until 4. Tab. \ref{tab:conclu_2048} shows the experiments when the dimension of the latent space representations is set to be 2048. As mentioned in Ch. \ref{sec:restrictions}, because of the very high number of features in the output of the network, a two-step dimensionality reduction is performed to suppress noise during the process of dimensionality reduction and also to facilitate faster calculation of the pairwise distance between the points. In line with the results of the previous experiments, the \ac{HDBSCAN} clustering algorithm produces the best results. The learning rate is rate set to 0.001 with a decay factor of 0.1 throughout all the experiments in this subsection. A early stopping criteria is used to naturally terminate the training of the models on convergence. When the validation loss no long reduced for atleast 5 epochs, then the training is terminated. The number of epochs is set to a very high number of 200 for all the experiments so that the training is only stopped when early stopping criteria is triggered on model convergence. 
 \begin{table}[H]
     \setlength\extrarowheight{10pt}
-    \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimensions of the latent space representations is 2048. }
+    \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimensions of the latent space representations is 2048. }
     \centering
     \begin{tabular}{p{30pt}|p{30pt}|p{30pt}|p{30pt}|l|p{30pt}|p{40pt}|p{30pt}|p{30pt}}
       \toprule
@@ -230,7 +230,7 @@ Latent space representations are lower dimensional representations of the datase
       \midrule
       \multirow{4}{30pt}{512}	& 18.507 & 2	& 3.594 & \ac{HDBSCAN}	& 289	& 0.127 & 0.189 & 243.297 \\ \cline{2-9} 
       & 15.525 & 2	& 3.368 & Agglomerative	& 175	& 0.036	& -0.013	& 109.668 \\ \cline{2-9} 
-      & 16.595 & 2	& 3.709 & KMedoids & 175	& 0.222 & -0.040	& 102.518 \\ \cline{2-9}
+      & 16.595 & 2	& 3.709 & k-medoids & 175	& 0.222 & -0.040	& 102.518 \\ \cline{2-9}
       & 18.593 & 2	& 3.918 & Spectral	& 175	& 9.257 & 0.020	& 101.925 \\ 
       \bottomrule
     \end{tabular}
@@ -258,14 +258,14 @@ But larger dimensions of the latent space representations mean longer training t
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 145.809 & \ac{HDBSCAN}	& 307	& 0.187 & 0.186	& 489.133 \\ \cline{2-7} 
-    & 6.575 & KMedoids	& 175	& 0.532 & -0.023	& 129.956 \\ \cline{2-7} 
+    & 6.575 & k-medoids	& 175	& 0.532 & -0.023	& 129.956 \\ \cline{2-7} 
     & 4.989 & Spectral	& 175	& 9.226 & 0.024 & 131.239 \\ \cline{2-7}
     & 6.823 & Agglomerative	& 175	& 0.053 & 0.010 & 131.956 \\ 
     \bottomrule
@@ -293,14 +293,14 @@ The training time for the model with 1024 dimensions is 73 hours for 65 epochs. 
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 256. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 256. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 5.901 & \ac{HDBSCAN}	& 293	& 0.725 & 0.164	& 718.808 \\ \cline{2-7} 
-    & 6.206 & KMedoids	& 175	& 0.471	& -0.078	& 136.173 \\ \cline{2-7} 
+    & 6.206 & k-medoids	& 175	& 0.471	& -0.078	& 136.173 \\ \cline{2-7} 
     & 6.106 & Spectral	& 175	& 11.077 & 0.003	& 133.593 \\ \cline{2-7}
     & 5.539 & Agglomerative	& 175	& 0.031 & -0.020	& 132.193 \\ 
     \bottomrule
@@ -327,14 +327,14 @@ It is to be noted here that the performance of the \ac{HDBSCAN} algorithm is wor
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 128. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 128. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.036 & \ac{HDBSCAN}	& 307	& 0.121 & 0.174	& 354.460 \\ \cline{2-7} 
-    & 3.689 & KMedoids	& 175	& 5.255 & -0.037	& 177.251 \\ \cline{2-7} 
+    & 3.689 & k-medoids	& 175	& 5.255 & -0.037	& 177.251 \\ \cline{2-7} 
     & 3.295 & Spectral	& 175	& 5.511 & 0.024	& 116.696 \\ \cline{2-7}
     & 3.531 & Agglomerative	& 175	& 0.057 & -0.033	& 94.799 \\ 
     \bottomrule
@@ -347,14 +347,14 @@ Thus, Tab. \ref{tab:conclu_64} and Tab. \ref{tab:conclu_32} are the experiments 
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 64. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 64. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.059 & \ac{HDBSCAN}	& 286	& 0.538 & 0.148 	& 639.097 \\ \cline{2-7} 
-    & 3.086 & KMedoids	& 175	& 3.143 & -0.068	& 145.711 \\ \cline{2-7} 
+    & 3.086 & k-medoids	& 175	& 3.143 & -0.068	& 145.711 \\ \cline{2-7} 
     & 3.189 & Spectral	& 175	& 8.760 & -0.020	& 152.836 \\ \cline{2-7}
     & 3.914 & Agglomerative	& 175	& 0.032 & -0.017	& 157.152 \\ 
     \bottomrule
@@ -366,14 +366,14 @@ As expected, the performance of these models have decreased by $4\%$ and $3\%$ r
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 32. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 32. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 2.748 & \ac{HDBSCAN}	& 273	& 0.222 & 0.158	& 562.223 \\ \cline{2-7} 
-    & 2.917 & KMedoids	& 175	& 1.434 & -0.021	& 141.890 \\ \cline{2-7} 
+    & 2.917 & k-medoids	& 175	& 1.434 & -0.021	& 141.890 \\ \cline{2-7} 
     & 2.985 & Spectral	& 175	& 6.190 & 0.016	& 107.808 \\ \cline{2-7}
     & 2.501 & Agglomerative	& 175	& 0.031 & 0.023	& 93.092 \\ 
     \bottomrule
@@ -385,14 +385,14 @@ Experiments are also conducted for training the models with dimensions 16, 8 and
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 16. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 16. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 2.673 & \ac{HDBSCAN}	& 287	& 0.419 & 0.168	& 621.601 \\ \cline{2-7} 
-    & 3.240 & KMedoids	& 175	& 2.276	& -0.023	& 147.403 \\ \cline{2-7} 
+    & 3.240 & k-medoids	& 175	& 2.276	& -0.023	& 147.403 \\ \cline{2-7} 
     & 3.005 & Spectral	& 175	& 6.064 & 0.027	& 109.908 \\ \cline{2-7}
     & 3.469 & Agglomerative	& 175	& 0.031 & 0.005	& 92.398 \\ 
     \bottomrule
@@ -404,14 +404,14 @@ Tab. \ref{tab:conclu_16}, \ref{tab:conclu_8} and Tab. \ref{tab:conclu_4} are the
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 8. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 8. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 2.851 & \ac{HDBSCAN}	& 290	& 0.187 & 0.135	& 551.979 \\ \cline{2-7} 
-    & 2.529 & KMedoids	& 175	& 7.996 & -0.028	& 146.129 \\ \cline{2-7} 
+    & 2.529 & k-medoids	& 175	& 7.996 & -0.028	& 146.129 \\ \cline{2-7} 
     & 2.693 & Spectral	& 175	& 3.949 & -0.026	& 115.756 \\ \cline{2-7}
     & 2.714 & Agglomerative	& 175	& 0.033 & -0.020	& 93.977 \\ 
     \bottomrule
@@ -423,14 +423,14 @@ The training time for the model with 16 dimensions is 16 hours for 29 epochs. Th
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 4. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 4. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 2.876 & \ac{HDBSCAN}	& 296	& 0.550 & 0.101	& 526.278 \\ \cline{2-7} 
-    & 3.102 & KMedoids	& 175	& 0.555 & -0.102	& 193.242 \\ \cline{2-7} 
+    & 3.102 & k-medoids	& 175	& 0.555 & -0.102	& 193.242 \\ \cline{2-7} 
     & 2.432 & Spectral	& 175	& 1.952	& -0.071	& 92.449 \\ \cline{2-7}
     & 2.517 & Agglomerative	& 175	& 0.030 & -0.116 	& 92.347 \\ 
     \bottomrule
@@ -451,14 +451,14 @@ Once the number of dimensions of the latent space representations is set to 512,
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 32. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 32. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.555 & \ac{HDBSCAN}	& 279	& 0.620 & 0.185	& 689.203 \\ \cline{2-7} 
-    & 3.731 & KMedoids	& 175	& 0.176 & -0.029	& 101.171 \\ \cline{2-7} 
+    & 3.731 & k-medoids	& 175	& 0.176 & -0.029	& 101.171 \\ \cline{2-7} 
     & 3.349 & Spectral	& 175	& 7.221 & 0.042 	& 100.748 \\ \cline{2-7}
     & 3.663 & Agglomerative	& 175	& 0.031 & -0.007	& 102.203 \\ 
     \bottomrule
@@ -484,14 +484,14 @@ Once the number of dimensions of the latent space representations is set to 512,
 Tab. \ref{tab:conclu_512} on Page 60 already shows the performance of the model when the dimensions of the latent space representation is 512 and the number of semantic subgroups is 64. Tab. \ref{tab:conclu_k_32} records the performance of the model when the number of semantic subgroups is set to 32. Tab. \ref{tab:conclu_k_32_levels} shows the performance of the multi-level \ac{HDBSCAN} algorithm on this model. The rest of the parameters for the experiments remains constant throughout this subsection. 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 32. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 32. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.555 & \ac{HDBSCAN}	& 279	& 0.620 & 0.185	& 689.203 \\ \cline{2-7} 
-    & 3.731 & KMedoids	& 175	& 0.176 & -0.029	& 101.171 \\ \cline{2-7} 
+    & 3.731 & k-medoids	& 175	& 0.176 & -0.029	& 101.171 \\ \cline{2-7} 
     & 3.349 & Spectral	& 175	& 7.221 & 0.042 	& 100.748 \\ \cline{2-7}
     & 3.663 & Agglomerative	& 175	& 0.031 & -0.007	& 102.203 \\ 
     \bottomrule
@@ -501,14 +501,14 @@ Tab. \ref{tab:conclu_512} on Page 60 already shows the performance of the model 
 It is seen that the performance of the model with $k=32$ is comparable to the model with $k=64$. The \ac{DBCV} score for the model with $k=32$ is 0.185 while that of the model with $k=64$ is 0.186. In other words, even with fewour semantic subgroups the model could achieve comparable results. Moreover, the model for $k=32$ requires a training time of 28 hours for 39 epochs. Whereas, the model for $k=64$ requires a training time of 64 hours for 54 epochs. Thus, reducing the value of k by a factor of 2 also led t the decrease in the training time by a factor of 2.29. This also re-ensures the ultimate goal of the task. Fewer subcategories in the objects means the model will learn more "general" features of the objects and not the extremely intricate and instance-specific object features. This would help in objects of the dataset which actually capture the overall variance in the dataset. 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 16. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 16. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.797 & \ac{HDBSCAN}	& 291	& 0.140 & 0.182	& 244.248 \\ \cline{2-7} 
-    & 3.557 & KMedoids	& 175	& 0.257 & -0.50	& 100.699 \\ \cline{2-7} 
+    & 3.557 & k-medoids	& 175	& 0.257 & -0.50	& 100.699 \\ \cline{2-7} 
     & 3.480 & Spectral	& 175	& 6.331 & 0.030	& 103.005 \\ \cline{2-7}
     & 3.731 & Agglomerative	& 175	& 0.033 & -0.007	& 104.203 \\ 
     \bottomrule
@@ -535,14 +535,14 @@ Tab. \ref{tab:conclu_k_16} and Tab. \ref{tab:conclu_k_8} shows the performance o
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 8. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 8. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.018 & \ac{HDBSCAN}	& 291	& 0.140 & 0.139 	& 235.023 \\ \cline{2-7} 
-    & 3.091 & KMedoids	& 175	& 0.191 & -0.092	& 98.415 \\ \cline{2-7} 
+    & 3.091 & k-medoids	& 175	& 0.191 & -0.092	& 98.415 \\ \cline{2-7} 
     & 3.101 & Spectral	& 175	& 6.810 & -0.027	& 96.898 \\ \cline{2-7}
     & 3.177 & Agglomerative	& 175	& 0.038 & -0.030	& 97.490 \\ 
     \bottomrule
@@ -554,14 +554,14 @@ The model for $k=16$ requires a training time of 37 hours for 63 epochs until co
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 128. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 128. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.259 & \ac{HDBSCAN}	& 301	& 0.115 & 0.186 	& 332.309 \\ \cline{2-7} 
-    & 4.356 & KMedoids	& 175	& 0.172 & -0.049	& 205.339 \\ \cline{2-7} 
+    & 4.356 & k-medoids	& 175	& 0.172 & -0.049	& 205.339 \\ \cline{2-7} 
     & 3.344 & Spectral	& 175	& 11.716 & 0.024	& 166.501 \\ \cline{2-7}
     & 5.815 & Agglomerative	& 175	& 0.049 & -0.041	& 170.280 \\ 
     \bottomrule
@@ -573,14 +573,14 @@ Tab. \ref{tab:conclu_k_128} shows the performance of the model when the dimensio
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 4. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 4. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.295 & \ac{HDBSCAN}	& 296	& 0.122 & 0.103	& 269.228 \\ \cline{2-7} 
-    & 3.577 & KMedoids	& 175	& 0.308 & -0.045	& 139.550 \\ \cline{2-7} 
+    & 3.577 & k-medoids	& 175	& 0.308 & -0.045	& 139.550 \\ \cline{2-7} 
     & 3.751 & Spectral	& 175	& 11.623 & -0.004	& 167.611 \\ \cline{2-7}
     & 5.013 & Agglomerative	& 175	& 0.032 & -0.005	& 169.509 \\ 
     \bottomrule
@@ -592,14 +592,14 @@ Tab. \ref{tab:conclu_k_4} and Tab. \ref{tab:conclu_k_2} shows the performance of
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 2. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512 and the number of semantic subgroups is 2. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 4.469 & \ac{HDBSCAN}	& 289	& 0.126 & 0.085	& 320.217 \\ \cline{2-7} 
-    & 3.364 & KMedoids	& 175	& 5.662 & -0.118 	& 155.136 \\ \cline{2-7} 
+    & 3.364 & k-medoids	& 175	& 5.662 & -0.118 	& 155.136 \\ \cline{2-7} 
     & 3.349 & Spectral	& 175	& 5.662 & -0.089	& 115.978 \\ \cline{2-7}
     & 3.029 & Agglomerative	& 175	& 0.038 & -0.100	& 98.683 \\ 
     \bottomrule
@@ -621,14 +621,14 @@ An overview of the training and validation loss of the models is shown in Fig. \
 One of the most crucial hyperparameters to adjust in deep learning methods is batch size. Attempting to optimize convex functions involves an intrinsic trade-off between the advantages of larger and smaller batch sizes. One way to ensure convergence to the global optima of the objective function is to use a batch size equal to the entire dataset. But doing so comes at the expense of a slower empirical convergence to that optimal state. Also, it practically infeasible to load the entire dataset like the ABC dataset \cite{Koch_2019_CVPR} in this use-case all at once. However, it has been demonstrated empirically that employing lower batch sizes leads to a faster convergence to "good" solutions. Smaller batch sizes enable the model to "start learning before having to see all the data," which provides an easy explanation for this. A smaller batch size has the drawback of not guaranteeing that the model will eventually come to the global optima. It will oscillate between the global optima, remaining outside a certain $\epsilon$-ball of the optima, where $\epsilon$ is determined by the batch size to dataset ratio. Therefore, as mentioned in Ch. \ref{sec:hardware}, the largest batch size that could be fit in the GPU with the higher capacity is observed to be 256. Thus, to facilitate the training of multiple models for experimentation in the limited timeframe parallelly, the performance of the models with batch sizes 64, 128 and 256 are evaluated. 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 256. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 256. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 5.855 & \ac{HDBSCAN}	& 291	& 0.178 & 0.154 & 382.814 \\ \cline{2-7} 
-    & 6.034 & KMedoids	& 175	& 0.384 & -0.040	& 146.189 \\ \cline{2-7} 
+    & 6.034 & k-medoids	& 175	& 0.384 & -0.040	& 146.189 \\ \cline{2-7} 
     & 5.365 & Spectral	& 175	& 13.660 & 0.026	& 145.207 \\ \cline{2-7}
     & 5.513 & Agglomerative	& 175	& 0.040 & -0.011	& 167.093 \\ 
     \bottomrule
@@ -655,14 +655,14 @@ The dimension of the latent space representations of the all the models in this 
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 64. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 64. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 5.454 & \ac{HDBSCAN}	& 300	& 1.080 & 0.177	& 730.026 \\ \cline{2-7} 
-    & 6.732 & KMedoids	& 175	& 7.606 & -0.056	& 602.923 \\ \cline{2-7} 
+    & 6.732 & k-medoids	& 175	& 7.606 & -0.056	& 602.923 \\ \cline{2-7} 
     & 6.326 & Spectral	& 175	& 51.657 & 0.008	& 492.017 \\ \cline{2-7}
     & 6.129 & Agglomerative	& 175	& 0.489 & -0.007 &	481.838 \\ 
     \bottomrule
@@ -699,14 +699,14 @@ Determining an appropriate finite number of training epochs is a major challenge
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the patience for early stopping is 3, dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 128. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the patience for early stopping is 3, dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 128. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.643 & \ac{HDBSCAN}	& 289	& 0.112 & 0.132	& 260.046 \\ \cline{2-7} 
-    & 3.614 & Kmedoids	& 175	& 0.101	& -0.054	& 115.333 \\ \cline{2-7} 
+    & 3.614 & k-medoids	& 175	& 0.101	& -0.054	& 115.333 \\ \cline{2-7} 
     & 3.535 & Spectral	& 175	& 5.567	& -0.008	& 114.561 \\ \cline{2-7}
     & 3.765 & Agglomerative	& 175	& 0.299	& -0.033	& 106.243 \\ 
     \bottomrule
@@ -733,7 +733,7 @@ Tab. \ref{tab:conclu_patience_3} shows the performance of the model with patienc
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the patience for early stopping is 7, dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 128. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the patience for early stopping is 7, dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 128. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
@@ -741,7 +741,7 @@ Tab. \ref{tab:conclu_patience_3} shows the performance of the model with patienc
     \midrule
     \multirow{4}{30pt}{2}	& 3.731	& \ac{HDBSCAN}	& 298	& 0.126	& 0.199	& 293.794
     \\ \cline{2-7} 
-    & 3.257	& Kmedoids	& 175	& 0.134	& -0.037	& 116 \\ \cline{2-7} 
+    & 3.257	& k-medoids	& 175	& 0.134	& -0.037	& 116 \\ \cline{2-7} 
     & 3.340	& Spectral	& 175	& 9.391	& 0.011	& 94.393 \\ \cline{2-7}
     & 2.788	& Agglomerative	& 175	& 0.032	& -0.018	& 93.149 \\ 
     \bottomrule
@@ -770,14 +770,14 @@ pared to the next best model with patience 5 which has the \ac{DBCV} score of 0.
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the patience for early stopping is 10, dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 128. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the patience for early stopping is 10, dimension of the latent space representations is 512, the number of semantic subgroups is 32 and the batch size for training the model is 128. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.338	& \ac{HDBSCAN}	& 308	& 0.126	& 0.190	& 330.257 \\ \cline{2-7} 
-    & 3.191	& Kmedoids	& 175	& 0.288	& -0.051	& 166.315 \\ \cline{2-7} 
+    & 3.191	& k-medoids	& 175	& 0.288	& -0.051	& 166.315 \\ \cline{2-7} 
     & 3.072	& Spectral	& 175	& 7.785	& 0.013	& 156.930 \\ \cline{2-7}
     & 3.441	& Agglomerative	& 175	& 0.032	& -0.041	& 159.887 \\ 
     \bottomrule
@@ -798,14 +798,14 @@ Fig. \ref{fig:loss_early_stopping_patience} gives an overview of the training an
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the learning rate is 0.01. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the learning rate is 0.01. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.417	& \ac{HDBSCAN}	& 285	& 0.109	& 0.128	& 315.829 \\ \cline{2-7} 
-    & 3.455	& Kmedoids	& 175	& 0.246	& -0.038	& 147.585 \\ \cline{2-7} 
+    & 3.455	& k-medoids	& 175	& 0.246	& -0.038	& 147.585 \\ \cline{2-7} 
     & 3.270	& Spectral	& 175	& 6.347	& -0.057	& 156.651 \\ \cline{2-7}
     & 3.844	& Agglomerative	& 175	& 0.037	& -0.083	& 162.778 \\ 
     \bottomrule
@@ -834,14 +834,14 @@ The learning rate is one of the crucial hyperparameters when building a machine 
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the learning rate is 0.001 and the decay factor is 0.5. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the learning rate is 0.001 and the decay factor is 0.5. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.351	& \ac{HDBSCAN}	& 303	& 0.113	& 0.212	& 334.613 \\ \cline{2-7} 
-    & 3.734	& Kmedoids	& 175	& 0.273	& -0.033	& 164.001 \\ \cline{2-7} 
+    & 3.734	& k-medoids	& 175	& 0.273	& -0.033	& 164.001 \\ \cline{2-7} 
     & 3.192	& Spectral	& 175	& 6.865	& 0.003	& 109.385 \\ \cline{2-7}
     & 3.722	& Agglomerative	& 175	& 0.043	& -0.001	& 92.632 \\ 
     \bottomrule
@@ -873,14 +873,14 @@ Keeping the learning rate and the rest of the parameters constant, experiments a
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with PointNet autonocoder on 1000 datapoints when the learning rat is 0.001 and the decay factor is 0.9. }
+  \caption{Results of the ConClu approach with PointNet autonocoder on 1000 datapoints when the learning rat is 0.001 and the decay factor is 0.9. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.265	& \ac{HDBSCAN}	& 287	& 0.114	& 0.184	& 225.236 \\ \cline{2-7} 
-    & 3.298	& Kmedoids	& 175	& 0.144	& 0.010	& 95.764 \\ \cline{2-7} 
+    & 3.298	& k-medoids	& 175	& 0.144	& 0.010	& 95.764 \\ \cline{2-7} 
     & 4.107	& Spectral	& 175	& 14.298	& 0.036	& 116.901 \\ \cline{2-7}
     & 3.297	& Agglomerative	& 175	& 0.033	& 0.017	& 96.614 \\ 
     \bottomrule
@@ -914,7 +914,8 @@ Tab. \ref{tab:conclu_32} already shows the performance of the model when the lea
 
 Fig. \ref{fig:loss_lr} gives an overview of the training and validation loss of the models for learning rate and decay factor of the learning rate used during training the models. Even with a lower higher learning rate, the model takes almost the same number of epoch until convergence. But it can be noticed that the model reaches a comparable validation loss quite early on as compared to the model with a lower learning rate. The model with learning rate  0.001 as decay factor 0.9 takes the least training time. 
 
-\subsection{Conclu approach with \ac{DGCNN} as Backbone}
+\subsection{ConClu approach with \ac{DGCNN} as Backbone}
+\label{sec:conclu_dgcnn}
 
 As mentioned in Ch. \ref{sec:method}, two feature representation learning backbones are used for the experiments. Experiments with the \ac{DGCNN} as the backbone is recorded here. The performance of all the clustering algorithms are evaluated.
 
@@ -923,14 +924,14 @@ As discussed earlier, the dimension of the latent space representation is an ext
 
 \begin{table}[t]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 1024. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 1024. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.022	& \ac{HDBSCAN}	& 295	& 0.121 & 0.112	& 228.925 \\ \cline{2-7} 
-    & 3.519 & Kmedoids	& 175	& 0.151 & -0.067	& 92.043 \\ \cline{2-7} 
+    & 3.519 & k-medoids	& 175	& 0.151 & -0.067	& 92.043 \\ \cline{2-7} 
     & 3.212 & Spectral	& 175	& 6.712 & -0.038 	& 92.080 \\ \cline{2-7}
     & 3.683 & Agglomerative	& 175	& 0.037 & -0.089	& 124.850 \\ 
     \bottomrule
@@ -955,14 +956,14 @@ As discussed earlier, the dimension of the latent space representation is an ext
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 512. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 512. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.214 & \ac{HDBSCAN}	& 299	& 0.125 & 0.129	& 327.926 \\ \cline{2-7} 
-    & 3.739 & Kmedoids	& 175	& 0.248 & -0.060	& 162.210 \\ \cline{2-7} 
+    & 3.739 & k-medoids	& 175	& 0.248 & -0.060	& 162.210 \\ \cline{2-7} 
     & 3.212 & Spectral	& 175	& 6.712 & -0.038 & 92.080 \\ \cline{2-7}
     & 3.683 & Agglomerative	& 175	& 0.037 & -0.089	& 124.850 \\ 
     \bottomrule
@@ -985,18 +986,18 @@ As discussed earlier, the dimension of the latent space representation is an ext
   \label{tab:dgcnn_512_levels}
 \end{table}
 
-Tab. \ref{tab:dgcnn_512} records the performance of the model when the dimension of the latent space representation is 512. Tab. \ref{tab:dgcnn_512_levels} documents the performance of multi-level \ac{HDBSCAN} algorithm on this model. All other parameters of the model remains constant. This model takes a training time of 231 hours for 60 epochs. This is four times the time requires by the model when PointNet autoencoder as the backbone. Even with such high training time, the performance of the model is seen to deteriorate by atleast 3\% in case of \ac{HDBSCAN} algorithm and atmost 5\% in case of agglomerative clustering algorithm. Table. \ref{tab:dgcnn_256} records the performance of the model when the dimension is further reduced to 256. On reducing the dimension by a factor of 2, the model training time requires by the model also decreased by a factor of 2. Now the model requires a training time of 120 hours for 31 epochs. But unlike the model with the PointNet autoencoder as backbone, this model had a degradation in the performance when the dimension is reduced to 256. There is a 3\% decrease in performance for the \ac{HDBSCAN} algorithm and roughly $5\%$ degradation for the KMedoids algorithm and spectral clustering algorithm. However, the performance of the agglomerative clustering algorithm remains almost similar.  
+Tab. \ref{tab:dgcnn_512} records the performance of the model when the dimension of the latent space representation is 512. Tab. \ref{tab:dgcnn_512_levels} documents the performance of multi-level \ac{HDBSCAN} algorithm on this model. All other parameters of the model remains constant. This model takes a training time of 231 hours for 60 epochs. This is four times the time requires by the model when PointNet autoencoder as the backbone. Even with such high training time, the performance of the model is seen to deteriorate by atleast 3\% in case of \ac{HDBSCAN} algorithm and atmost 5\% in case of agglomerative clustering algorithm. Table. \ref{tab:dgcnn_256} records the performance of the model when the dimension is further reduced to 256. On reducing the dimension by a factor of 2, the model training time requires by the model also decreased by a factor of 2. Now the model requires a training time of 120 hours for 31 epochs. But unlike the model with the PointNet autoencoder as backbone, this model had a degradation in the performance when the dimension is reduced to 256. There is a 3\% decrease in performance for the \ac{HDBSCAN} algorithm and roughly $5\%$ degradation for the k-medoids algorithm and spectral clustering algorithm. However, the performance of the agglomerative clustering algorithm remains almost similar.  
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 256. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 256. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.374	& \ac{HDBSCAN}	& 278	& 0.112	& 0.098	& 240.169 \\ \cline{2-7} 
-    & 3.673	& Kmedoids	& 175	& 0.171	& -0.151	& 103.629 \\ \cline{2-7} 
+    & 3.673	& k-medoids	& 175	& 0.171	& -0.151	& 103.629 \\ \cline{2-7} 
     & 3.579	& Spectral	& 175	& 6.933	& -0.078	& 105.700 \\ \cline{2-7}
     & 3.722	& Agglomerative	& 175	& 0.044	& -0.001	& 92.631 \\ 
     \bottomrule
@@ -1004,18 +1005,18 @@ Tab. \ref{tab:dgcnn_512} records the performance of the model when the dimension
   \label{tab:dgcnn_256}
 \end{table}
 
-Tab. \ref{tab:dgcnn_128} records the performance of the model when the dimension of the latent space representation is further reduced to 128. The learning rate for all the models in this subsection is set to be 0.001 with a decay factor of 0.1. It is also noticed that the models in with the \ac{DGCNN} backbone has a higher \ac{GPU} consumption. So, a batch size of a maximum of 32 could be used according to the hardware settings available at \ac{IPA} as mentioned in Ch. \ref{sec:restrictions}. The model requires a training time of 91 hours for 33 epochs until convergence. The performance of the \ac{HDBSCAN} algorithm remains almost constant whereas the performance of the Kmedoids algorithm improves by 2\% as compared to the model with dimension 256. The performance of the spectral clustering algorithm degrades by 2\% whereas the performance of the agglomerative clustering degrades by $5\%$. Furthermore, the performance of all the clustering algorithm deteriorates for this model as compared to its other counterpart with PointNet autoencoder backbone. 
+Tab. \ref{tab:dgcnn_128} records the performance of the model when the dimension of the latent space representation is further reduced to 128. The learning rate for all the models in this subsection is set to be 0.001 with a decay factor of 0.1. It is also noticed that the models in with the \ac{DGCNN} backbone has a higher \ac{GPU} consumption. So, a batch size of a maximum of 32 could be used according to the hardware settings available at \ac{IPA} as mentioned in Ch. \ref{sec:restrictions}. The model requires a training time of 91 hours for 33 epochs until convergence. The performance of the \ac{HDBSCAN} algorithm remains almost constant whereas the performance of the k-medoids algorithm improves by 2\% as compared to the model with dimension 256. The performance of the spectral clustering algorithm degrades by 2\% whereas the performance of the agglomerative clustering degrades by $5\%$. Furthermore, the performance of all the clustering algorithm deteriorates for this model as compared to its other counterpart with PointNet autoencoder backbone. 
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 128. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 128. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.498	& \ac{HDBSCAN}	& 289	& 0.118	& 0.103	& 250.010 \\ \cline{2-7} 
-    & 3.839	& Kmedoids	& 175	& 0.131	& -0.116	& 106.311 \\ \cline{2-7} 
+    & 3.839	& k-medoids	& 175	& 0.131	& -0.116	& 106.311 \\ \cline{2-7} 
     & 3.559	& Spectral	& 175	& 6.662	& -0.108	& 103.972 \\ \cline{2-7}
     & 3.590	& Agglomerative	& 175	& 0.045	& -0.099	& 104.450 \\ 
     \bottomrule
@@ -1027,14 +1028,14 @@ For the purpose of completeness of the evaluation, the dimension of the model is
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 64. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 64. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.430	& \ac{HDBSCAN}	& 289	& 0.113	& 0.083	& 253.259 \\ \cline{2-7} 
-    & 3.572	& Kmedoids	& 175	& 0.137	& -0.074	& 107.411 \\ \cline{2-7} 
+    & 3.572	& k-medoids	& 175	& 0.137	& -0.074	& 107.411 \\ \cline{2-7} 
     & 3.384	& Spectral	& 175	& 6.879	& -0.090	& 105.169 \\ \cline{2-7}
     & 3.298	& Agglomerative	& 175	& 0.030	& -0.104	& 104.248 \\ 
     \bottomrule
@@ -1045,14 +1046,14 @@ For the purpose of completeness of the evaluation, the dimension of the model is
 Tab. \ref{tab:dgcnn_32} records the performance of the model when the dimension of the laten space representation is set to 32. The model requires a training time of 70 hours for 19 epochs until convergence. The performance of the model is quite comparable to the model with dimension 64. Further reducing the dimension of the latent space representations degrades the performance of the models even more. Fig. \ref{fig:loss_dgcnn} gives an overview of all the models trained with \ac{DGCNN} as the backbone of the model for different sizes of the latent space representation. 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 32. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 32. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.390	& \ac{HDBSCAN}	& 284	& 0.179	& 0.088	& 308.699 \\ \cline{2-7} 
-    & 4.151	& Kmedoids	& 175	& 0.304	& -0.098	& 178.198 \\ \cline{2-7} 
+    & 4.151	& k-medoids	& 175	& 0.304	& -0.098	& 178.198 \\ \cline{2-7} 
     & 4.199	& Spectral	& 175	& 34.680	& -0.065	& 185.643 \\ \cline{2-7}
     & 3.067	& Agglomerative	& 175	& 0.032	& -0.110	& 99.183 \\ 
     \bottomrule
@@ -1064,14 +1065,14 @@ It can be observed that the validation loss is least when the model has dimensio
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 4. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 1000 datapoints when the dimension of the latent space representation is 4. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 3.204	& \ac{HDBSCAN}	& 286	& 0.117	& -0.078	& 235.378 \\ \cline{2-7} 
-    & 3.317 & Kmedoids	& 175	& 0.144	& -0.135	& 100.929 \\ \cline{2-7} 
+    & 3.317 & k-medoids	& 175	& 0.144	& -0.135	& 100.929 \\ \cline{2-7} 
     & 3.133	& Spectral	& 175	& 3.587	& -0.059	& 102.188 \\ \cline{2-7}
     & 3.225	& Agglomerative	& 175	& 0.033	& -0.100	& 99.532 \\ 
     \bottomrule
@@ -1091,14 +1092,14 @@ It is important to check that the results obtained on a small subset of the enti
 
 \begin{table}[t]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 2000 datapoints when the dimension of the latent space representation is 512. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 2000 datapoints when the dimension of the latent space representation is 512. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{50pt}|p{40pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 7.034	& \ac{HDBSCAN}	& 591	& 0.225	& 0.182	& 3.596.855 \\ \cline{2-7} 
-    & 6.511	& Kmedoids	& 175	& 0.213	& -0.202	& 409.159 \\ \cline{2-7} 
+    & 6.511	& k-medoids	& 175	& 0.213	& -0.202	& 409.159 \\ \cline{2-7} 
     & 6.730	& Spectral	& 175	& 26.729	& -0.129	& 410.735 \\ \cline{2-7}
     & 6.666	& Agglomerative	& 175	& 0.102	& -0.17	& 399.792 \\ 
     \bottomrule
@@ -1124,14 +1125,14 @@ It is important to check that the results obtained on a small subset of the enti
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Results of the Conclu approach with \ac{DGCNN} backbone on 5000 datapoints when the dimension of the latent space representation is 512. }
+  \caption{Results of the ConClu approach with \ac{DGCNN} backbone on 5000 datapoints when the dimension of the latent space representation is 512. }
   \centering
   \begin{tabular}{|p{30pt}|p{50pt}|p{60pt}|p{50pt}|p{50pt}|p{40pt}|p{50pt}|}
     \toprule
     \ac{t-SNE} dim	& \ac{t-SNE} time & Clustering Algo. & No. of Clusters & Clustering Time (seconds) & \ac{DBCV} score & \ac{DBCV} Time (seconds)\\
     \midrule
     \multirow{4}{30pt}{2}	& 17.516	& \ac{HDBSCAN}	& 1.486	& 0.647	& 0.185	& 120280.203 \\ \cline{2-7} 
-    & 18.025	& Kmedoids	& 175	& 0.550	& -0.409	& 2.696.609 \\ \cline{2-7} 
+    & 18.025	& k-medoids	& 175	& 0.550	& -0.409	& 2.696.609 \\ \cline{2-7} 
     & 6.730	& Spectral	& 175	& 26.729	& -0.129	& 410.735 \\ \cline{2-7}
     & 6.666	& Agglomerative	& 175	& 0.102	& -0.17	& 399.792 \\ 
     \bottomrule
@@ -1167,18 +1168,18 @@ As observed earlier, the training time for the model with \ac{DGCNN} as the back
 
 \subsubsection{Calculating the similarity of the test dataset with the representative objects}
 
-Once the representative objects are obtained, it is necessary to compare how similar they are compared to the objects in the test dataset. Hausdorff distance is lcommonly used to calculate the similarity between two point clouds. So if the set of representative members generalizes the entire dataset well enough, then each object in the test dataset would be very similar to atleast one object from the set of representative members. Hausdorff distance calculates how different one point cloud is to another. So, lower the Hausdorff distance, more similar are the point clouds to one another. Thus, for the a set of "good" representative members, the average distance from all objects in the test dataset to their corresponding nearest object in the representative set is minimum. Table- \ref{tab:pointnet_sim} shows the similarity metric of the ConClu approach with the PointNet Autoencoder as backbone. It can be seen that the KMedoids has the minimum Hausdorff distance which is quite comparable to agglomerative clustering followed by spectral clustering and eventually multi-level \ac{HDBSCAN} algorithm. This can be due to the fact that the traditional spectral clustering algorithm and agglomerative clustering doesn't give medoids of the cluster but cluster centres. But to ensure that the cluster centres are actual members of the dataset, Hausdorff distance is used to calculate the medoid of the clusters from the respective cluster members.  Because of this usage of Hausdorff distance in calculating the medoid, it is possible that when Hausdorff distance is used to calculate the ultimate similarity of the test dataset and the representative members, it slightly favoured the clustering algorithm which already used it for calculating the cluster medoid. Also to make it consistent with spectral clustering and agglomerative clustering, Hausdorff distance is also used as the pairwise distance metric during the KMedoids. Overall, it is to be noted further that even if the average distance for multi-level \ac{HDBSCAN} is a little more  than the rest of the algorithm, the variation isn't quite drastic. Tab. \ref{tab:dgcnn_sim} shows the similarity metric of the ConClu approach with the \ac{DGCNN} as backbone. It is observed that the results for both the backbones are very similar. Hence, it is not conclusive enough to use just this similarity metric to choose a suitable network for the purpose. 
+Once the representative objects are obtained, it is necessary to compare how similar they are compared to the objects in the test dataset. Hausdorff distance is lcommonly used to calculate the similarity between two point clouds. So if the set of representative members generalizes the entire dataset well enough, then each object in the test dataset would be very similar to atleast one object from the set of representative members. Hausdorff distance calculates how different one point cloud is to another. So, lower the Hausdorff distance, more similar are the point clouds to one another. Thus, for the a set of "good" representative members, the average distance from all objects in the test dataset to their corresponding nearest object in the representative set is minimum. Table- \ref{tab:pointnet_sim} shows the similarity metric of the ConClu approach with the PointNet Autoencoder as backbone. It can be seen that the k-medoids has the minimum Hausdorff distance which is quite comparable to agglomerative clustering followed by spectral clustering and eventually multi-level \ac{HDBSCAN} algorithm. This can be due to the fact that the traditional spectral clustering algorithm and agglomerative clustering doesn't give medoids of the cluster but cluster centres. But to ensure that the cluster centres are actual members of the dataset, Hausdorff distance is used to calculate the medoid of the clusters from the respective cluster members.  Because of this usage of Hausdorff distance in calculating the medoid, it is possible that when Hausdorff distance is used to calculate the ultimate similarity of the test dataset and the representative members, it slightly favoured the clustering algorithm which already used it for calculating the cluster medoid. Also to make it consistent with spectral clustering and agglomerative clustering, Hausdorff distance is also used as the pairwise distance metric during the k-medoids. Overall, it is to be noted further that even if the average distance for multi-level \ac{HDBSCAN} is a little more  than the rest of the algorithm, the variation isn't quite drastic. Tab. \ref{tab:dgcnn_sim} shows the similarity metric of the ConClu approach with the \ac{DGCNN} as backbone. It is observed that the results for both the backbones are very similar. Hence, it is not conclusive enough to use just this similarity metric to choose a suitable network for the purpose. 
 
 \begin{table}[t]
   \setlength\extrarowheight{10pt}
-  \caption{Similarity metric for the Conclu approach with PointNet Autoencoder backbone.}
+  \caption{Similarity metric for the ConClu approach with PointNet Autoencoder backbone.}
   \centering
   \begin{tabular}{|p{50pt}|p{50pt}|p{50pt}|p{60pt}|p{40pt}|}
     \toprule
     Dataset Size(Whole)	& No. of  representative objects	& Dataset Size(Test)	& Clustering Algo	& Average Hausdorff Distance\\
     \midrule
     949647	& 94	& 49981	& multi-level \ac{HDBSCAN} &  0.170 \\ \cline{1-5} 
-    949647	& 175	& 49981	& KMedoids	& 0.134 \\ \cline{1-5}
+    949647	& 175	& 49981	& k-medoids	& 0.134 \\ \cline{1-5}
     949647	& 175	& 49981	& Spectral	&	0.155  \\ \cline{1-5}
     949647	& 175	& 49981	& Agglomerative	& 0.138 \\   
     \bottomrule
@@ -1188,17 +1189,30 @@ Once the representative objects are obtained, it is necessary to compare how sim
 
 \begin{table}[H]
   \setlength\extrarowheight{10pt}
-  \caption{Similarity metric for the Conclu approach with \ac{DGCNN} backbone.}
+  \caption{Similarity metric for the ConClu approach with \ac{DGCNN} backbone.}
   \centering
   \begin{tabular}{|p{50pt}|p{50pt}|p{50pt}|p{60pt}|p{40pt}|}
     \toprule
     Dataset Size(Whole)	& No. of  representative objects	& Dataset Size(Test)	& Clustering Algo	& Average Hausdorff Distance\\
     \midrule
     949647	& 94	& 49981	& multi-level \ac{HDBSCAN} &  0.170 \\ \cline{1-5} 
-    949647	& 175	& 49981	& KMedoids	& 0.133 \\ \cline{1-5}
+    949647	& 175	& 49981	& k-medoids	& 0.133 \\ \cline{1-5}
     949647	& 175	& 49981	& Spectral	&	0.152  \\ \cline{1-5}
     949647	& 175	& 49981	& Agglomerative	& 0.137 \\   
     \bottomrule
   \end{tabular}
   \label{tab:dgcnn_sim}
 \end{table}
+
+\subsection{Results}
+
+Observing the results of the experimentations it is evident that the \ac{HDBSCAN} algorithm has significantly better performance as compared to any other clustering algorithm. But it had a major drawback of not having any control on the ultimate number of clusters obtained in the end. To circumnavigate this issue, the idea of multi-level \ac{HDBSCAN} is proposed. This naturally degrades the \ac{DBCV} score to some extent because the least-dense region within a cluster is no longer more dense as compared to the region in-between clusters but it has 2 important benefits. It had a control on the ultimate number of representative objects of the dataset which is very crucial in the present use-case. Also often times, it is observed that even though the result of this algorithm is not up to the mark as of \ac{HDBSCAN} algorithm, it is still better or at  least comparable to the next best algorithm, i.e. the spectral clustering algorithm. Furthermore, another significant benefit of multi-level \ac{HDBSCAN} algorithm as compared to spectral clustering is that the latter takes significantly higher time to cluster such a large dataset as compared to the former. Even in evaluations recorded in Ch. \ref{sec:experiments} it can be seen that the time taken by the spectral clustering algorithm is quite high as compared to any other algorithm. The multi-level \ac{HDBSCAN} algorithm takes 0.8 seconds to cluster 1000 datapoints, whereas spectral clustering takes 7.2 seconds for the same task. This phenomenon is even intensified when the number of samples increase from 1000 datapoints to 1 million datapoints. Spectral clustering takes roughly 20 days to form 175 clusters from the entire dataset, whereas the multi-level \ac{HDBSCAN} takes as less as 3 hours. This is because spectral clustering has a time complexity of $O(N^3)$ for a dataset with $N$ objects. Also, it is observed that the multi-level \ac{HDBSCAN} algorithm had better performance in most cases as compared to spectral clustering. Thus, it is inefficient to use such large clustering time for worse performance.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=400pt,height=300pt]{pictures/all_objs.PNG}
+  \caption{Some of the representative members of the ABC dataset\cite{Koch_2019_CVPR} obtained on applying multi-level \ac{HDBSCAN} algorithm on the feature representations obtained from the ConClu approach with PointNet Autoencoder backbone.}
+  \label{fig:all_hdbscan_objs}
+\end{figure}
+
+The ultimate goal of this thesis is to identify "good" source data that represents the variance of the entire dataset. It is observed that the objects obtained after the applying the clustering algorithms are quite diverse in nature. Although there is no known objective way to determine what qualifies as a "good" source object in case of unsupervised learning, the diversity in the objects obtained in the end quite ensures the fulfillment of the task in hand. Fig. \ref{fig:all_hdbscan_objs} shows some of the cluster representatives obtained after applying the multi-level \ac{HDBSCAN} algorithm. Only some objects were chosen from the entire set of representative objects for the sake of visualization. It can be seen that the representative objects of the dataset are quite diverse in nature. Ranging from an ellipse shaped ring, an aircraft to a dumbbell, the objects are quite different from one another. Thus, weighing the pros and cons of the two different backbones and the 5 different clustering algorithm, it can be concluded that the ConClu approach with the PointNet Autoencoder gives the best model for the generation of the latent space representations of te objects in the dataset. Furthermore, weighing the performance of the clustering algorithm under different setup and the overall time required by the clustering algorithms, the multi-level \ac{HDBSCAN} algorithm seems to be a practical choice for this scenario. The \ac{HDBSCAN} algorithm has better performance compared to the multi-level \ac{HDBSCAN} algorithm because more number of clusters would naturally mean more smaller but denser clusters. But since it has no control on the number of clusters it returns and mostly returns a large number of clusters in the presence of a large dataset. Having such a high number of cluster representatives isn't feasible for further tasks in the current setup at \ac{IPA}. This is why the maximum number of cluster representatives is set to 175. Under this particular constraint, the multi-level \ac{HDBSCAN} algorithm is the best choice for clustering algorithm in this use-case. 

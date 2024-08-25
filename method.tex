@@ -456,11 +456,10 @@ Every color in this illustration denotes a cluster. It is evident that the densi
 
 \subsubsection{Requirements and Conditions}
 \label{sec:clustering_algo}
-Once the feature representations are obtained, multiple clustering algorithms are utilized to group the objects in the datasets into clusters. For this, one algorithm from each type of clustering algorithms as mentioned in \ref{sec:Clustering_Algorithms} are implemented to analyze the behavior of different clustering algorithms in this use case. Since the ultimate goal of the task in hand is to find representative members of the dataset, it is more robust to find the medoid of the cluster instead of the arithmetic mean. As mentioned in \ref{sec:Distribution_based_Clustering}, the medoids are actual datapoints of the dataset which is more practical to use in this use case instead of using a rather blurred, noisy arithmetic mean of the clusters. So, the scikit-learn implementations of the k-medoids algorithm \cite{scikit_learn_kmedoids}, spectral clustering algorithm \cite{scikit-learn} and agglomerative clustering algorithm \cite{scikit-learn} are used for this purpose. Since the spectral clustering algorithm and agglomerative clustering algorithm implementations provide the cluster centres and not the cluster medoids at the end, an additional step is necessary to compute the cluster medoids. 
+Once the feature representations are obtained, multiple clustering algorithms are utilized to group the objects in the datasets into clusters. For this, one algorithm from each type of clustering algorithms as mentioned in \ref{sec:Clustering_Algorithms} are implemented to analyze the behavior of different clustering algorithms in this use case. Since the ultimate goal of the task in hand is to find representative members of the dataset, it is more robust to find the medoid of the cluster instead of the arithmetic mean. As mentioned in \ref{sec:Distribution_based_Clustering}, the medoids are actual datapoints of the dataset which is more practical to use in this use case instead of using a rather blurred, noisy arithmetic mean of the clusters. 
 
 \subsubsection{Selected Clustering Algorithms}
-
-Another clustering algorithm that is suggested for this task is the "multi-level \ac{HDBSCAN}" clustering. The traditional implementation of the \ac{HDBSCAN} algorithm available in scikit-learn can provide hierarchical density based clusters. However, this algorithm does not provide any control on the number of clusters that can be generated. Thus, in the presence of very large datasets like the ABC \cite{Koch_2019_CVPR} dataset, it can potentially generate more than a hundred thousand clusters and thus, that many number of cluster representative members. Generating that many data for the source library in the current infrastructure present at \ac{IPA} is extremely computationally expensive and thus, technically infeasible. Increasing the minimum cluster size to be considered as a cluster and increasing the minimum number of samples around a point to be considered as a core point can decrease the overall number of cluster but that would also mean that the algorithm would label more datapoints as outliers. Losing too much information about the objects as outliers can jeopardize the purpose of a source library which is expected to generalize the feature of maximum possible objects in the dataset. 
+The scikit-learn implementations of the k-medoids algorithm \cite{scikit_learn_kmedoids}, spectral clustering algorithm \cite{scikit-learn} and agglomerative clustering algorithm \cite{scikit-learn} are used for this purpose. Since the spectral clustering algorithm and agglomerative clustering algorithm implementations provide the cluster centres and not the cluster medoids at the end, an additional step is necessary to compute the cluster medoids. Another clustering algorithm that is suggested for this task is the "multi-level \ac{HDBSCAN}" clustering. The traditional implementation of the \ac{HDBSCAN} algorithm available in scikit-learn can provide hierarchical density based clusters. However, this algorithm does not provide any control on the number of clusters that can be generated. Thus, in the presence of very large datasets like the ABC \cite{Koch_2019_CVPR} dataset, it can potentially generate more than a hundred thousand clusters and thus, that many number of cluster representative members. Generating that many data for the source library in the current infrastructure present at \ac{IPA} is extremely computationally expensive and thus, technically infeasible. Increasing the minimum cluster size to be considered as a cluster and increasing the minimum number of samples around a point to be considered as a core point can decrease the overall number of cluster but that would also mean that the algorithm would label more datapoints as outliers. Losing too much information about the objects as outliers can jeopardize the purpose of a source library which is expected to generalize the feature of maximum possible objects in the dataset. 
 
 \vspace{5mm}
 
@@ -471,6 +470,32 @@ Another clustering algorithm that is suggested for this task is the "multi-level
     \item Thus, the relevant datapoints for the next level are the $m$ medoids and all the $n$ outliers relabelled as medoids of new clusters. Step 2 and 3 are repeated until convergence, i.e. when $m + n \leq k$ where $k$ is the maximum number of permissible clusters as shown in Alg. \ref{alg:hier_cluster}.
 \end{enumerate}
 After the convergence of the algorithm, $c$ medoid points are obtained which are the representative members of the $c$ clusters where $c \leq k$. Similar to the k-medoids algorithm, the Euclidean distance metric is used to compute the medoids. The $"min\_cluster\_size"$ hyperparameter controls the minimum number of datapoints to be contained in a cluster. Increasing this value would mean clusters with more number of elements. But this would also mean that groups smaller than this size would be treated as outliers. Thus, increasing this value could lead to significant loss of information about the features of different objects in the cluster. To circumvent this issue, the value of this parameter is kept at its default value which is 2. This is the reason why \ac{HDBSCAN} algorithm returns a significantly high number of clusters. Thus, the proposal of multi-level \ac{HDBSCAN} algorithm is deemed necessary for this use case.
+
+\begin{algorithm}[H]
+    \caption{Pseudo-code for hierarchical clustering}\label{alg:hier_cluster}
+    \textbf{Input:} $\{\mathcal{E}\}$: is the set of feature representations for all objects in the dataset, $K$ is the number of permissible clusters.\\
+    \textbf{Output:} $\{\mathcal{P}_R\}$ is the set of representative members of the dataset.
+    \begin{algorithmic}[1] 
+        \State $\mathcal{E}_R \leftarrow \{\mathcal{E}\}$               
+        \State $classifier,\; predictions,\; num\_clusters = \ac{HDBSCAN}(\mathcal{E}_R)$
+        \State $count \leftarrow 0$
+        \State $C \leftarrow predictions$
+        \State $cluster\_members = get\_cluster\_members(C, \{\mathcal{E}\})$
+        \State $clusters = list(unique(C))$
+        
+        \While{$True$}
+            \State $\mathcal{E}_R, \; C, \; cluster\_members, \; num\_clusters \; classifier = get\_hier\_clusters(\mathcal{E}, \; \mathcal{E}_R, \; C, \; cluster\_members, count)$
+            \State $count +=1$
+            \State $total\_num\_clusters = len(list(unique(C)))$
+            \If{$total\_num\_clusters \leq K \; \mathbf{or} \; n\_clusters \; is \; 0$}
+                \State break
+            \EndIf            
+        \EndWhile
+        \State $medoid\_indices = get\_medoid\_indices(\mathcal{E}_R, \mathcal{E}\ )$
+        \State $\{\mathcal{P}_R\} = \{\mathcal{P}_i, \; \mathcal{P}_i \in \{\mathcal{P}\} \; and \; i \in medoid\_indices\}$
+        \State $\mathbf{return \;}\{\mathcal{P}_R\}$          
+    \end{algorithmic}
+\end{algorithm}
 
 \begin{algorithm}[H]
     \caption{Pseudo-code for multi-level \ac{HDBSCAN} clustering}\label{alg:multi_level_hdbscan}
@@ -500,32 +525,6 @@ After the convergence of the algorithm, $c$ medoid points are obtained which are
             \State $num\_clusters = len(list(unique(C)))$
         \EndIf
         \State $\mathbf{return \;}\mathcal{E}_R, \; C, \; cluster\_members, \; num\_clusters, \; classifier$ 
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{algorithm}[H]
-    \caption{Pseudo-code for hierarchical clustering}\label{alg:hier_cluster}
-    \textbf{Input:} $\{\mathcal{E}\}$: is the set of feature representations for all objects in the dataset, $K$ is the number of permissible clusters.\\
-    \textbf{Output:} $\{\mathcal{P}_R\}$ is the set of representative members of the dataset.
-    \begin{algorithmic}[1] 
-        \State $\mathcal{E}_R \leftarrow \{\mathcal{E}\}$               
-        \State $classifier,\; predictions,\; num\_clusters = \ac{HDBSCAN}(\mathcal{E}_R)$
-        \State $count \leftarrow 0$
-        \State $C \leftarrow predictions$
-        \State $cluster\_members = get\_cluster\_members(C, \{\mathcal{E}\})$
-        \State $clusters = list(unique(C))$
-        
-        \While{$True$}
-            \State $\mathcal{E}_R, \; C, \; cluster\_members, \; num\_clusters \; classifier = get\_hier\_clusters(\mathcal{E}, \; \mathcal{E}_R, \; C, \; cluster\_members, count)$
-            \State $count +=1$
-            \State $total\_num\_clusters = len(list(unique(C)))$
-            \If{$total\_num\_clusters \leq K \; \mathbf{or} \; n\_clusters \; is \; 0$}
-                \State break
-            \EndIf            
-        \EndWhile
-        \State $medoid\_indices = get\_medoid\_indices(\mathcal{E}_R, \mathcal{E}\ )$
-        \State $\{\mathcal{P}_R\} = \{\mathcal{P}_i, \; \mathcal{P}_i \in \{\mathcal{P}\} \; and \; i \in medoid\_indices\}$
-        \State $\mathbf{return \;}\{\mathcal{P}_R\}$          
     \end{algorithmic}
 \end{algorithm}
 
@@ -573,6 +572,8 @@ Thus, the memory consumption for the ball-tree algorithm is way more in comparis
 \textbf{Brute Force Algorithm}
 A brute force algorithm is a straightforward and exhaustive search strategy that systematically examines all possible options until it finds the solution to a problem. It’s a general approach used for problem-solving when the problem size allows for detailed investigation. In the brute force method, it is iterated through each data point and the density is calculated by considering the distances to other points. However, due to their high time complexity, brute force methods are inefficient for large-scale problems.
 
+\subsection{Evaluation Metrices}
+This section gives an overview of the evaluation metrices used to compare the results of the different clustering algorithms evaluated in this thesis. It also provides the details of the metric used to compare how similar the objects in the test dataset are to the representative members of the entire dataset. 
 \subsubsection{Evaluation of Clustering Algorithms}
 It is evident how even the evaluation metrics using just the intrinsic features of the dataset are still not efficient in the presence of noise, outliers or non-convex clusters. As pointed out by the authors of \cite{jain1988algorithms}, "without a strong effort in this direction, cluster analysis will remain a black art accessible only to those true believers who have experience and great courage". The fact that this statement holds even today, 35 years after he said it is even more astonishing. To tackle the problem of inefficient evaluation metrics for non-convex clusters or where the different clusters have a difference in size Moulavi \textit{et. al.} proposed the \ac{DBCV} Index \cite{moulavi2014density}.
 
@@ -628,6 +629,17 @@ Once the validity index of each cluster is calculated, the final \ac{DBCV} score
 \end{equation}
 If a cluster has better density compactness within the cluster as compared to density separation in between adjacent clusters, than the validity index of the cluster would take a positive value. On the other hand, if the density outside the cluster separting it from adjacent clusters is more than density compactedness inside the cluster than it would take a negative value. Thus, the \ac{DBCV} score can vary in the range $[-1,1]$ where greater \ac{DBCV} score indicates to a better density-based clustering algorithm.
 
+\subsubsection{Evaluation of Similarity in Point Clouds}
+Hausdorff distance is commonly used to calculate the similarity between two point clouds. So if the set of representative members generalizes the entire dataset well enough, then each object in the test dataset would be very similar to atleast one object from the set of representative members. Hausdorff distance calculates how different one point cloud is to another. So, lower the Hausdorff distance, more similar are the point clouds to one another. Thus, for the a set of "good" representative members, the average distance from all objects in the test dataset to their corresponding nearest object in the representative set is minimum. Mathematically, Hausdorff distance is the measure of how far two subsets in a metric space. Intuitively speaking, the Hausdorff distance between two sets of points is lower when every point in one set is close to some point in the other set. In other words Hausdorff distance is the longest distance that needs to be covered when traveling from any point in one of the subsets to the closest point in the other subset. Let $(M,d)$ be a $d$-dimensional metric space and $X \subset M$, $Y \subset M$ are the two non-empty subsets of points, then the Hausdorff distance between $X$ and $Y$ is defined as in Eq. \ref{eq:hausdorff}.
+\begin{equation}
+    \label{eq:hausdorff}
+    \mathit{d_H(X,Y)} := \mathit{\left\{max(\underset{x \in X}{sup} \; d(x,Y), \underset{y \in Y}{sup} \; d(X,y))\right\}},
+  \end{equation}
+where $sup$ is the supremum operator and $d(a,B) := \underset{b \in B}{inf} \; d(a,b)$ is the distance from a point $a \in X$ to the subset $B \subseteq X$, where $inf$ is the infimum operator. Thus, in the context of point clouds the Hausdorff distance is defined as in Eq. \ref{eq:hausdorff_point_cloud}. If $P_1 = \{x_i \in \mathbb{R}^3\}_{i=1}^n$ and $P_2 = \{x_j \in \mathbb{R}^3\}_{j=1}^m$, then the maximum distance between any pair of nearest neighbors between the two point clouds is defined as in eq. \ref{eq:hausdorff_point_cloud}.
+\begin{equation}
+    \label{eq:hausdorff_point_cloud}
+    \mathit{hausdorff(P_1, P_2)} := \mathit{\frac{1}{2} \underset{x \in P_1}{max}\lvert x - NN(x,P_2) \rvert + \frac{1}{2} \underset{x' \in P_2}{max}\lvert x' - NN(x',P_1) \rvert},
+  \end{equation}
 \subsection{Important Aspects of the Studies}
 \subsubsection{Focus and Restrictions}
 \label{sec:restrictions}

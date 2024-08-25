@@ -487,19 +487,19 @@ Dimensions, often known as features or input variables, are predictor variables 
 \vspace{5mm}
 
 \textbf{Curse of dimensionality} The inverse link between growing model dimensions and declining generalizability is known as the "curse of dimensionality". The model space rises with the amount of model input variables. Conversely, sparse data results from a constant amount of data points. This indicates that much of the feature space of the model is empty or devoid of observable data points. Data points get so different from one another as data sparsity rises that prediction models are less successful in finding explanatory patterns\cite{Goodfellow-et-al-2016}. Models may overfit on training data in order to explain patterns in sparse data sufficiently. Thus, poor generalizability may result from increases in dimensionality. By causing multicollinearity, high dimensionality might further impede model interpretability\cite{bellman46adaptive}. The effect of the number of model parameters on the performance of the model is shown in Fig. \ref{fig:dimensionality_reduction}.
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=350pt,height=200pt]{pictures/curse_of_dimensionality.PNG}
   \caption{The effect of the number of model parameters on the model performance.\cite{dr}}
   \label{fig:dimensionality_reduction}
 \end{figure} 
-There is a chance that certain variables are unnecessary or associated as the number of model variables rises. The curse of dimensionality can be mitigated by increasing the collection of data by reducing data sparsity. However, the number of data points required to counteract the curse of dimensionality grows exponentially with the number of dimensions in a model. Its not always possible of course, to gather enough data. Therefore, dimensionality reduction is necessary to enhance data analysis. \ac{PCA}, \ac{LDA} and \ac{t-SNE} are dimensionality reduction algorithms that improve machine learning models. 
+ There is a chance that certain variables are unnecessary or associated as the number of model variables rises. The curse of dimensionality can be mitigated by increasing the collection of data by reducing data sparsity. However, the number of data points required to counteract the curse of dimensionality grows exponentially with the number of dimensions in a model. Its not always possible of course, to gather enough data. Therefore, dimensionality reduction is necessary to enhance data analysis. \ac{PCA}, \ac{LDA} and \ac{t-SNE} are dimensionality reduction algorithms that improve machine learning models.
 
 \subsubsection{Linear Discriminant Analysis}
 In supervised machine learning, \ac{LDA} is a method used to resolve multi-class classification problems. It reduces the dimensionality of the data to enable the separation of several classes with numerous features. A generative model framework is used in \ac{LDA}, which is often referred to as \ac{NDA} or \ac{DFA}. In other words, \ac{LDA} algorithms estimate the distribution of data for each class and classify additional data points by applying Bayes' Theorem \cite{bellman46adaptive}. Conditional probabilities or the likelihood of an event given the occurrence of another event are computed by Bayes Theorem. It is used by \ac{LDA} algorithms to determine the likelihood that a particular data item will be included in a specific output. Finding a linear feature combination that distinguishes any number of categories of objects or events is how \ac{LDA} operates. To facilitate easier classification, \ac{LDA} projects data with at least two dimensions into a single dimension as shown in Fig. \ref{fig:lda}. 
-\begin{figure}[t]
+\begin{figure}[h]
   \centering
-  \includegraphics[width=350pt,height=200pt]{pictures/lda.PNG}
+  \includegraphics[width=300pt,height=200pt]{pictures/lda.PNG}
   \caption{Projection of the data before and after applying \ac{LDA}.\cite{dr}}
   \label{fig:lda}
 \end{figure} 
@@ -513,17 +513,18 @@ Similar to \ac{LDA}, \ac{PCA} is also a dimension reduction method. Unlike \ac{L
   \caption{Projection of the data from higher dimensional space to lower dimensional space on applying \ac{PCA}\cite{pca}}
   \label{fig:pca}
 \end{figure} 
-A linear combination of the the variables in the original dataset gives rise to the principal components.  By combining the variables in this manner, the majority of the information found in the original variables is condensed into the first components and these new variables or principal components are left uncorrelated. The premise is that ten-dimensional data sets provide ten principal components. PCA then attempts to assign the maximum amount of information to the first principal component, the maximum amount of information left to the second principal component and so on, until the result is somewhat like the Fig. \ref{fig:pca_variables}. By removing the components with little information and using the ones that remain as the new variables, the dimensionality can be minimized without compromising much information when the data is organized using principle components. Its crucial to understand that the primary components are created as linear combinations of the original variables, they are less interpretable and have no true significance. From a geometric perspective, the principal components are the data's directions that account for the greatest amount of variance or the lines that encompass the majority of the data's information. Here, variation and information are related in that a line's variance indicates how dispersed the data points are along it. The more dispersion a line has, the more data it contains. To put all of this into perspective, principle components are new vectors that offer the optimal viewpoint for examining and assessing the data, making the variations between the observations easier to observe.
+A linear combination of the the variables in the original dataset gives rise to the principal components.  By combining the variables in this manner, the majority of the information found in the original variables is condensed into the first components and these new variables or principal components are left uncorrelated. The premise is that ten-dimensional data sets provide ten principal components. PCA then attempts to assign the maximum amount of information to the first principal component, the maximum amount of information left to the second principal component and so on, until the result is somewhat like the Fig. \ref{fig:pca_variables}. By removing the components with little information and using the ones that remain as the new variables, the dimensionality can be minimized without compromising much information when the data is organized using principle components. Its crucial to understand that the primary components are created as linear combinations of the original variables, they are less interpretable and have no true significance. From a geometric perspective, the principal components are the data's directions that account for the greatest amount of variance or the lines that encompass the majority of the data's information. Here, variation and information are related in that a line's variance indicates how dispersed the data points are along it. The more dispersion a line has, the more data it contains. To put all of this into perspective, principle components are new vectors that offer the optimal viewpoint for examining and assessing the data, making the variations between the observations easier to observe. 
+
+\vspace{5mm}
+
+\textbf{Working priniciple for \ac{PCA}}\\
 \begin{figure}[t] 
   \centering
   \includegraphics[width=350pt,height=200pt]{pictures/pca_variables.PNG}
   \caption{The percentage of explained variance for each principal component}
   \label{fig:pca_variables}
-\end{figure} 
+\end{figure}
 
-\vspace{5mm}
-
-\textbf{Working priniciple for \ac{PCA}}\\
 \begin{enumerate}
   \item \textbf{Normalization} This step's objective is to normalize the continuous original variable's range to ensure each one makes an equal contribution to the analysis. More precisely, the reason \ac{PCA} is extremely sensitive to the variances of the original variables is because normalization must be done first. In other words, if the ranges of the initial variables differ significantly, the variables with greater ranges will take precedence over the variables with smaller ranges, which will produce biased results. Therefore, this issue can be avoided by translating the data to similar scales. The mathematical procedure for achieving this is to take each variable's value, subtract the mean and then divide the result by the standard deviation as shown in Eq. \ref{eq:norm}.
   \begin{equation}

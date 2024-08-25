@@ -43,7 +43,7 @@ Tab. \ref{tab:basic_with_tsne} shows the results of the baseline algorithm when 
     \end{tabular}
     \label{tab:basic_with_tsne}
 \end{table}
-\subsubsection{Basic Study with increasing datapoints}
+\subsubsection{Basic Study with Increasing Datapoints}
 As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compute the \ac{DBCV} for all the datapoints in the ABC datasets \cite{Koch_2019_CVPR} as once, it is necessary to verify that the results obtained for a smaller subset of the dataset can be interpolated for the entire dataset. In other words, the results obtained for a smaller subset of the dataset generalizes the behavior of the entire dataset well. Tab. \ref{tab:basic_2000_without_tsne} shows the results of the baseline algorithm on 2000 datapoints without applying dimensionality reduction and Tab. \ref{tab:basic_2000_with_tsne} shows the results of the baseline algorithm on 2000 datapoints when \ac{t-SNE} dimensionality reduction is applied. It is observed that roughly $10\%$ of the datapoints are classified as outliers by the \ac{HDBSCAN} algorithm for all the experiments on 1000 and 2000 datapoints. 
 \begin{table}[H]
     \setlength\extrarowheight{10pt}
@@ -83,7 +83,7 @@ As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compu
 \label{sec:conclu_with_pointnet}
 As mentioned in Ch. \ref{sec:method}, two feature representation learning backbones are used for the experiments. Experiments with the PointNet autoencoder as the backbone is recorded here. The performance of all the clustering algorithm is evaluated. Different hyperparameter optimizations are performed which will be elaborated  gradually through this subsection.  
 
-\subsubsection{Evaluation of increasing datapoints}
+\subsubsection{Evaluation of Increasing Datapoints}
 \label{sec:conclu_with_inc_data}
 As mentioned in Ch. \ref{sec:restrictions}, it is extremely inefficient to compute the \ac{DBCV} for all the datapoints in the ABC datasets \cite{Koch_2019_CVPR} as once, it is necessary to verify that the results obtained for a smaller subset of the dataset can be interpolated for the entire dataset. In other words, the results obtained for a smaller subset of the dataset generalizes the behavior of the entire dataset well. Tab. \ref{tab:conclu_1000} shows the results of the ConClu approach on 1000 datapoints and Tab. \ref{tab:conclu_2000}  and \ref{tab:conclu_5000} shows the results of the ConClu approach on 2000 datapoints and 5000 datapoints respectively. It is observed that roughly $10\%$ of the datapoints are classified as outliers by the \ac{HDBSCAN} algorithm for all the experiments on 1000, 2000 and 5000 datapoints. The dimension of the latent space representations for table
 \ref{tab:conclu_1000}, \ref{tab:conclu_2000} and \ref{tab:conclu_5000} is 1024. 

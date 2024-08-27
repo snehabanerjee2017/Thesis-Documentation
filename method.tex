@@ -3,7 +3,7 @@
 This chapter gives the details of the network, clustering algorithms and the evaluation metrics that are utilized and examined in this thesis. 
 \subsection{Network}
 \subsubsection{Selection of network}
-The unsupervised feature representation learning approach proposed by Guofeng Mei \textit{et. al.}\cite{mei2022unsupervised} is adapted to be used in the existing scenario at \ac{IPA}. The primary motivation behind using an unsupervised learning  methodology is that annotation of point clouds can be really challenging. To really focus on the point level features of a point cloud, it is required to have a high number of points in the point cloud. And labelling such high number of points in each point cloud in large real world datasets can be really expensive and severely inefficient. Unsupervised learning facilitates high quality feature representation without the need for humans in the loop. Moreover, sporadic and non-uniform distribution of the point clouds can also add further challenges in point-level annotation of the point clouds. Thus, in the absence of such annotations, it is impossible to get supervised feature representations for computer vision tasks. 
+The unsupervised feature representation learning approach proposed by Guofeng Mei \textit{et. al.}\cite{mei2022unsupervised} is adapted to be used in the existing scenario at \ac{IPA}. The primary motivation behind using an unsupervised learning  methodology is that annotation of point clouds can be really challenging. To really focus on the point level features of a point cloud, it is required to have a high number of points in the point cloud. And labelling such high number of points in each point cloud in large real world datasets can be really expensive and severely inefficient. Unsupervised learning facilitates high quality feature representation without the need for humans in the loop. Moreover, sporadic and non-uniform distribution of the point clouds can also add further challenges in point-level annotation of the point clouds. Thus, in the absence of such annotations, it is impossible to get supervised feature representations for computer vision tasks.\cite{mei2022unsupervised} 
 
 \vspace{5 mm}
 
@@ -191,7 +191,7 @@ where $\theta = (\theta _1, \theta _2, ... , \theta _M)$ are the weights of $M$ 
  Now, the model already has the feature representation from the feature encoder backbone (eg. PointNet or  \ac{DGCNN}). The next step is the point-level clustering module. Fig.\ref{fig:point_level} gives a detailed visualization of the point-level clustering module. It can be seen that it is made up of 2 entities, the "class probability prediction" function and the "label reassigning". The point-level clustering module is analogous to the semantic segmentation task. Each point $p_i$ of the point cloud $\mathcal{P}$ is assigned to one of the $J$ predetermined possible subgroups or semantic categories. Essentially, it is achieved by processing each of the point cloud $\mathcal{\textbf{P}}$ followed by a point-level class probability prediction operator that yields a matrix for class probability $\mathit{\textbf{S}} = \{ s_{ij} \in [0,1]\}_{i,j}^{N,J}$. The label reassigning operator thus, takes the point cloud $\mathcal{\textbf{P}}$ and the class probability matrix $S$ and generates a pseudo-label matrix $\mathit{\mathbf{\gamma}} = \{ \gamma_{ij} \in \{0,1\}\}_{i,j}^{N,J}$. The weights for the encoder $f_{\varphi}$ are learnt such that it minimizes the average cross-entropy loss between the pseudo-label $\gamma$ and the predicted class probability $\textbf{S}$. The average cross entropy loss is calculated by the formula given in Eq.\ref{eq:avg_cross_entropy}.
 \begin{equation}
     \label{eq:avg_cross_entropy}
-    \mathit{\epsilon}(\gamma,\textbf{S})= \mathit{ - \frac{1}{N}} \langle \gamma,\log \textbf{S} \rangle = \mathit{ - \frac{1}{N}} \sum_{i=1}^{N} \sum_{j=1}^{J} \gamma_{ij} \log s_{ij}.
+    \mathit{H}(\gamma,\textbf{S})= \mathit{ - \frac{1}{N}} \langle \gamma,\log \textbf{S} \rangle = \mathit{ - \frac{1}{N}} \sum_{i=1}^{N} \sum_{j=1}^{J} \gamma_{ij} \log s_{ij}.
 \end{equation}
 But to train a network with a cross-entropy loss, the ground truth labels of the points in the point cloud are required. Since that is not available, one needs to assign the label $\gamma$ automatically, which is explained in details in the following passage. 
 
@@ -238,14 +238,14 @@ where $\vec{1}_{J}$ is the vector of ones having dimension $J$. The above condit
 \begin{equation}
     \label{eq:entropy_regular}
     \begin{split}
-        &\underset{\Gamma}{min \langle \Gamma, D \rangle} - \epsilon \mathit{H}(\Gamma),\\
+        &\underset{\Gamma}{min \langle \Gamma, D \rangle} - \lambda \mathit{H}(\Gamma),\\
         &s.t., \Gamma^{T}\vec{1}_{\mathit{N}} = \frac{1}{\mathit{J}}\vec{1}_{J} =, \Gamma\vec{1}_{J} = \frac{1}{\mathit{N}}\vec{1}_{\mathit{N}},
     \end{split}    
 \end{equation}
-where, $\mathit{H}(\Gamma) = \langle \Gamma, \log \Gamma -1 \rangle $ is the entropy of $\Gamma$ and $\epsilon$ is the regularization parameter. As per \cite{cuturi2013sinkhorn}, on solving Eq. \ref{eq:entropy_regular}, the normalized exponential matrix in Eq. \ref{eq:gamma} is attained. 
+where, $\mathit{H}(\Gamma) = \langle \Gamma, \log \Gamma -1 \rangle $ is the entropy of $\Gamma$ and $\lambda$ is the regularization parameter. As per \cite{cuturi2013sinkhorn}, on solving Eq. \ref{eq:entropy_regular}, the normalized exponential matrix in Eq. \ref{eq:gamma} is attained. 
 \begin{equation}
     \label{eq:gamma}
-    \Gamma = diag(\mu) exp(\mathit{D/\epsilon}) diag(\nu),
+    \Gamma = diag(\mu) exp(\mathit{D/\lambda}) diag(\nu),
 \end{equation}
 where $\mu$ and $\nu$ are renormalized vectors in $\mathbb{R}^N$ and $\mathbb{R}^J$ respectively and $exp()$ is the exponential function. These vectors are computed on utilizing the iterative Sinkhorn-Knopp algorithm\cite{cuturi2013sinkhorn} with the constraints $ \mu = \frac{1}{\mathit{N}} \vec{1}_{\mathit{N}} $ and $ \nu = \frac{1}{\mathit{J}} \vec{1}_{\mathit{J}} $. The pseudo-code for the Sinkhorn-Knopp algorithm is elaborated in Algorithm \ref{alg:sinkhorn}.
 
@@ -295,7 +295,7 @@ where $ \lVert \cdot \rVert _1 $ is the $l_{1}$-norm or the Manhattan distance a
                 \State \# Computes posterior probability matrix
                 \State $\gamma = sinkhorn(\ac{stop-grad}(D), 1e - 3, 20)$
                 \State \# Computes Loss Function 
-                \State $\mathcal{L} = \epsilon(\gamma,S) + \eta \mathcal{L}_{orth}(C)$
+                \State $\mathcal{L} = H(\gamma,S) + \eta \mathcal{L}_{orth}(C)$
             \EndFor
             \State \# Updates backbone, projector ad predictor
             \State $ f_{\varphi}, \phi_{\alpha} \gets optimize(\frac{\mathcal{L}}{N})$
@@ -359,7 +359,7 @@ The minimum value the above equation can attain is 0. This is because, in the fi
 The objective of the network is to simultaneously minimize both the point-level clustering loss and the instance level contrasting loss. If the two augmented views of the point cloud $\mathcal{P}$ are $\mathcal{P}^a$ and $\mathcal{P}^b$, then the point-level clustering loss can be calculated by Eq. \ref{eq:local_loss}.
 \begin{equation}
     \label{eq:local_loss}
-    \mathcal{L}_{\mathit{local}} = \epsilon(\gamma^{a}, S^a) + \epsilon(\gamma^{b}, S^b) + \eta(\mathcal{L}_{orth}(C^a) + \mathcal{L}_{orth}(C^b))
+    \mathcal{L}_{\mathit{local}} = H(\gamma^{a}, S^a) + H(\gamma^{b}, S^b) + \eta(\mathcal{L}_{orth}(C^a) + \mathcal{L}_{orth}(C^b))
 \end{equation}
 where $\eta>0$ is a regularization parameter. Here $\gamma^a$ is the posterior class probability of the point belonging to one of the subcategories, $S^a$ is the predicted class probability and $C^a$ is the normalized center of the augmented view of the point cloud $\mathcal{P}^a$. In the same way, the corresponding terms for the other augmented view $\mathcal{P}^b$ are $\gamma^b$, $S^b$ and $C^b$. Therefore, the total loss could be calculated as the linear combination of $\mathcal{L}^{global}$ and $\mathcal{L}^{local}$ as in Eq. \ref{eq:total_loss}.
 \begin{equation}
@@ -372,7 +372,7 @@ where $\eta>0$ is a regularization parameter. Here $\gamma^a$ is the posterior c
 The goal of this thesis is to find a diverse set of objects that collectively represent the entire ABC dataset \cite{Koch_2019_CVPR}. This set of objects is to be then used as the source library for the different transfer learning approaches to be used in bin picking applications. Therefore, clustering algorithms are necessary to find the representative members of the dataset. In order to facilitate the usage of the \ac{DBCV} Index as the evaluation metric for the clustering algorithm as mentioned in Ch. \ref{sec:dbcv}, it is necessary to reduce the dimensions of the latent space representations. Furthermore, it would be beneficial to find lesser but denser clusters. This means that fewer objects could collectively represent the entire dataset and each representative member would be similar to a greater number of other objects in the dataset. Thus, reducing the dimensions of the latent space representations by dimensionality reduction would entail more "crowded" clusters in case of density-based clustering algorithms.
 
 \subsubsection{T-distributed Stochastic Neighbor Embedding}
-A technique for reducing dimensionality, \ac{t-SNE} is mostly used for data visualization in 2D and 3D maps. This approach has become well-liked since it can identify non-linear relationships in the data. If the data has more than two or three features, it might be necessary to consider looking for clusters in the data. To better understand the data and determine how many clusters to use in clustering models like kmeans, if necessary. To further grasp what one hopes to obtain, the following example is used for illustration. It is assumed that the data is to be converted from a 2D space to a 1D dimension as shown in Fig. \ref{fig:2d_data} and Fig. \ref{fig:1d_data} respectively.
+A technique for reducing dimensionality, \ac{t-SNE} is mostly used for data visualization in 2D and 3D maps. This approach has become well-liked since it can identify non-linear relationships in the data. If the data has more than two or three features, it might be necessary to consider looking for clusters in the data. To better understand the data and determine how many clusters to use in clustering models like k-means, if necessary. To further grasp what one hopes to obtain, the following example is used for illustration. It is assumed that the data is to be converted from a 2D space to a 1D dimension as shown in Fig. \ref{fig:2d_data} and Fig. \ref{fig:1d_data} respectively.\cite{van2008visualizing}
 
 \begin{figure}
     \centering
@@ -392,9 +392,9 @@ A technique for reducing dimensionality, \ac{t-SNE} is mostly used for data visu
 \end{figure}
 Every color in this illustration denotes a cluster. It is evident that the densities of each cluster differ. It can be observed that at least two of the clusters overlap when a simple projection of the data onto one of its dimensions is performed. This highlights that a better method is necessary for the dimension reduction task. This problem is handled by the \ac{t-SNE} algorithm and its effectiveness is described in the following steps.
 \begin{itemize}
-    \item Determining a joint probability distribution that captures the commonalities amongst the data points.
-    \item Constructing a dataset of the points with the target dimension and thereafter computing the joint probability distribution of those points as well.
-    \item Gradient descent is used to transform the low-dimensional dataset into a joint probability distribution that is as close as feasible to the high-dimensional dataset.
+    \item Determining a joint probability distribution that captures the commonalities amongst the data points.\cite{van2008visualizing}
+    \item Constructing a dataset of the points with the target dimension and thereafter computing the joint probability distribution of those points as well.\cite{van2008visualizing}
+    \item Gradient descent is used to transform the low-dimensional dataset into a joint probability distribution that is as close as feasible to the high-dimensional dataset.\cite{van2008visualizing}
 \end{itemize}
 
 \vspace{5mm}
@@ -402,12 +402,12 @@ Every color in this illustration denotes a cluster. It is evident that the densi
 \textbf{Working principle of \ac{t-SNE}}\\
 \begin{enumerate}
     \item \textbf{The likelihood of points to belong to the same neighborhood}\\
-    Finding each point's Euclidian distance from every other point is the initial step in the process. Next, these distances are converted into conditional probabilities, which express how similar one pair of points is to the other. This means that it is required to determine the degree of similarity—that is the likelihood—between any two points in the data. A Gaussian distribution with a standard deviation of $\sigma_i$ and a center at $x_i$ represents the conditional probability of point $x_j$ to be next to point $x_i$. The conditional probability is defined mathematically as shown in Eq. \ref{eq:cond_prob}. The factors that effect $\sigma_i$ are discussed later.
+    Finding each point's Euclidean distance from every other point is the initial step in the process. Next, these distances are converted into conditional probabilities, which express how similar one pair of points is to the other. This means that it is required to determine the degree of similarity—that is the likelihood—between any two points in the data. A Gaussian distribution with a standard deviation of $\sigma_i$ and a center at $x_i$ represents the conditional probability of point $x_j$ to be next to point $x_i$. The conditional probability is defined mathematically as shown in Eq. \ref{eq:cond_prob}. The factors that effect $\sigma_i$ are discussed later.
     \begin{equation}
         \label{eq:cond_prob}
         \mathit{p_{j|i}} = \mathit{\frac{exp \left(- \frac{\lVert x_i - x_j \rVert ^2}{2 \sigma_i^2} \right)}{\sum_{k \neq i} exp \left(- \frac{\lVert x_i - x_k \rVert ^2}{2 \sigma_i^2} \right)}}, 
     \end{equation}
-    where $p_{j|i}$ is the probability that the point $x_i$ has $x_j$ as its neighbor. Since the clusters can have varying densities, the division by the total of all the other points positioned at the Gaussian distribution centered at $x_i$ is necessary. Looking back to Fig. \ref{fig:2d_data} as an example to clarify, the orange cluster has a lesser density than the blue. As a result, there will be less similarity between the orange and blue points if the Gaussian distribution is used to compute the commonalities between each pair of points. The normalization is performed because it is only necessary to view the clusters as such in the final output and if any of the clusters have differing densities need not be visualized. The joint probability distribution can be computed from the conditional distributions as shown in Eq. \ref{eq:joint_prob}.
+    where $p_{j|i}$ is the probability that the point $x_i$ has $x_j$ as its neighbor. Since the clusters can have varying densities, the division by the total of all the other points positioned at the Gaussian distribution centered at $x_i$ is necessary. Looking back to Fig. \ref{fig:2d_data} as an example to clarify, the orange cluster has a lesser density than the blue. As a result, there will be less similarity between the orange and blue points if the Gaussian distribution is used to compute the commonalities between each pair of points. The normalization is performed because it is only necessary to view the clusters as such in the final output and if any of the clusters have differing densities need not be visualized. The joint probability distribution can be computed from the conditional distributions as shown in Eq. \ref{eq:joint_prob}.\cite{van2008visualizing}
     \begin{equation}
         \label{eq:joint_prob}
         \mathit{p_{ij}} = \mathit{\frac{p_{j|i} + p_{i|j}}{2n}}. 
@@ -420,14 +420,14 @@ Every color in this illustration denotes a cluster. It is evident that the densi
         \begin{minipage}[t]{.45\textwidth}
           \centering
           \includegraphics[width=150pt,height=50pt]{pictures/random_1d_data.PNG}
-          \captionof{figure}{A random dataset created in 1D space.}
+          \captionof{figure}{A random dataset created in 1D space \cite{tsne}.}
           \label{fig:random_1d_data}
         \end{minipage}%
         \hspace{5mm}
         \begin{minipage}[t]{.45\textwidth}
           \centering
           \includegraphics[width=150pt,height=50pt]{pictures/tsne_output.PNG}
-          \captionof{figure}{Visualization of the dataset in 1D space after applying \ac{t-SNE}.}
+          \captionof{figure}{Visualization of the dataset in 1D space after applying \ac{t-SNE} \cite{tsne}.}
           \label{fig:tsne_output}
         \end{minipage}  
     \end{figure}
@@ -436,7 +436,7 @@ Every color in this illustration denotes a cluster. It is evident that the densi
         \label{eq:joint_prob_random}
         \mathit{q_{ij}} = \frac{\left(1 + \lVert y_i - y_j \rVert\right) ^{-1}}{\sum_{k \neq l}\left(1 + \lVert y_k - y_l \rVert\right) ^{-1}}.
     \end{equation}
-    The heavy tails attribute of the t-distribution is the rationale behind selecting it over the Gaussian distribution. This property helps minimize "crowding" of the points in the lower dimension by making moderate gaps between points in the high-dimensional space. An additional benefit of employing the t-distribution is that it enhances the algorithm's optimization procedure in the third stage.
+    The heavy tails attribute of the t-distribution is the rationale behind selecting it over the Gaussian distribution. This property helps minimize "crowding" of the points in the lower dimension by making moderate gaps between points in the high-dimensional space. An additional benefit of employing the t-distribution is that it enhances the algorithm's optimization procedure in the third stage.\cite{van2008visualizing}
     \item \textbf{Modification of the dataset in the low-dimensional space for the best possible data visualization}\\
     Now, the \ac{KL} divergence is utilized to maximize the similarity between the joint probability distribution of the data points in the low dimensional space and the higher dimensional space. The \ac{KL} divergence serves as a gauge for the degree of difference between two distributions. It is defined for distributions P and Q in the probability space of $\chi$ by Eq. \ref{eq:kl_div}.
     \begin{equation}
@@ -448,7 +448,7 @@ Every color in this illustration denotes a cluster. It is evident that the densi
         \label{eq:kl_div_cost}
         \mathit{C} = \mathit{\ac{KL}(P || Q)} = \sum_i \sum_j \mathit{p_{ij}} \log \mathit{\frac{p_{ij}}{q_{ij}}}.
     \end{equation}
-    The low dimension dataset's point values are obtained from this optimization, which is then utilized for visualizing the dataset in the lower dimensional space. Refering to the example before, the clusters in the low-dimensional space appears as in Fig. \ref{fig:tsne_output}. The \ac{t-SNE} model has a number of hyperparameters that can be fine-tuned depending on the use-case. A few of these have to do with gradient descent. The two most crucial ones are the number of iterations, the learning rate and perplexity. It serves to select the Gaussian distribution expressing the conditional distribution in high-dimensional space's standard deviation $\sigma_i$. It can be defined as the count of each point's effective neighbors. For perplexities ranging from 5 to 50, the model is fairly robust.
+    The low dimension dataset's point values are obtained from this optimization, which is then utilized for visualizing the dataset in the lower dimensional space. Refering to the example before, the clusters in the low-dimensional space appears as in Fig. \ref{fig:tsne_output}. The \ac{t-SNE} model has a number of hyperparameters that can be fine-tuned depending on the use-case. A few of these have to do with gradient descent. The two most crucial ones are the number of iterations, the learning rate and perplexity. It serves to select the Gaussian distribution expressing the conditional distribution in high-dimensional space's standard deviation $\sigma_i$. It can be defined as the count of each point's effective neighbors. For perplexities ranging from 5 to 50, the model is fairly robust.\cite{van2008visualizing}
 
 \end{enumerate}
 
@@ -574,7 +574,7 @@ A brute force algorithm is a straightforward and exhaustive search strategy that
 
 \subsection{Evaluation Metrices}
 This section gives an overview of the evaluation metrices used to compare the results of the different clustering algorithms evaluated in this thesis. It also provides the details of the metric used to compare how similar the objects in the test dataset are to the representative members of the entire dataset. 
-\subsubsection{Evaluation of Clustering Algorithms}
+\subsubsection{Metric for Clustering Algorithms}
 It is evident how even the evaluation metrics using just the intrinsic features of the dataset are still not efficient in the presence of noise, outliers or non-convex clusters. As pointed out by the authors of \cite{jain1988algorithms}, "without a strong effort in this direction, cluster analysis will remain a black art accessible only to those true believers who have experience and great courage". The fact that this statement holds even today, 35 years after he said it is even more astonishing. To tackle the problem of inefficient evaluation metrics for non-convex clusters or where the different clusters have a difference in size Moulavi \textit{et. al.} proposed the \ac{DBCV} Index \cite{moulavi2014density}.
 
 \subsubsection*{Density Based Cluster Validition Index}
@@ -588,7 +588,7 @@ Using the above-mentioned equation, a symmetric reachability distance is defined
 
 \vspace{5mm}
 
-Moreover, with this approach, the density of the object is dependent to its distance from only one other object i.e. the $k^th$ nearest neighbor. This approach is not as robust as compared to considering more objects in its neighborhood as done in Gaussian distribution kernel density estimation. Thus, in order to propose a more robust density estimation, the use of a new parameterless core distance is proposed which can be elucidated as the inverse of a density estimate and thus, can be used in defining the \ac{MRD}. So now instead of using just one point in the cluster, all the points are taken into account such that the objects closer to it contribute to the density more as compared to the objects further away. We can see in Eq. \ref{eq:aptscoredist}, that the inverse of the $KNN$ distances raised to the power of dimensions is calculated such that closer objects gets a higher weight as compared to further objects. This effect can further be increased by using squared Euclidean distance instead of Euclidean distances. Also, as per the definition of \ac{MRD}\cite{lelis2009semi}, the core distance of an object is compared to the distances of the object to other objects in the cluster. Hence, the core distance needs to be comparable to these distances. For each object $\textbf{o}$ in the cluster, the "all-points-core-distance" $a_{pts}coredist(\textbf{o})$ lies between the second and the last nearest neighbor distance of the object\cite{moulavi2014density} as in Eq. \ref{eq:knndist}. 
+Moreover, with this approach, the density of the object is dependent to its distance from only one other object i.e. the $k^th$ nearest neighbor. This approach is not as robust as compared to considering more objects in its neighborhood as done in Gaussian distribution kernel density estimation. Thus, in order to propose a more robust density estimation, the use of a new parameterless core distance is proposed which can be elucidated as the inverse of a density estimate and thus, can be used in defining the \ac{MRD}. So now instead of using just one point in the cluster, all the points are taken into account such that the objects closer to it contribute to the density more as compared to the objects further away. It can be seen in Eq. \ref{eq:aptscoredist}, that the inverse of the $KNN$ distances raised to the power of dimensions is calculated such that closer objects gets a higher weight as compared to further objects. This effect can further be increased by using squared Euclidean distance instead of Euclidean distances. Also, as per the definition of \ac{MRD}\cite{lelis2009semi}, the core distance of an object is compared to the distances of the object to other objects in the cluster. Hence, the core distance needs to be comparable to these distances. For each object $\textbf{o}$ in the cluster, the "all-points-core-distance" $a_{pts}coredist(\textbf{o})$ lies between the second and the last nearest neighbor distance of the object\cite{moulavi2014density} as in Eq. \ref{eq:knndist}. 
 
 \begin{equation}
   \label{eq:knndist}
@@ -629,7 +629,7 @@ Once the validity index of each cluster is calculated, the final \ac{DBCV} score
 \end{equation}
 If a cluster has better density compactness within the cluster as compared to density separation in between adjacent clusters, than the validity index of the cluster would take a positive value. On the other hand, if the density outside the cluster separting it from adjacent clusters is more than density compactedness inside the cluster than it would take a negative value. Thus, the \ac{DBCV} score can vary in the range $[-1,1]$ where greater \ac{DBCV} score indicates to a better density-based clustering algorithm.
 
-\subsubsection{Evaluation of Similarity in Point Clouds}
+\subsubsection{Metric for Similarity in Point Clouds}
 Hausdorff distance is commonly used to calculate the similarity between two point clouds. So if the set of representative members generalizes the entire dataset well enough, then each object in the test dataset would be very similar to atleast one object from the set of representative members. Hausdorff distance calculates how different one point cloud is to another. So, lower the Hausdorff distance, more similar are the point clouds to one another. Thus, for the a set of "good" representative members, the average distance from all objects in the test dataset to their corresponding nearest object in the representative set is minimum. Mathematically, Hausdorff distance is the measure of how far two subsets in a metric space. Intuitively speaking, the Hausdorff distance between two sets of points is lower when every point in one set is close to some point in the other set. In other words Hausdorff distance is the longest distance that needs to be covered when traveling from any point in one of the subsets to the closest point in the other subset. Let $(M,d)$ be a $d$-dimensional metric space and $X \subset M$, $Y \subset M$ are the two non-empty subsets of points, then the Hausdorff distance between $X$ and $Y$ is defined as in Eq. \ref{eq:hausdorff}.
 \begin{equation}
     \label{eq:hausdorff}
@@ -663,7 +663,7 @@ The data generation procedure currently used at \ac{IPA} requires 24 hours for c
 
 \subsubsection{Hardware and Environment Setup}
 \label{sec:hardware}
-All the aspects of this thesis work has been carried on into a single setup, a powerful workstation computer, ML-Lab-2 at \ac{IPA}. It is a Ubuntu server. The \ac{CPU} are two ”Quad Core Intel Xeon Silver 4112 @ 2.60 GHz” with a total installed \ac{RAM} of 275 GB. \todo{ensure the specification for CPU}. The system has two \ac{GPU} which are "Tesla V100-PCIE-32GB" and "NVIDIA GeForce RTX 3090" with 32 \ac{GB} and 24 \ac{GB} memory respectively. Each of the individual model training is executed on a single GPU. 
+All the aspects of this thesis work has been carried on into a single setup, a powerful workstation computer, ML-Lab-2 at \ac{IPA}. It is a Ubuntu server. The \ac{CPU} are two ”Quad Core Intel Xeon Silver 4112 @ 2.60 GHz” with a total installed \ac{RAM} of 275 GB. The system has two \ac{GPU} which are "Tesla V100-PCIE-32GB" and "NVIDIA GeForce RTX 3090" with 32 \ac{GB} and 24 \ac{GB} memory respectively. Each of the individual model training is executed on a single GPU. 
 
 
 

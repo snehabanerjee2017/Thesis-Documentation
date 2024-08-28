@@ -355,7 +355,7 @@ The minimum value the above equation can attain is 0. This is because, in the fi
     \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Loss function}
+\subsubsection{Loss Function}
 The objective of the network is to simultaneously minimize both the point-level clustering loss and the instance level contrasting loss. If the two augmented views of the point cloud $\mathcal{P}$ are $\mathcal{P}^a$ and $\mathcal{P}^b$, then the point-level clustering loss can be calculated by Eq. \ref{eq:local_loss}.
 \begin{equation}
     \label{eq:local_loss}
@@ -657,6 +657,6 @@ The aim of this thesis is to find "good" representative members of the dataset w
 \subsubsection{Hardware and Environment Setup}
 \label{sec:hardware}
 All the aspects of this thesis work has been carried on into a single setup, a powerful workstation computer, ML-Lab-2 at \ac{IPA}. It is an Ubuntu server. The \ac{CPU} are two ”Quad Core Intel Xeon Silver 4112 @ 2.60 GHz” with a total installed \ac{RAM} of 275 GB. The system has two \ac{GPU} which are "Tesla V100-PCIE-32GB" and "NVIDIA GeForce RTX 3090" with 32 \ac{GB} and 24 \ac{GB} memory respectively. Each of the individual model training is executed on a single GPU. 
-
+\cleardoublepage
 
 
